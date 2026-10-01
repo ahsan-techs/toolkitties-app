@@ -147,7 +147,7 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
             <p className="mt-3 text-base text-slate">{displayDescription}</p>
           </div>
 
-          <div className={wide ? "mx-auto mt-10 w-full max-w-4xl" : "mx-auto mt-10 max-w-2xl"}>
+          <div className={wide ? "tk-workspace-wide" : "tk-workspace"}>
             {tool.functional ? (
               tool.slug === "invoice-generator" ? <InvoiceGenerator /> : <ToolWorkspace tool={tool} initialOpts={variant?.presetOpts} />
             ) : (

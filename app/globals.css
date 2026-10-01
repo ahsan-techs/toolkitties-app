@@ -28,3 +28,87 @@ body {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
 }
+
+/* ==========================================================================
+   Collapsible tools sidebar
+   State lives on <html data-sidebar="collapsed"> (set by an inline script in
+   app/(main)/layout.tsx and by SidebarToggle). Only applies on lg+ screens,
+   which is where the sidebar is shown.
+   ========================================================================== */
+.tk-sidebar {
+  width: 16rem;
+  transition: width 0.25s ease;
+}
+
+.tk-sb-scroll {
+  scrollbar-width: thin;
+}
+
+/* The tool workspace (the card with the upload box / form). */
+.tk-workspace {
+  width: 100%;
+  max-width: 42rem;
+  margin: 2.5rem auto 0;
+  transition: max-width 0.25s ease;
+}
+.tk-workspace-wide {
+  width: 100%;
+  max-width: 56rem;
+  margin: 2.5rem auto 0;
+  transition: max-width 0.25s ease;
+}
+
+@media (min-width: 1024px) {
+  html[data-sidebar="collapsed"] .tk-sidebar {
+    width: 4.5rem;
+  }
+  html[data-sidebar="collapsed"] .tk-sb-label,
+  html[data-sidebar="collapsed"] .tk-sb-grouptitle {
+    display: none;
+  }
+  html[data-sidebar="collapsed"] .tk-sb-head {
+    justify-content: center;
+  }
+  html[data-sidebar="collapsed"] .tk-sb-scroll {
+    gap: 0.75rem;
+    padding-right: 0;
+  }
+  html[data-sidebar="collapsed"] .tk-sb-group + .tk-sb-group {
+    border-top: 1px solid rgb(21 23 26 / 0.1);
+    padding-top: 0.75rem;
+  }
+  html[data-sidebar="collapsed"] .tk-sb-group ul {
+    margin-top: 0;
+    align-items: center;
+  }
+  html[data-sidebar="collapsed"] .tk-sb-link {
+    width: 2.75rem;
+    height: 2.5rem;
+    justify-content: center;
+    padding: 0;
+  }
+  html[data-sidebar="collapsed"] .tk-sb-icon {
+    width: auto;
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+  html[data-sidebar="collapsed"] .tk-sb-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Extra room for the tool itself when the sidebar is slim. */
+  html[data-sidebar="collapsed"] .tk-workspace {
+    max-width: 56rem;
+  }
+  html[data-sidebar="collapsed"] .tk-workspace-wide {
+    max-width: 64rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tk-sidebar,
+  .tk-workspace,
+  .tk-workspace-wide {
+    transition: none;
+  }
+}
