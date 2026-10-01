@@ -298,8 +298,8 @@ export default function InvoiceGenerator() {
           </button>
         </header>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
-          {/* ---------------- Left: editor ---------------- */}
+        <div className="mt-6 flex flex-col-reverse gap-6">
+          {/* ---------------- Editor ---------------- */}
           <div className="min-w-0 space-y-6">
             <Card title="Invoice details">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -368,12 +368,16 @@ export default function InvoiceGenerator() {
                   <Toggle on={pdf.converted && previews.length > 0} disabled={previews.length === 0} onChange={(v) => setPdf((p) => ({ ...p, converted: v }))} label={`Add approx. total in ${previews[0] ?? "a preview currency"}`} />
                 </div>
                 <div className="sm:col-span-2"><Label text="File name (optional)"><input className={inp} placeholder={`invoice-${inv.number}`} value={pdf.fileName} onChange={(e) => setPdf((p) => ({ ...p, fileName: e.target.value }))} /></Label></div>
+                <button type="button" onClick={exportPdf} disabled={busy} className="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow transition hover:bg-emerald-700 disabled:opacity-60 sm:col-span-2">
+                  {busy ? "Building PDF…" : "⬇ Download PDF"}
+                </button>
+                {err && <p className="rounded-lg bg-rose-500/10 px-3 py-2 text-xs text-rose-600 dark:text-rose-300 sm:col-span-2">{err}</p>}
               </div>
             </Card>
           </div>
 
-          {/* ---------------- Right: summary + currencies ---------------- */}
-          <aside className="min-w-0 space-y-6 lg:sticky lg:top-24 lg:self-start">
+          {/* ---------------- Summary + currencies (shown first) ---------------- */}
+          <aside className="grid min-w-0 gap-6 md:grid-cols-2">
             <section className="overflow-hidden rounded-2xl border border-emerald-700/30 bg-gradient-to-br from-emerald-600 to-emerald-800 p-5 text-white shadow-lg shadow-emerald-900/10">
               <p className="text-xs font-medium uppercase tracking-wider text-emerald-100/80">Total due</p>
               <p className="mt-1 truncate text-3xl font-semibold tabular-nums tracking-tight">{money(t.total, cur)}</p>

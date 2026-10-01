@@ -130,7 +130,7 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
 
       <Navbar />
       <main className="container-content flex gap-10 py-10 md:py-14">
-        {!wide && <ToolsSidebar currentSlug={tool.slug} />}
+        <ToolsSidebar currentSlug={tool.slug} />
 
         <div className="min-w-0 flex-1">
           <nav className="mb-6 text-sm text-slate">
@@ -147,7 +147,7 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
             <p className="mt-3 text-base text-slate">{displayDescription}</p>
           </div>
 
-          <div className={wide ? "mx-auto mt-10 max-w-6xl" : "mx-auto mt-10 max-w-2xl"}>
+          <div className={wide ? "mx-auto mt-10 w-full max-w-4xl" : "mx-auto mt-10 max-w-2xl"}>
             {tool.functional ? (
               tool.slug === "invoice-generator" ? <InvoiceGenerator /> : <ToolWorkspace tool={tool} initialOpts={variant?.presetOpts} />
             ) : (
