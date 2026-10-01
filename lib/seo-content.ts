@@ -1,8 +1,9 @@
 import type { Tool, ToolGroup } from "@/lib/tools-data";
 
-type Kind = "pdf" | "image" | "text" | "calculator" | "generator" | "generic";
+type Kind = "pdf" | "image" | "text" | "calculator" | "generator" | "document" | "generic";
 
 function detectKind(tool: Tool, group: ToolGroup): Kind {
+  if (group.id === "business") return "document";
   if (group.id === "documents") return "pdf";
   if (group.id === "images") return "image";
   if (["unit-converter", "percentage-calculator", "age-calculator", "color-picker", "timestamp-converter"].includes(tool.slug)) return "calculator";
@@ -38,6 +39,14 @@ export function generateHowTo(tool: Tool, group: ToolGroup): string[] {
       `Copy the output with one click, or leave it in place to keep editing.`,
     ];
   }
+  if (kind === "document") {
+    return [
+      `Open ${tool.name} and fill in your details, your client's details, the invoice number, and the date.`,
+      `Add each line item with a quantity and rate, then set tax and discount. Totals update instantly.`,
+      `Optionally set a late-fee policy and toggle currencies to preview your total in other currencies.`,
+      `Choose page size and accent colour, then click Download PDF. Everything happens in your browser.`,
+    ];
+  }
   if (kind === "calculator") {
     return [
       `Open ${tool.name} and fill in the values it asks for.`,
@@ -62,6 +71,7 @@ export function generateBenefits(tool: Tool, group: ToolGroup): string[] {
   if (kind === "pdf") return [...base, "Works the same on Windows, Mac, Linux, and Chromebooks — anything with a modern browser."];
   if (kind === "image") return [...base, "Keeps your original photo quality intact unless you choose to compress it."];
   if (kind === "text") return [...base, "Updates the result instantly as you type, so you can see changes in real time."];
+  if (kind === "document") return [...base, "Includes a late-fee simulator and live multi-currency previews, with a clean, print-ready PDF."];
   if (kind === "calculator") return [...base, "Gives an instant, accurate result without opening a spreadsheet."];
   return [...base, "Generates a fresh, unique result every time you run it."];
 }
@@ -104,6 +114,13 @@ export function generateFaqs(tool: Tool, group: ToolGroup): { q: string; a: stri
     });
   }
 
+  if (kind === "document") {
+    common.push(
+      { q: `Does ${name} add late fees automatically?`, a: `No. The Late Fee Matrix simulates what a late payment would cost and can print your late-payment terms on the invoice, but you decide the policy. Check your local rules on late fees and interest.` },
+      { q: `Are the currency conversions exact?`, a: `They are previews based on live exchange rates when available (or clearly labelled estimates if offline). Use your bank's rate for the final amount you invoice.` }
+    );
+  }
+
   return common;
 }
 
@@ -119,6 +136,7 @@ export function generateSeoTitle(tool: Tool, group: ToolGroup): string {
   if (kind === "pdf") return `${tool.name} Online Free — No Signup, Instant Download | Toolkitties`;
   if (kind === "image") return `${tool.name} Online Free — Fast, Private, No Quality Loss | Toolkitties`;
   if (kind === "text") return `${tool.name} Online — Free, Instant Results, No Signup | Toolkitties`;
+  if (kind === "document") return `${tool.name} Online Free — Create & Download PDF, No Signup | Toolkitties`;
   if (kind === "calculator") return `${tool.name} Online Free — Instant, Accurate Results | Toolkitties`;
   return `${tool.name} Online Free — Generate Instantly, No Signup | Toolkitties`;
 }

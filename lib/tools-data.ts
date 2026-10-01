@@ -4,6 +4,7 @@ export type Tool = {
   description: string;
   icon: string;
   functional: boolean; // true = fully working in-browser today
+  wide?: boolean; // true = full-width dashboard layout (no sidebar)
 };
 
 export type ToolGroup = {
@@ -89,6 +90,15 @@ export const toolGroups: ToolGroup[] = [
       { slug: "age-calculator", name: "Age Calculator", description: "Find exact age in years, months, and days from a birthdate.", icon: "🎂", functional: true },
       { slug: "color-picker", name: "Color Palette Generator", description: "Pick a color and get matching HEX, RGB, and HSL values.", icon: "🎨", functional: true },
       { slug: "timestamp-converter", name: "Timestamp Converter", description: "Convert between Unix timestamps and readable dates.", icon: "⏱️", functional: true },
+    ],
+  },
+  {
+    id: "business",
+    title: "Business & Invoicing",
+    icon: "💼",
+    blurb: "Create professional invoices and business documents in your browser.",
+    tools: [
+      { slug: "invoice-generator", name: "Invoice Generator", description: "Build a professional invoice with tax, a late-fee simulator and multi-currency previews, then download it as a PDF.", icon: "🧾", functional: true, wide: true },
     ],
   },
 ];
