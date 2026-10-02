@@ -17,7 +17,7 @@ export default function HeroSearch() {
     <section className="container-content pt-16 pb-12 text-center md:pt-24">
       <p className="font-display text-sm font-medium uppercase tracking-widest text-moss">50+ tools, zero installs</p>
       <h1 className="mx-auto mt-4 max-w-2xl font-display text-4xl font-semibold leading-tight text-ink md:text-5xl">
-        Every file tool you reach for, in one clean workspace.
+        50+ Premium Tools. 100% Free Forever.
       </h1>
       <p className="mx-auto mt-4 max-w-xl text-base text-slate md:text-lg">
         Compress PDFs, convert images, and clean up text — processed on your own device, gone the moment you close the tab.

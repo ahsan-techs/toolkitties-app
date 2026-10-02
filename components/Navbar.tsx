@@ -3,9 +3,8 @@
 import { useState } from "react";
 
 const catalogGroups = [
-  { label: "Tools Catalog", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
-  { label: "Pro Features", items: ["Unlimited daily actions", "Priority processing queue", "No file size caps"] },
-  { label: "Privacy & Security", items: ["Runs 100% in your browser", "Files never touch a server", "GDPR-friendly by design"] },
+  { label: "50+ Premium Tools", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
+  { label: "100% Free Forever", items: ["Unlimited daily actions", "Priority processing queue", "No file size caps"] },
 ];
 
 export default function Navbar() {
