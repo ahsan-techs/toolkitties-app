@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
+import MotionRoot from "@/components/motion/MotionRoot";
 
 export const metadata: Metadata = {
   title: "Toolkitties — 50+ Free Online Tools, No Signup Required",
@@ -22,19 +23,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem("toolkitties-sidebar")==="collapsed")document.documentElement.setAttribute("data-sidebar","collapsed")}catch(e){}`,
-          }}
-        />
         <link
           href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <noscript>
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
       </head>
-      <body className="font-body antialiased">{children}</body>
+      <body className="font-body antialiased">
+        <MotionRoot>{children}</MotionRoot>
+      </body>
     </html>
   );
 }

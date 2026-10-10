@@ -1,17 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import { useMotionValueEvent, useScroll } from "framer-motion";
 
 const catalogGroups = [
-  { label: "50+ Premium Tools", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
-  { label: "100% Free Forever", items: ["Unlimited daily actions", "Priority processing queue", "No file size caps"] },
+  { label: "Tools Catalog", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
+  { label: "Pro Features", items: ["Unlimited daily actions", "Priority processing queue", "No file size caps"] },
+  { label: "Privacy & Security", items: ["Runs 100% in your browser", "Files never touch a server", "GDPR-friendly by design"] },
 ];
 
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollY } = useScroll();
+
+  // Adds a soft shadow once the page scrolls; state only changes at the threshold.
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const next = y > 8;
+    setScrolled((prev) => (prev === next ? prev : next));
+  });
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/10 bg-paper/90 backdrop-blur">
+    <header
+      className={`sticky top-0 z-50 border-b border-ink/10 backdrop-blur transition-[background-color,box-shadow] duration-300 ${
+        scrolled ? "bg-paper/95 shadow-[0_8px_24px_-16px_rgba(21,23,26,0.35)]" : "bg-paper/90"
+      }`}
+    >
       <div className="container-content flex h-16 items-center justify-between">
         <a href="/" className="flex items-center gap-2">
           <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -35,7 +49,7 @@ export default function Navbar() {
                 {group.label}
               </button>
               {openMenu === group.label && (
-                <div className="absolute left-0 top-full w-64 rounded-2xl border border-ink/10 bg-white p-2 shadow-lg">
+                <div className="absolute left-0 top-full w-64 origin-top-left animate-pop rounded-2xl border border-ink/10 bg-white p-2 shadow-lg">
                   {group.items.map((item) => (
                     <div key={item} className="rounded-xl px-3 py-2 text-sm text-slate hover:bg-sand hover:text-ink">
                       {item}

@@ -1,3 +1,5 @@
+import Reveal from "./motion/Reveal";
+
 // Homepage content aimed at both search engines and AI answer engines:
 // a plain-language privacy explanation, a FAQ that answers the questions
 // people actually ask, and matching structured data (Organization, WebSite,
@@ -64,26 +66,29 @@ export default function HomeGeo() {
   return (
     <>
       <section className="container-content py-16">
-        <div className="mx-auto max-w-3xl rounded-3xl border border-ink/10 bg-white p-8 md:p-10">
+        <Reveal className="mx-auto max-w-3xl rounded-3xl border border-ink/10 bg-white p-8 md:p-10">
           <h2 className="font-display text-2xl font-semibold text-ink">Privacy by design, not by promise</h2>
           <p className="mt-3 text-base text-slate">
             Most online file tools upload your document to a server before doing anything with it. Toolkitties works the other way around: the tool is delivered to your browser and does the work there. Your file never leaves your device, so there is no copy of it for us to store, share, or lose — which is why the platform is GDPR-friendly by design.
           </p>
-        </div>
+        </Reveal>
       </section>
 
       <section id="faq" className="container-content pb-20">
-        <div className="mx-auto max-w-3xl">
+        <Reveal className="mx-auto max-w-3xl">
           <h2 className="font-display text-2xl font-semibold text-ink md:text-3xl">Frequently asked questions</h2>
           <div className="mt-6 flex flex-col divide-y divide-ink/10 rounded-2xl border border-ink/10 bg-white">
             {faqs.map((f) => (
               <details key={f.q} className="group p-5">
-                <summary className="cursor-pointer list-none text-sm font-semibold text-ink">{f.q}</summary>
-                <p className="mt-2 text-sm text-ink/75">{f.a}</p>
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
+                  {f.q}
+                  <span aria-hidden className="text-lg font-normal text-moss transition-transform duration-300 group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-2 text-sm text-ink/75 group-open:animate-rise">{f.a}</p>
               </details>
             ))}
           </div>
-        </div>
+        </Reveal>
       </section>
     </>
   );

@@ -17,8 +17,8 @@ export default function Home() {
         <HeroSearch />
 
         <section id="tools" className="container-content divide-y divide-ink/10 py-6">
-          {toolGroups.map((group) => (
-            <ToolGroupSection key={group.id} group={group} />
+          {toolGroups.map((group, i) => (
+            <ToolGroupSection key={group.id} group={group} eager={i === 0} />
           ))}
         </section>
 

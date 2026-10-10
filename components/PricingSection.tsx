@@ -1,3 +1,5 @@
+import Reveal from "./motion/Reveal";
+
 const plans = [
   {
     name: "Starter Framework",
@@ -39,17 +41,17 @@ const plans = [
 export default function PricingSection() {
   return (
     <section id="pricing" className="container-content py-20">
-      <div className="mx-auto max-w-xl text-center">
+      <Reveal className="mx-auto max-w-xl text-center">
         <h2 className="font-display text-3xl font-semibold text-ink md:text-4xl">Simple pricing, no surprises</h2>
         <p className="mt-3 text-base text-slate">Start free. Upgrade only when you actually need more.</p>
         <p className="mt-2 text-xs text-slate">Prices are in US dollars — your bank or card provider converts to your local currency at checkout.</p>
-      </div>
+      </Reveal>
 
       <div className="mt-12 grid gap-6 md:grid-cols-3">
-        {plans.map((plan) => (
+        {plans.map((plan, i) => (
+          <Reveal key={plan.name} delay={i * 0.1} y={32} className="h-full">
           <div
-            key={plan.name}
-            className={`flex flex-col rounded-3xl border p-8 ${
+            className={`flex h-full flex-col rounded-3xl border p-8 transition-shadow duration-300 hover:shadow-lg ${
               plan.highlighted ? "border-moss bg-ink text-paper shadow-xl md:-translate-y-3" : "border-ink/10 bg-white text-ink"
             }`}
           >
@@ -79,6 +81,7 @@ export default function PricingSection() {
               {plan.cta}
             </a>
           </div>
+          </Reveal>
         ))}
       </div>
     </section>

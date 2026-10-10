@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import LocaleHeader from "@/components/i18n/LocaleHeader";
 import LocaleFooter from "@/components/i18n/LocaleFooter";
+import Reveal from "@/components/motion/Reveal";
 import { toolGroups } from "@/lib/tools-data";
 import { locales, localeLabels, type Locale } from "@/lib/i18n/config";
 import { toolTranslations } from "@/lib/i18n/tool-translations";
@@ -44,13 +45,13 @@ export default function TranslatedHomePage({ locale }: { locale: Locale }) {
         </section>
 
         <section className="container-content flex flex-col gap-14 pb-20">
-          {toolGroups.map((group) => {
+          {toolGroups.map((group, gi) => {
             const title = groupTitles[group.id]?.[locale] ?? group.title;
             const functionalTools = group.tools.filter((tool) => tool.functional && toolTranslations[tool.slug]?.[locale]);
             if (functionalTools.length === 0) return null;
 
             return (
-              <div key={group.id}>
+              <Reveal key={group.id} eager={gi === 0}>
                 <h2 className="flex items-center gap-2 font-display text-xl font-semibold text-ink">
                   <span>{group.icon}</span>
                   {title}
@@ -70,7 +71,7 @@ export default function TranslatedHomePage({ locale }: { locale: Locale }) {
                     );
                   })}
                 </div>
-              </div>
+              </Reveal>
             );
           })}
         </section>
