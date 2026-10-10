@@ -1,4 +1,4 @@
-import Reveal from "./motion/Reveal";
+import Reveal from "@/components/motion/Reveal";
 
 const plans = [
   {
@@ -49,10 +49,10 @@ export default function PricingSection() {
 
       <div className="mt-12 grid gap-6 md:grid-cols-3">
         {plans.map((plan, i) => (
-          <Reveal key={plan.name} delay={i * 0.1} y={32} className="h-full">
+          <Reveal key={plan.name} delay={i * 0.07} className="h-full">
           <div
-            className={`flex h-full flex-col rounded-3xl border p-8 transition-shadow duration-300 hover:shadow-lg ${
-              plan.highlighted ? "border-moss bg-ink text-paper shadow-xl md:-translate-y-3" : "border-ink/10 bg-white text-ink"
+            className={`flex h-full flex-col rounded-3xl p-8 ${
+              plan.highlighted ? "glass-dark border-moss text-paper shadow-xl md:-translate-y-3" : "glass text-ink"
             }`}
           >
             {plan.highlighted && (

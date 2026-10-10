@@ -5,7 +5,7 @@ export default function ToolCard({ tool }: { tool: Tool }) {
   return (
     <Link
       href={`/${tool.slug}`}
-      className="group flex h-full flex-col gap-3 rounded-2xl border border-ink/10 bg-white p-5 transition hover:-translate-y-0.5 hover:border-moss/40 hover:shadow-md"
+      className="glass-card group flex h-full flex-col gap-3 rounded-2xl p-5 transition hover:-translate-y-0.5 hover:border-moss/40 hover:shadow-md"
     >
       <div className="flex items-center justify-between">
         <span className="text-2xl">{tool.icon}</span>

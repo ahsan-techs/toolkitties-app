@@ -1,18 +1,19 @@
 "use client";
 
-import { m, useScroll, useSpring } from "framer-motion";
+import { LazyMotion, domAnimation, m, useScroll } from "framer-motion";
 
-// Thin reading-progress bar pinned to the very top of the page.
-// Driven by a motion value, so scrolling never triggers a React re-render.
+// Thin moss progress line at the very top of the page. Scales with transform only.
+// Hidden for reduced-motion users via the .scroll-progress rule in globals.css.
 export default function ScrollProgress() {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 220, damping: 32, mass: 0.4 });
 
   return (
-    <m.div
-      aria-hidden
-      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-gradient-to-r from-moss via-moss to-gold"
-      style={{ scaleX }}
-    />
+    <LazyMotion features={domAnimation}>
+      <m.div
+        aria-hidden="true"
+        className="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5 bg-moss"
+        style={{ scaleX: scrollYProgress, transformOrigin: "0% 50%" }}
+      />
+    </LazyMotion>
   );
 }

@@ -1,32 +1,37 @@
 "use client";
 
-import { m } from "framer-motion";
 import type { ReactNode } from "react";
-import { easeOutExpo } from "./ease";
+import { LazyMotion, domAnimation, m } from "framer-motion";
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 type RevealProps = {
   children: ReactNode;
   className?: string;
+  /** Seconds to wait before the reveal starts (use for gentle staggering). */
   delay?: number;
+  /** Upward travel in px (starts this far below its final position). */
   y?: number;
-  // Above-the-fold content must never start hidden (protects LCP): pass eager.
-  eager?: boolean;
+  /** Sideways travel in px (positive = starts to the right). */
+  x?: number;
 };
 
-// Fades + lifts content into place once, the first time it scrolls into view.
-export default function Reveal({ children, className, delay = 0, y = 24, eager = false }: RevealProps) {
-  if (eager) return <div className={className}>{children}</div>;
-
+// Fades in and moves a few pixels into place once, when it scrolls into view.
+// Only opacity + transform are animated. Reduced motion is handled in
+// globals.css via [data-motion], so server and client always render the same HTML.
+export default function Reveal({ children, className, delay = 0, y = 20, x = 0 }: RevealProps) {
   return (
-    <m.div
-      data-reveal
-      className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      transition={{ duration: 0.7, delay, ease: easeOutExpo }}
-    >
-      {children}
-    </m.div>
+    <LazyMotion features={domAnimation}>
+      <m.div
+        data-motion
+        className={className}
+        initial={{ opacity: 0, y, x }}
+        whileInView={{ opacity: 1, y: 0, x: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6, delay, ease: EASE }}
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 }

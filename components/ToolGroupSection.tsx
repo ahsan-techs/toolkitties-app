@@ -5,13 +5,13 @@ import type { ToolGroup } from "@/lib/tools-data";
 import ToolCard from "./ToolCard";
 import Reveal from "./motion/Reveal";
 
-export default function ToolGroupSection({ group, eager = false }: { group: ToolGroup; eager?: boolean }) {
+export default function ToolGroupSection({ group }: { group: ToolGroup }) {
   const [expanded, setExpanded] = useState(false);
   const visibleTools = expanded ? group.tools : group.tools.slice(0, 4);
 
   return (
     <div className="py-8">
-      <Reveal eager={eager} y={16} className="mb-5 flex items-end justify-between">
+      <Reveal className="mb-5 flex items-end justify-between">
         <div>
           <h2 className="flex items-center gap-2 font-display text-2xl font-semibold text-ink">
             <span>{group.icon}</span>
@@ -29,7 +29,7 @@ export default function ToolGroupSection({ group, eager = false }: { group: Tool
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {visibleTools.map((tool, i) => (
-          <Reveal key={tool.slug} eager={eager} delay={(i % 4) * 0.06} y={20} className="h-full">
+          <Reveal key={tool.slug} delay={(i % 4) * 0.06} y={18} className="h-full">
             <ToolCard tool={tool} />
           </Reveal>
         ))}
