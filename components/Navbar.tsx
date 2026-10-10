@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const catalogGroups = [
   { label: "Tools Catalog", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
@@ -10,9 +10,18 @@ const catalogGroups = [
 
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Navbar glass gets a little more solid once you start scrolling.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="glass-nav sticky top-0 z-50">
+    <header data-scrolled={scrolled} className="glass-nav sticky top-0 z-50">
       <div className="container-content flex h-16 items-center justify-between">
         <a href="/" className="flex items-center gap-2">
           <svg width="26" height="26" viewBox="0 0 26 26" fill="none">

@@ -14,28 +14,41 @@ type RevealProps = {
   y?: number;
   /** Sideways travel in px (positive = starts to the right). */
   x?: number;
+  /** Starting scale (1 = no scale). */
+  scale?: number;
   /** Play on page load instead of waiting to scroll into view (for content at the top of a page). */
   eager?: boolean;
+  /** Play only the first time it appears. Default: replays every time it scrolls back into view. */
+  once?: boolean;
   /** Tolerate any extra props passed by older callers. */
   [key: string]: unknown;
 };
 
-// Fades in and moves a few pixels into place once. Only opacity + transform are
-// animated. Reduced motion is handled in globals.css via [data-motion], so server
-// and client always render the same HTML.
-export default function Reveal({ children, className, delay = 0, y = 20, x = 0, eager = false }: RevealProps) {
-  const shown = { opacity: 1, y: 0, x: 0 };
+// Fades in and settles into place whenever it scrolls into view (and again each time
+// it comes back). Only opacity + transform are animated. Reduced motion is handled in
+// globals.css via [data-motion], so server and client always render the same HTML.
+export default function Reveal({
+  children,
+  className,
+  delay = 0,
+  y = 28,
+  x = 0,
+  scale = 1,
+  eager = false,
+  once = false,
+}: RevealProps) {
+  const shown = { opacity: 1, y: 0, x: 0, scale: 1 };
 
   return (
     <LazyMotion features={domAnimation}>
       <m.div
         data-motion
         className={className}
-        initial={{ opacity: 0, y, x }}
+        initial={{ opacity: 0, y, x, scale }}
         animate={eager ? shown : undefined}
         whileInView={eager ? undefined : shown}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay, ease: EASE }}
+        viewport={{ once, amount: "some", margin: "0px 0px -80px 0px" }}
+        transition={{ duration: 0.75, delay, ease: EASE }}
       >
         {children}
       </m.div>

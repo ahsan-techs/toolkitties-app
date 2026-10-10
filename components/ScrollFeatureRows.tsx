@@ -1,5 +1,6 @@
 import Reveal from "@/components/motion/Reveal";
 import Parallax from "@/components/motion/Parallax";
+import RevealWords from "@/components/motion/RevealWords";
 
 // The four visuals below use only the site palette (ink, paper, sand, moss, gold)
 // and have no looping animation. Text content is unchanged.
@@ -35,7 +36,9 @@ function SignatureVisual() {
     <div className="relative flex h-[350px] w-full items-center justify-center overflow-hidden rounded-2xl border border-ink/10 bg-gradient-to-br from-moss/10 to-sand">
       <div className="shape-moss absolute -bottom-16 -left-16 h-72 w-72 rounded-full" />
 
-      <div className="relative flex flex-col items-center space-y-4 rounded-2xl border border-ink/10 bg-white/90 p-8 shadow-lg">
+      <div className="orb orb-gold absolute left-[24%] top-[14%] h-20 w-20" />
+      <div className="orb orb-moss absolute bottom-[12%] right-[22%] h-24 w-24" />
+      <div className="glass relative flex flex-col items-center space-y-4 rounded-2xl p-8">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-moss shadow-lg shadow-moss/30">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-paper" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -152,12 +155,14 @@ export default function ScrollFeatureRows() {
                 row.align === "right" ? "md:flex-row-reverse" : ""
               }`}
             >
-              <Reveal x={textFrom} y={0} className="flex-1">
-                <h3 className="font-display text-3xl font-semibold leading-snug text-ink">{row.title}</h3>
+              <Reveal x={textFrom * 1.6} y={0} className="flex-1">
+                <h3 className="font-display text-3xl font-semibold leading-snug text-ink">
+                  <RevealWords text={row.title} />
+                </h3>
                 <p className="mt-4 max-w-md text-base text-slate">{row.copy}</p>
               </Reveal>
-              <Reveal x={-textFrom} y={0} delay={0.08} className="w-full flex-1">
-                <Parallax distance={10}>
+              <Reveal x={-textFrom * 1.6} y={0} delay={0.1} className="w-full flex-1">
+                <Parallax distance={18} tilt={10}>
                   <row.Visual />
                 </Parallax>
               </Reveal>

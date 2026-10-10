@@ -29,7 +29,7 @@ export default function ToolGroupSection({ group }: { group: ToolGroup }) {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {visibleTools.map((tool, i) => (
-          <Reveal key={tool.slug} delay={(i % 4) * 0.06} y={18} className="h-full">
+          <Reveal key={tool.slug} delay={(i % 4) * 0.07} y={36} scale={0.97} className="h-full">
             <ToolCard tool={tool} />
           </Reveal>
         ))}

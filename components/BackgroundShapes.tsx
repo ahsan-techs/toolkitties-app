@@ -1,15 +1,32 @@
-// Soft, static colour shapes (moss + gold, ~15% peak) that sit behind the homepage
-// so the glass surfaces have something to blur. Purely decorative: absolutely
-// positioned, no animation, no layout impact.
+"use client";
+
+import { LazyMotion, domAnimation, m, useScroll, useTransform } from "framer-motion";
+
+// A fixed layer of soft moss and gold colour that stays behind the page while it scrolls,
+// so every glass surface always has something to blur. The shapes move at different
+// speeds as you scroll (parallax) and slowly drift on their own. Transform only.
 export default function BackgroundShapes() {
+  const { scrollYProgress } = useScroll();
+  const up = useTransform(scrollYProgress, [0, 1], ["0vh", "-30vh"]);
+  const down = useTransform(scrollYProgress, [0, 1], ["0vh", "26vh"]);
+  const upSlow = useTransform(scrollYProgress, [0, 1], ["0vh", "-16vh"]);
+
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <div className="shape-moss absolute -left-44 top-4 h-[480px] w-[480px] rounded-full md:h-[720px] md:w-[720px]" />
-      <div className="shape-gold absolute -right-44 top-40 h-[420px] w-[420px] rounded-full md:h-[620px] md:w-[620px]" />
-      <div className="shape-gold absolute -left-48 top-[26%] h-[460px] w-[460px] rounded-full md:h-[680px] md:w-[680px]" />
-      <div className="shape-moss absolute -right-48 top-[48%] h-[460px] w-[460px] rounded-full md:h-[700px] md:w-[700px]" />
-      <div className="shape-gold absolute -left-44 top-[72%] h-[420px] w-[420px] rounded-full md:h-[620px] md:w-[620px]" />
-      <div className="shape-moss absolute -right-44 top-[88%] h-[420px] w-[420px] rounded-full md:h-[620px] md:w-[620px]" />
-    </div>
+    <LazyMotion features={domAnimation}>
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <m.div data-motion style={{ y: up }} className="absolute -left-[16vmax] -top-[10vmax] will-change-transform">
+          <div className="shape-moss drift-a h-[62vmax] w-[62vmax] rounded-full" />
+        </m.div>
+        <m.div data-motion style={{ y: down }} className="absolute -right-[14vmax] top-[6vh] will-change-transform">
+          <div className="shape-gold drift-b h-[52vmax] w-[52vmax] rounded-full" />
+        </m.div>
+        <m.div data-motion style={{ y: upSlow }} className="absolute -right-[8vmax] top-[62vh] will-change-transform">
+          <div className="shape-moss drift-b h-[50vmax] w-[50vmax] rounded-full" />
+        </m.div>
+        <m.div data-motion style={{ y: down }} className="absolute -left-[12vmax] top-[70vh] will-change-transform">
+          <div className="shape-gold drift-a h-[46vmax] w-[46vmax] rounded-full" />
+        </m.div>
+      </div>
+    </LazyMotion>
   );
 }

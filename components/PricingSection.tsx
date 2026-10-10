@@ -40,7 +40,11 @@ const plans = [
 
 export default function PricingSection() {
   return (
-    <section id="pricing" className="container-content py-20">
+    <section id="pricing" className="container-content relative py-20">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="orb orb-moss drift-b absolute left-[2%] top-[34%] h-28 w-28 md:left-[14%] md:h-40 md:w-40" />
+        <div className="orb orb-gold drift-a absolute bottom-[10%] right-[2%] h-24 w-24 md:right-[16%] md:h-36 md:w-36" />
+      </div>
       <Reveal className="mx-auto max-w-xl text-center">
         <h2 className="font-display text-3xl font-semibold text-ink md:text-4xl">Simple pricing, no surprises</h2>
         <p className="mt-3 text-base text-slate">Start free. Upgrade only when you actually need more.</p>
@@ -49,7 +53,7 @@ export default function PricingSection() {
 
       <div className="mt-12 grid gap-6 md:grid-cols-3">
         {plans.map((plan, i) => (
-          <Reveal key={plan.name} delay={i * 0.07} className="h-full">
+          <Reveal key={plan.name} delay={i * 0.09} y={40} scale={0.96} className="h-full">
           <div
             className={`flex h-full flex-col rounded-3xl p-8 ${
               plan.highlighted ? "glass-dark border-moss text-paper shadow-xl md:-translate-y-3" : "glass text-ink"
