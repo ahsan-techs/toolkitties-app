@@ -3,10 +3,12 @@ import type { Tool, ToolGroup } from "@/lib/tools-data";
 type Kind = "pdf" | "image" | "text" | "calculator" | "generator" | "document" | "generic";
 
 function detectKind(tool: Tool, group: ToolGroup): Kind {
+  if (tool.slug === "image-to-pdf") return "image";
+  if (["jwt-decoder", "regex-tester"].includes(tool.slug)) return "text";
   if (group.id === "business") return "document";
   if (group.id === "documents") return "pdf";
   if (group.id === "images") return "image";
-  if (["unit-converter", "percentage-calculator", "age-calculator", "color-picker", "timestamp-converter"].includes(tool.slug)) return "calculator";
+  if (["unit-converter", "percentage-calculator", "age-calculator", "color-picker", "timestamp-converter", "loan-calculator", "bmi-calculator", "days-between-dates", "number-base-converter", "color-converter"].includes(tool.slug)) return "calculator";
   if (["qr-code-generator", "password-generator", "uuid-generator", "lorem-ipsum"].includes(tool.slug)) return "generator";
   if (group.id === "text") return "text";
   return "generic";

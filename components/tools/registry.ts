@@ -1,0 +1,16 @@
+// Slugs of the tools that are built as their own small components (see MiniTool.tsx).
+// Kept in a plain .ts file so server components can read it.
+export const MINI_TOOL_SLUGS = [
+  "image-to-pdf",
+  "image-to-webp",
+  "flip-image",
+  "sort-lines",
+  "json-to-csv",
+  "jwt-decoder",
+  "regex-tester",
+  "number-base-converter",
+  "color-converter",
+  "loan-calculator",
+  "bmi-calculator",
+  "days-between-dates",
+] as const;

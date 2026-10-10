@@ -34,6 +34,7 @@ export const toolGroups: ToolGroup[] = [
       { slug: "pdf-page-numbers", name: "Add Page Numbers", description: "Number every page of a PDF automatically.", icon: "🔢", functional: true },
       { slug: "unlock-pdf", name: "Unlock PDF", description: "Remove a password from a PDF you have the rights to open.", icon: "🔓", functional: false },
       { slug: "pdf-to-jpg", name: "PDF to JPG", description: "Export each PDF page as a standalone JPG image.", icon: "🖼️", functional: false },
+      { slug: "image-to-pdf", name: "Image to PDF", description: "Combine JPG and PNG images into a single PDF, in the order you choose.", icon: "📷", functional: true },
     ],
   },
   {
@@ -54,6 +55,8 @@ export const toolGroups: ToolGroup[] = [
       { slug: "svg-to-png", name: "SVG Vector Converter", description: "Rasterize an SVG icon into a PNG at any size.", icon: "🧿", functional: true },
       { slug: "heic-to-jpg", name: "HEIC to JPG", description: "Convert iPhone HEIC photos into standard JPGs.", icon: "📱", functional: true },
       { slug: "watermark-image", name: "Watermark Image", description: "Add a text watermark across a photo before sharing it.", icon: "💧", functional: true },
+      { slug: "image-to-webp", name: "Image to WebP", description: "Convert JPG or PNG images to WebP for smaller, faster-loading web pages.", icon: "🌐", functional: true },
+      { slug: "flip-image", name: "Flip Image", description: "Mirror or flip a photo, and optionally turn it black and white.", icon: "🪞", functional: true },
     ],
   },
   {
@@ -74,6 +77,8 @@ export const toolGroups: ToolGroup[] = [
       { slug: "lorem-ipsum", name: "Lorem Ipsum Generator", description: "Generate placeholder paragraphs for mockups and drafts.", icon: "🧵", functional: true },
       { slug: "duplicate-lines", name: "Remove Duplicate Lines", description: "Clean a list by deleting repeated lines automatically.", icon: "🧹", functional: true },
       { slug: "hash-generator", name: "Text to Hash", description: "Generate an MD5 or SHA-256 hash from any text.", icon: "🔗", functional: true },
+      { slug: "sort-lines", name: "Sort Lines", description: "Sort, reverse and clean up a list of lines in one click.", icon: "↕️", functional: true },
+      { slug: "json-to-csv", name: "JSON to CSV", description: "Turn JSON data into a CSV file you can open in Excel or Google Sheets.", icon: "📈", functional: true },
     ],
   },
   {
@@ -90,6 +95,13 @@ export const toolGroups: ToolGroup[] = [
       { slug: "age-calculator", name: "Age Calculator", description: "Find exact age in years, months, and days from a birthdate.", icon: "🎂", functional: true },
       { slug: "color-picker", name: "Color Palette Generator", description: "Pick a color and get matching HEX, RGB, and HSL values.", icon: "🎨", functional: true },
       { slug: "timestamp-converter", name: "Timestamp Converter", description: "Convert between Unix timestamps and readable dates.", icon: "⏱️", functional: true },
+      { slug: "jwt-decoder", name: "JWT Decoder", description: "Read the header and payload of a JSON Web Token and see when it expires.", icon: "🪪", functional: true },
+      { slug: "regex-tester", name: "Regex Tester", description: "Test a regular expression and see every match highlighted as you type.", icon: "🧪", functional: true },
+      { slug: "number-base-converter", name: "Number Base Converter", description: "Convert numbers between binary, octal, decimal, hex and more.", icon: "🔟", functional: true },
+      { slug: "color-converter", name: "Color Converter & Contrast Checker", description: "Convert HEX, RGB and HSL colours and check text contrast for accessibility.", icon: "🌈", functional: true },
+      { slug: "loan-calculator", name: "Loan / EMI Calculator", description: "Work out your monthly loan payment, total interest and a yearly breakdown.", icon: "🏦", functional: true },
+      { slug: "bmi-calculator", name: "BMI Calculator", description: "Calculate your body mass index in metric or imperial units.", icon: "⚖️", functional: true },
+      { slug: "days-between-dates", name: "Days Between Dates", description: "Count the days, weeks and working days between two dates.", icon: "📅", functional: true },
     ],
   },
   {

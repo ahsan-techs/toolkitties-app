@@ -6,6 +6,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ToolWorkspace from "@/components/ToolWorkspace";
 import ToolsSidebar from "@/components/ToolsSidebar";
+import MiniTool from "@/components/tools/MiniTool";
+import { MINI_TOOL_SLUGS } from "@/components/tools/registry";
 import { allTools, findTool, toolGroups } from "@/lib/tools-data";
 import { toolVariants, findVariant, variantsForTool } from "@/lib/tool-variants";
 import { generateHowTo, generateBenefits, generateFaqs, generatePrivacyNote, generateSeoTitle, generateSeoDescription } from "@/lib/seo-content";
@@ -149,7 +151,13 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
 
           <div className={wide ? "tk-workspace-wide" : "tk-workspace"}>
             {tool.functional ? (
-              tool.slug === "invoice-generator" ? <InvoiceGenerator /> : <ToolWorkspace tool={tool} initialOpts={variant?.presetOpts} />
+              tool.slug === "invoice-generator" ? (
+                <InvoiceGenerator />
+              ) : (MINI_TOOL_SLUGS as readonly string[]).includes(tool.slug) ? (
+                <MiniTool slug={tool.slug} />
+              ) : (
+                <ToolWorkspace tool={tool} initialOpts={variant?.presetOpts} />
+              )
             ) : (
               <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-ink/15 bg-sand/40 p-12 text-center">
                 <span className="text-3xl">🛠️</span>
