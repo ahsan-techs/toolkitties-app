@@ -7,7 +7,7 @@ export const inputCls =
 export const btnCls =
   "rounded-full bg-ink px-6 py-3 text-sm font-semibold text-paper transition hover:bg-ink/85 disabled:cursor-not-allowed disabled:opacity-50";
 export const ghostBtnCls =
-  "rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-medium text-ink hover:border-moss/50";
+  "rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-medium text-ink hover:border-moss/50 disabled:cursor-not-allowed disabled:opacity-40";
 
 export function Stack({ children }: { children: ReactNode }) {
   return <div className="flex flex-col gap-5">{children}</div>;

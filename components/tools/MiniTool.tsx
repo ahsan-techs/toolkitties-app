@@ -5,6 +5,8 @@ import type { ComponentType } from "react";
 
 // Each tool loads only when its page is opened, so the other pages stay light.
 const tools: Record<string, ComponentType> = {
+  "merge-pdf": dynamic(() => import("./MergePdf")),
+  "split-pdf": dynamic(() => import("./SplitPdf")),
   "image-to-pdf": dynamic(() => import("./ImageToPdf")),
   "image-to-webp": dynamic(() => import("./ImageToWebp")),
   "flip-image": dynamic(() => import("./FlipImage")),

@@ -1,6 +1,8 @@
 // Slugs of the tools that are built as their own small components (see MiniTool.tsx).
 // Kept in a plain .ts file so server components can read it.
 export const MINI_TOOL_SLUGS = [
+  "merge-pdf",
+  "split-pdf",
   "image-to-pdf",
   "image-to-webp",
   "flip-image",
