@@ -154,7 +154,7 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
               tool.slug === "invoice-generator" ? (
                 <InvoiceGenerator />
               ) : (MINI_TOOL_SLUGS as readonly string[]).includes(tool.slug) ? (
-                <MiniTool slug={tool.slug} />
+                <MiniTool slug={tool.slug} initialOpts={variant?.presetOpts} />
               ) : (
                 <ToolWorkspace tool={tool} initialOpts={variant?.presetOpts} />
               )
