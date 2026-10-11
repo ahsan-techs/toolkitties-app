@@ -27,10 +27,10 @@ export function generateHowTo(tool: Tool, group: ToolGroup): string[] {
   }
   if (kind === "image") {
     return [
-      `Go to the ${tool.name} page and drop in your images (one or many), paste a screenshot with Ctrl+V, or click the box to pick files from your device.`,
-      `Adjust the options this tool offers — such as quality, size, format or angle — and watch the preview update.`,
-      `Your images are processed instantly on your own device, so there's no upload and no waiting in a queue.`,
-      `Download each result, or grab everything at once as a single ZIP file.`,
+      `Go to the ${tool.name} page and drop in your image, or click the box to pick a file from your device.`,
+      `Set the options this tool needs, such as quality, width and height, or rotation degrees.`,
+      `Click "Process image" — the conversion happens instantly on your own device.`,
+      `Preview the result and download it in one tap.`,
     ];
   }
   if (kind === "text") {
@@ -71,7 +71,7 @@ export function generateBenefits(tool: Tool, group: ToolGroup): string[] {
     "Completely free, with no daily limit on the Starter plan for light use.",
   ];
   if (kind === "pdf") return [...base, "Works the same on Windows, Mac, Linux, and Chromebooks — anything with a modern browser."];
-  if (kind === "image") return [...base, "Handles many images at once, previews the result live, and lets you download everything as one ZIP."];
+  if (kind === "image") return [...base, "Keeps your original photo quality intact unless you choose to compress it."];
   if (kind === "text") return [...base, "Updates the result instantly as you type, so you can see changes in real time."];
   if (kind === "document") return [...base, "Includes a late-fee simulator and live multi-currency previews, with a clean, print-ready PDF."];
   if (kind === "calculator") return [...base, "Gives an instant, accurate result without opening a spreadsheet."];
@@ -106,7 +106,7 @@ export function generateFaqs(tool: Tool, group: ToolGroup): { q: string; a: stri
   if (kind === "image") {
     common.push({
       q: `Does ${name} reduce image quality?`,
-      a: `Only if you choose to. Quality, size and format are in your hands, and you can hold a button to compare the result with your original. Tools that don't need to change quality (rotate, flip, crop to PNG) keep the full detail.`,
+      a: `Tools that resize or compress let you control the quality or dimensions yourself, so you can balance file size against sharpness.`,
     });
   }
   if (kind === "text") {

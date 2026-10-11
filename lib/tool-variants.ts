@@ -9,7 +9,7 @@ export type ToolVariant = {
   name: string; // short name, shown as H1 and in nav
   title: string; // full SEO title
   description: string; // meta description + intro copy
-  presetOpts: Record<string, string>; // pre-filled tool options
+  presetOpts: Record<string, string>; // pre-filled ToolWorkspace options
 };
 
 export const toolVariants: ToolVariant[] = [
@@ -20,7 +20,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress JPG Under 100KB",
     title: "Compress JPG Under 100KB Online Free | Toolkitties",
     description: "Shrink a JPG photo to under 100KB in seconds — free, private, and runs entirely in your browser. No signup, no upload.",
-    presetOpts: { target: "100" },
+    presetOpts: { quality: "35" },
   },
   {
     slug: "compress-jpg-under-500kb",
@@ -28,7 +28,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress JPG Under 500KB",
     title: "Compress JPG Under 500KB Online Free | Toolkitties",
     description: "Reduce a JPG photo to under 500KB while keeping it sharp — free, private, and instant, right in your browser.",
-    presetOpts: { target: "500" },
+    presetOpts: { quality: "60" },
   },
   {
     slug: "compress-png-for-mobile",
@@ -36,7 +36,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress PNG for Mobile",
     title: "Compress PNG for Mobile Online Free | Toolkitties",
     description: "Shrink a PNG so it loads fast on mobile connections — free, private, and processed entirely on your device.",
-    presetOpts: { quality: "60", format: "image/webp" },
+    presetOpts: { quality: "55" },
   },
   {
     slug: "compress-image-for-email",
@@ -44,7 +44,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress Image for Email",
     title: "Compress Image for Email Attachments Online Free | Toolkitties",
     description: "Get a photo small enough to email without hitting attachment limits — free and instant, right in your browser.",
-    presetOpts: { target: "1024" },
+    presetOpts: { quality: "50" },
   },
   {
     slug: "compress-image-for-whatsapp",
@@ -52,7 +52,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress Image for WhatsApp",
     title: "Compress Image for WhatsApp Online Free | Toolkitties",
     description: "Shrink a photo before sending it on WhatsApp, without losing much quality — free and processed on your device.",
-    presetOpts: { target: "500" },
+    presetOpts: { quality: "65" },
   },
 
   // ---- Resize Image: platform-specific dimension presets ----
@@ -104,7 +104,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress PDF for Email",
     title: "Compress PDF for Email Attachments Online Free | Toolkitties",
     description: "Shrink a PDF so it fits under email attachment limits — free, private, and processed entirely in your browser.",
-    presetOpts: {},
+    presetOpts: { targetMb: "10" },
   },
   {
     slug: "compress-pdf-for-upload",
@@ -112,7 +112,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress PDF for Upload",
     title: "Compress PDF for Website Upload Online Free | Toolkitties",
     description: "Shrink a PDF's file size before uploading it to a form, portal, or website — free and instant.",
-    presetOpts: {},
+    presetOpts: { targetMb: "2" },
   },
 
   // ---- Password Generator: use-case presets ----

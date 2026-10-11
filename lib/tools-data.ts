@@ -22,9 +22,9 @@ export const toolGroups: ToolGroup[] = [
     icon: "📂",
     blurb: "Merge, split, and clean up PDFs without installing anything.",
     tools: [
-      { slug: "merge-pdf", name: "Merge PDF", description: "Combine several PDFs into a single file, in the order you choose.", icon: "🧩", functional: true },
-      { slug: "split-pdf", name: "Split PDF", description: "Pull specific pages out of a PDF into their own file.", icon: "✂️", functional: true },
-      { slug: "compress-pdf", name: "Compress PDF", description: "Shrink a PDF's file size for easier sharing and uploading.", icon: "🗜️", functional: true },
+      { slug: "merge-pdf", name: "Merge PDF", description: "Combine several PDFs into one file. Drag to reorder, pick pages from each file, and download instantly.", icon: "🧩", functional: true },
+      { slug: "split-pdf", name: "Split PDF", description: "Extract pages, split every page or every N pages, or cut custom ranges. Pick pages visually with previews.", icon: "✂️", functional: true },
+      { slug: "compress-pdf", name: "Compress PDF", description: "Shrink PDFs for email and uploads. Choose a level or a target size, compress many files at once, text stays sharp.", icon: "🗜️", functional: true },
       { slug: "protect-pdf", name: "Protect PDF", description: "Lock a PDF with a password (AES-256 encryption) before you send it out.", icon: "🔒", functional: true },
       { slug: "pdf-to-word", name: "PDF to Word (text only)", description: "Copy the text of a PDF into an editable Word document. Images and layout are not kept.", icon: "📝", functional: true },
       { slug: "rotate-pdf", name: "Rotate PDF", description: "Fix sideways or upside-down pages in seconds.", icon: "🔄", functional: true },
