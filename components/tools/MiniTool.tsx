@@ -17,6 +17,10 @@ const tools: Record<string, ComponentType> = {
   "loan-calculator": dynamic(() => import("./LoanCalculator")),
   "bmi-calculator": dynamic(() => import("./BmiCalculator")),
   "days-between-dates": dynamic(() => import("./DaysBetweenDates")),
+  "pdf-to-jpg": dynamic(() => import("./PdfToJpg")),
+  "pdf-to-word": dynamic(() => import("./PdfToWord")),
+  "protect-pdf": dynamic(() => import("./ProtectPdf")),
+  "unlock-pdf": dynamic(() => import("./UnlockPdf")),
 };
 
 export default function MiniTool({ slug }: { slug: string }) {

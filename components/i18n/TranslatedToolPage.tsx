@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import LocaleHeader from "@/components/i18n/LocaleHeader";
 import LocaleFooter from "@/components/i18n/LocaleFooter";
 import ToolWorkspace from "@/components/ToolWorkspace";
+import MiniTool from "@/components/tools/MiniTool";
+import { MINI_TOOL_SLUGS } from "@/components/tools/registry";
 import { findTool } from "@/lib/tools-data";
 import { locales, localeLabels, type Locale } from "@/lib/i18n/config";
 import { toolTranslations, findToolByLocalizedSlug } from "@/lib/i18n/tool-translations";
@@ -118,7 +120,7 @@ export default function TranslatedToolPage({ locale, slug }: { locale: Locale; s
         </div>
 
         <div className="mx-auto mt-10 max-w-2xl">
-          <ToolWorkspace tool={tool} />
+          {(MINI_TOOL_SLUGS as readonly string[]).includes(tool.slug) ? <MiniTool slug={tool.slug} /> : <ToolWorkspace tool={tool} />}
         </div>
 
         <section className="mx-auto mt-16 max-w-2xl">

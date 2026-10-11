@@ -13,4 +13,8 @@ export const MINI_TOOL_SLUGS = [
   "loan-calculator",
   "bmi-calculator",
   "days-between-dates",
+  "pdf-to-jpg",
+  "pdf-to-word",
+  "protect-pdf",
+  "unlock-pdf",
 ] as const;
