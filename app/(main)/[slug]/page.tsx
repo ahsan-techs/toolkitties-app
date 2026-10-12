@@ -1,20 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ToolWorkspace from "@/components/ToolWorkspace";
 import ToolsSidebar from "@/components/ToolsSidebar";
-import MiniTool from "@/components/tools/MiniTool";
-import { MINI_TOOL_SLUGS } from "@/components/tools/registry";
 import { allTools, findTool, toolGroups } from "@/lib/tools-data";
 import { toolVariants, findVariant, variantsForTool } from "@/lib/tool-variants";
 import { generateHowTo, generateBenefits, generateFaqs, generatePrivacyNote, generateSeoTitle, generateSeoDescription } from "@/lib/seo-content";
 import { locales } from "@/lib/i18n/config";
 import { toolTranslations } from "@/lib/i18n/tool-translations";
-
-const InvoiceGenerator = dynamic(() => import("@/components/InvoiceGenerator"));
 
 // Slugs that are reserved for other top-level routes and must never be treated as a tool page.
 const RESERVED_SLUGS = new Set(["sitemap.xml", "robots.txt", "favicon.ico"]);
@@ -85,7 +80,6 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
   const displayIcon = tool.icon;
   const canonicalSlug = variant?.slug ?? tool.slug;
 
-  const wide = !!tool.wide;
   const relatedTools = group.tools.filter((t) => t.slug !== tool.slug).slice(0, 4);
   const siblingVariants = variantsForTool(tool.slug).filter((v) => v.slug !== canonicalSlug);
   // On a variant page, always link back to the base tool it's powered by.
@@ -149,15 +143,9 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
             <p className="mt-3 text-base text-slate">{displayDescription}</p>
           </div>
 
-          <div className={wide ? "tk-workspace-wide" : "tk-workspace"}>
+          <div className="mx-auto mt-10 max-w-2xl">
             {tool.functional ? (
-              tool.slug === "invoice-generator" ? (
-                <InvoiceGenerator />
-              ) : (MINI_TOOL_SLUGS as readonly string[]).includes(tool.slug) ? (
-                <MiniTool slug={tool.slug} initialOpts={variant?.presetOpts} />
-              ) : (
-                <ToolWorkspace tool={tool} initialOpts={variant?.presetOpts} />
-              )
+              <ToolWorkspace tool={tool} initialOpts={variant?.presetOpts} />
             ) : (
               <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-ink/15 bg-sand/40 p-12 text-center">
                 <span className="text-3xl">🛠️</span>

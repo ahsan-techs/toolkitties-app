@@ -300,12 +300,24 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // --------------------------------------------------------------------
   // PDF tools
   // --------------------------------------------------------------------
-  if (["compress-pdf", "rotate-pdf", "delete-pdf-pages", "organize-pdf", "watermark-pdf", "pdf-page-numbers"].includes(tool.slug)) {
+  if (["merge-pdf", "split-pdf", "compress-pdf", "rotate-pdf", "delete-pdf-pages", "organize-pdf", "watermark-pdf", "pdf-page-numbers"].includes(tool.slug)) {
     const doProcess = () =>
       run(async () => {
+        if (tool.slug === "merge-pdf") {
+          if (files.length < 2) throw new Error("Add at least two PDFs to merge.");
+          const bytes = await pdf.mergePdfs(files);
+          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: "merged.pdf" });
+          return;
+        }
         const file = files[0];
         if (!file) throw new Error("Add a PDF first.");
 
+        if (tool.slug === "split-pdf") {
+          const pages = (opts.pages || "1").split(",").map((n) => parseInt(n.trim(), 10)).filter(Boolean);
+          const bytes = await pdf.splitPdf(file, pages);
+          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-split.pdf") });
+          return;
+        }
         if (tool.slug === "compress-pdf") {
           const bytes = await pdf.compressPdf(file);
           setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-compressed.pdf") });
@@ -356,10 +368,12 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       <Workspace>
         <Dropzone
           accept="application/pdf"
+          multiple={tool.slug === "merge-pdf"}
           onFiles={setFiles}
           label={files.length ? `Selected: ${files.map((f) => f.name).join(", ")}` : "Drop your PDF here, or click to browse"}
         />
 
+        {tool.slug === "split-pdf" && <TextField label="Pages to keep (comma separated)" value={opts.pages || ""} onChange={(v) => setOpt("pages", v)} placeholder="1, 2, 5" />}
         {tool.slug === "delete-pdf-pages" && <TextField label="Pages to delete (comma separated)" value={opts.pages || ""} onChange={(v) => setOpt("pages", v)} placeholder="2, 4" />}
         {tool.slug === "organize-pdf" && <TextField label="New page order (comma separated)" value={opts.order || ""} onChange={(v) => setOpt("order", v)} placeholder="3, 1, 2" />}
         {tool.slug === "rotate-pdf" && (
@@ -367,7 +381,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
         )}
         {tool.slug === "watermark-pdf" && <TextField label="Watermark text" value={opts.text || ""} onChange={(v) => setOpt("text", v)} placeholder="Toolkitties" />}
 
-        <PrimaryButton onClick={doProcess} disabled={processing || !files[0]}>
+        <PrimaryButton onClick={doProcess} disabled={processing || (tool.slug === "merge-pdf" ? files.length < 2 : !files[0])}>
           Process PDF
         </PrimaryButton>
 

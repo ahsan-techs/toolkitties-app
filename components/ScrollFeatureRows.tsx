@@ -1,31 +1,24 @@
-import Reveal from "@/components/motion/Reveal";
-import Parallax from "@/components/motion/Parallax";
-import RevealWords from "@/components/motion/RevealWords";
-
-// The four visuals below use only the site palette (ink, paper, sand, moss, gold)
-// and have no looping animation. Text content is unchanged.
-
 function CompressVisual() {
   return (
-    <div className="relative flex h-[350px] w-full items-center justify-center overflow-hidden rounded-2xl border border-ink/10 bg-gradient-to-tr from-moss/10 to-gold/10">
-      <div className="shape-moss absolute -right-16 -top-16 h-72 w-72 rounded-full" />
+    <div className="relative w-full h-[350px] bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 rounded-2xl border border-indigo-100/50 flex items-center justify-center overflow-hidden">
+      <div className="absolute w-64 h-64 bg-indigo-400/20 rounded-full blur-3xl -top-10 -right-10 animate-pulse" />
 
-      <div className="absolute flex h-64 w-52 -translate-x-12 translate-y-4 -rotate-6 transform flex-col justify-between rounded-xl border border-ink/10 bg-white p-4 shadow-xl">
+      <div className="absolute transform -rotate-6 -translate-x-12 translate-y-4 w-52 h-64 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-xl border border-white/50 flex flex-col justify-between transition-transform hover:scale-105 duration-300">
         <div className="space-y-2">
-          <div className="h-4 w-12 rounded bg-moss" />
-          <div className="h-2 w-full rounded bg-ink/10" />
-          <div className="h-2 w-5/6 rounded bg-ink/10" />
+          <div className="h-4 w-12 bg-indigo-500 rounded" />
+          <div className="h-2 w-full bg-slate-200 rounded" />
+          <div className="h-2 w-5/6 bg-slate-200 rounded" />
         </div>
-        <div className="flex h-8 w-full items-center justify-center rounded-lg bg-moss/10 text-xs font-bold text-moss">🗜️ 75% Compressed</div>
+        <div className="h-8 w-full bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-500 font-bold text-xs">🗜️ 75% Compressed</div>
       </div>
 
-      <div className="absolute flex h-64 w-52 -translate-y-4 translate-x-12 rotate-6 transform flex-col justify-between rounded-xl bg-moss p-4 text-paper shadow-2xl">
+      <div className="absolute transform rotate-6 translate-x-12 -translate-y-4 w-52 h-64 bg-indigo-600 p-4 rounded-xl shadow-2xl flex flex-col justify-between text-white transition-transform hover:scale-105 duration-300">
         <div className="space-y-2">
-          <div className="h-4 w-16 rounded bg-paper/20" />
-          <div className="h-2 w-full rounded bg-paper/20" />
-          <div className="h-2 w-4/5 rounded bg-paper/20" />
+          <div className="h-4 w-16 bg-white/20 rounded" />
+          <div className="h-2 w-full bg-white/20 rounded" />
+          <div className="h-2 w-4/5 bg-white/20 rounded" />
         </div>
-        <div className="flex h-8 w-full items-center justify-center rounded-lg bg-paper/10 text-xs font-bold text-paper">🔄 Ready to Download</div>
+        <div className="h-8 w-full bg-white/10 rounded-lg flex items-center justify-center font-bold text-xs text-white">🔄 Ready to Download</div>
       </div>
     </div>
   );
@@ -33,22 +26,20 @@ function CompressVisual() {
 
 function SignatureVisual() {
   return (
-    <div className="relative flex h-[350px] w-full items-center justify-center overflow-hidden rounded-2xl border border-ink/10 bg-gradient-to-br from-moss/10 to-sand">
-      <div className="shape-moss absolute -bottom-16 -left-16 h-72 w-72 rounded-full" />
+    <div className="relative w-full h-[350px] bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-2xl border border-emerald-100/50 flex items-center justify-center overflow-hidden">
+      <div className="absolute w-56 h-56 bg-emerald-400/20 rounded-full blur-3xl -bottom-10 -left-10" />
 
-      <div className="orb orb-gold absolute left-[24%] top-[14%] h-20 w-20" />
-      <div className="orb orb-moss absolute bottom-[12%] right-[22%] h-24 w-24" />
-      <div className="glass relative flex flex-col items-center space-y-4 rounded-2xl p-8">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-moss shadow-lg shadow-moss/30">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-paper" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+      <div className="relative flex flex-col items-center space-y-4 bg-white/60 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-white/80">
+        <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30 transform hover:scale-110 transition-transform duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
         <div className="text-center">
-          <div className="text-sm font-bold text-ink">Crypto-Signed Securely</div>
-          <div className="mt-1 text-xs text-slate">100% Tamper Proof Audit</div>
+          <div className="text-sm font-bold text-slate-800">Crypto-Signed Securely</div>
+          <div className="text-xs text-slate-500 mt-1">100% Tamper Proof Audit</div>
         </div>
-        <span className="rounded-full bg-moss/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-moss">E-ID Verified</span>
+        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase tracking-wider">E-ID Verified</span>
       </div>
     </div>
   );
@@ -56,29 +47,29 @@ function SignatureVisual() {
 
 function FormatVisual() {
   return (
-    <div className="relative flex h-[350px] w-full items-center justify-center overflow-hidden rounded-2xl border border-ink/10 bg-gradient-to-tr from-gold/10 to-moss/10">
-      <div className="relative z-10 flex items-center space-x-6">
-        <div className="flex h-20 w-16 flex-col items-center justify-center rounded-lg border border-ink/10 bg-white text-xs font-bold text-ink shadow-md">
+    <div className="relative w-full h-[350px] bg-gradient-to-tr from-blue-500/10 to-indigo-500/10 rounded-2xl border border-blue-100/50 flex items-center justify-center overflow-hidden">
+      <div className="flex items-center space-x-6 relative z-10">
+        <div className="w-16 h-20 bg-white shadow-md rounded-lg border border-slate-200 flex flex-col items-center justify-center font-bold text-xs text-red-500">
           <span className="text-xl">📄</span>PDF
         </div>
 
         <div className="flex items-center space-x-1">
-          <div className="h-1 w-8 rounded-full bg-moss/60" />
-          <div className="h-3 w-3 rounded-full bg-moss" />
-          <div className="h-1 w-8 rounded-full bg-moss/60" />
+          <div className="h-1 w-8 bg-blue-500 rounded-full animate-pulse" />
+          <div className="w-3 h-3 bg-blue-600 rounded-full animate-ping" />
+          <div className="h-1 w-8 bg-blue-500 rounded-full animate-pulse" />
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div className="flex h-16 w-14 flex-col items-center justify-center rounded-md bg-moss text-[10px] font-bold text-paper shadow-md">
+          <div className="w-14 h-16 bg-blue-600 text-white shadow-md rounded-md flex flex-col items-center justify-center font-bold text-[10px] transform hover:-translate-y-1 transition-transform">
             <span>📝</span>DOCX
           </div>
-          <div className="flex h-16 w-14 flex-col items-center justify-center rounded-md bg-ink text-[10px] font-bold text-paper shadow-md">
+          <div className="w-14 h-16 bg-green-600 text-white shadow-md rounded-md flex flex-col items-center justify-center font-bold text-[10px] transform hover:-translate-y-1 transition-transform">
             <span>📊</span>XLSX
           </div>
-          <div className="flex h-16 w-14 flex-col items-center justify-center rounded-md bg-gold text-[10px] font-bold text-ink shadow-md">
+          <div className="w-14 h-16 bg-yellow-600 text-white shadow-md rounded-md flex flex-col items-center justify-center font-bold text-[10px] transform hover:-translate-y-1 transition-transform">
             <span>🖼️</span>JPG
           </div>
-          <div className="flex h-16 w-14 flex-col items-center justify-center rounded-md bg-moss/80 text-[10px] font-bold text-paper shadow-md">
+          <div className="w-14 h-16 bg-purple-600 text-white shadow-md rounded-md flex flex-col items-center justify-center font-bold text-[10px] transform hover:-translate-y-1 transition-transform">
             <span>🔏</span>SIGN
           </div>
         </div>
@@ -89,24 +80,24 @@ function FormatVisual() {
 
 function SandboxVisual() {
   return (
-    <div className="relative flex h-[350px] w-full items-center justify-center overflow-hidden rounded-2xl bg-ink text-paper shadow-inner">
-      <div className="w-4/5 overflow-hidden rounded-xl border border-paper/10 bg-ink shadow-2xl">
-        <div className="flex items-center space-x-2 border-b border-paper/10 bg-paper/5 px-4 py-2">
-          <div className="h-2.5 w-2.5 rounded-full bg-paper/30" />
-          <div className="h-2.5 w-2.5 rounded-full bg-paper/30" />
-          <div className="h-2.5 w-2.5 rounded-full bg-paper/30" />
-          <div className="ml-4 flex items-center space-x-1 rounded-md border border-paper/10 bg-ink px-3 py-0.5 text-[10px] text-paper/70">
-            <span>🔒</span>
+    <div className="relative w-full h-[350px] bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl flex items-center justify-center overflow-hidden text-white shadow-inner">
+      <div className="w-4/5 bg-slate-950 rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden">
+        <div className="bg-slate-900 px-4 py-2 flex items-center space-x-2 border-b border-slate-800">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+          <div className="bg-slate-950 text-[10px] text-slate-400 px-3 py-0.5 rounded-md flex items-center space-x-1 ml-4 border border-slate-800">
+            <span className="text-emerald-500">🔒</span>
             <span>your-browser (Sandboxed)</span>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center space-y-3 p-6">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-moss bg-moss/30 text-xl font-bold text-paper">
+        <div className="p-6 flex flex-col items-center justify-center space-y-3">
+          <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center text-emerald-400 text-xl font-bold animate-pulse">
             🛡️
           </div>
           <div className="text-center">
             <div className="text-xs font-semibold">Local Client Processing Active</div>
-            <div className="mt-0.5 text-[10px] text-paper/70">0 bytes transferred to external cloud servers.</div>
+            <div className="text-[10px] text-slate-400 mt-0.5">0 bytes transferred to external cloud servers.</div>
           </div>
         </div>
       </div>
@@ -145,30 +136,22 @@ export default function ScrollFeatureRows() {
   return (
     <section className="container-content py-20">
       <div className="flex flex-col gap-24">
-        {rows.map((row) => {
-          // Each side slides in from its own edge: text from the text's side, visual from the visual's side.
-          const textFrom = row.align === "left" ? -24 : 24;
-          return (
-            <div
-              key={row.title}
-              className={`flex flex-col items-center gap-10 md:flex-row ${
-                row.align === "right" ? "md:flex-row-reverse" : ""
-              }`}
-            >
-              <Reveal x={textFrom * 1.6} y={0} className="flex-1">
-                <h3 className="font-display text-3xl font-semibold leading-snug text-ink">
-                  <RevealWords text={row.title} />
-                </h3>
-                <p className="mt-4 max-w-md text-base text-slate">{row.copy}</p>
-              </Reveal>
-              <Reveal x={-textFrom * 1.6} y={0} delay={0.1} className="w-full flex-1">
-                <Parallax distance={18} tilt={10}>
-                  <row.Visual />
-                </Parallax>
-              </Reveal>
+        {rows.map((row) => (
+          <div
+            key={row.title}
+            className={`flex flex-col items-center gap-10 md:flex-row ${
+              row.align === "right" ? "md:flex-row-reverse" : ""
+            }`}
+          >
+            <div className="flex-1">
+              <h3 className="font-display text-3xl font-semibold leading-snug text-ink">{row.title}</h3>
+              <p className="mt-4 max-w-md text-base text-slate">{row.copy}</p>
             </div>
-          );
-        })}
+            <div className="flex-1">
+              <row.Visual />
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

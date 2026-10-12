@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { ToolGroup } from "@/lib/tools-data";
 import ToolCard from "./ToolCard";
-import Reveal from "./motion/Reveal";
 
 export default function ToolGroupSection({ group }: { group: ToolGroup }) {
   const [expanded, setExpanded] = useState(false);
@@ -11,7 +10,7 @@ export default function ToolGroupSection({ group }: { group: ToolGroup }) {
 
   return (
     <div className="py-8">
-      <Reveal className="mb-5 flex items-end justify-between">
+      <div className="mb-5 flex items-end justify-between">
         <div>
           <h2 className="flex items-center gap-2 font-display text-2xl font-semibold text-ink">
             <span>{group.icon}</span>
@@ -25,13 +24,11 @@ export default function ToolGroupSection({ group }: { group: ToolGroup }) {
         >
           {expanded ? "Show less" : `Explore all ${group.title}`} →
         </button>
-      </Reveal>
+      </div>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {visibleTools.map((tool, i) => (
-          <Reveal key={tool.slug} delay={(i % 4) * 0.07} y={36} scale={0.97} className="h-full">
-            <ToolCard tool={tool} />
-          </Reveal>
+      <div className="grid grid-cols-2 gap-4 transition-all duration-300 md:grid-cols-4">
+        {visibleTools.map((tool) => (
+          <ToolCard key={tool.slug} tool={tool} />
         ))}
       </div>
     </div>

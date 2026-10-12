@@ -27,10 +27,6 @@ const config: Config = {
           "0%, 100%": { transform: "scaleY(0.4)" },
           "50%": { transform: "scaleY(1)" },
         },
-        pop: {
-          "0%": { opacity: "0", transform: "translateY(-6px) scale(0.98)" },
-          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
-        },
         rise: {
           "0%": { opacity: "0", transform: "translateY(14px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
@@ -42,7 +38,6 @@ const config: Config = {
         wave3: "wave 1s ease-in-out infinite 0.3s",
         wave4: "wave 1s ease-in-out infinite 0.45s",
         rise: "rise 0.6s ease-out forwards",
-        pop: "pop 0.18s ease-out",
       },
     },
   },

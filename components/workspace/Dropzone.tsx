@@ -50,11 +50,7 @@ export default function Dropzone({
         accept={accept}
         multiple={multiple}
         className="hidden"
-        onChange={(e) => {
-          handleFiles(e.target.files);
-          // Reset so picking the same file again (after removing it) still fires.
-          e.target.value = "";
-        }}
+        onChange={(e) => handleFiles(e.target.files)}
       />
     </div>
   );

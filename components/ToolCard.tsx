@@ -1,23 +1,11 @@
-"use client";
-
-import type { PointerEvent } from "react";
 import Link from "next/link";
 import type { Tool } from "@/lib/tools-data";
 
 export default function ToolCard({ tool }: { tool: Tool }) {
-  // A soft light follows the pointer across the glass. It only sets two CSS variables
-  // (no React re-render); the .glass-card::after rule in globals.css draws it.
-  function handlePointerMove(e: PointerEvent<HTMLAnchorElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-    e.currentTarget.style.setProperty("--my", `${e.clientY - rect.top}px`);
-  }
-
   return (
     <Link
       href={`/${tool.slug}`}
-      onPointerMove={handlePointerMove}
-      className="glass-card group flex h-full flex-col gap-3 rounded-2xl p-5"
+      className="group flex flex-col gap-3 rounded-2xl border border-ink/10 bg-white p-5 transition hover:-translate-y-0.5 hover:border-moss/40 hover:shadow-md"
     >
       <div className="flex items-center justify-between">
         <span className="text-2xl">{tool.icon}</span>

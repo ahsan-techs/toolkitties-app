@@ -104,7 +104,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress PDF for Email",
     title: "Compress PDF for Email Attachments Online Free | Toolkitties",
     description: "Shrink a PDF so it fits under email attachment limits — free, private, and processed entirely in your browser.",
-    presetOpts: { targetMb: "10" },
+    presetOpts: {},
   },
   {
     slug: "compress-pdf-for-upload",
@@ -112,7 +112,7 @@ export const toolVariants: ToolVariant[] = [
     name: "Compress PDF for Upload",
     title: "Compress PDF for Website Upload Online Free | Toolkitties",
     description: "Shrink a PDF's file size before uploading it to a form, portal, or website — free and instant.",
-    presetOpts: { targetMb: "2" },
+    presetOpts: {},
   },
 
   // ---- Password Generator: use-case presets ----

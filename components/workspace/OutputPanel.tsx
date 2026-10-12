@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function TextOutput({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
@@ -27,30 +27,18 @@ export function TextOutput({ value }: { value: string }) {
 }
 
 export function FileDownload({ blob, filename, previewImage }: { blob: Blob; filename: string; previewImage?: boolean }) {
-  // Create the object URL in an effect so it is released when the result changes or the
-  // component unmounts (creating one on every render leaked memory).
-  const [url, setUrl] = useState<string | null>(null);
-  useEffect(() => {
-    const u = URL.createObjectURL(blob);
-    setUrl(u);
-    return () => URL.revokeObjectURL(u);
-  }, [blob]);
-
+  const url = URL.createObjectURL(blob);
   return (
     <div className="flex flex-col items-center gap-4 rounded-2xl border border-ink/10 bg-sand/40 p-6 text-center">
-      {previewImage && url && <img src={url} alt="Preview" className="max-h-64 rounded-xl border border-ink/10 object-contain" />}
-      <p className="text-sm text-slate">Your file is ready — {blob.size >= 1024 * 1024 ? `${(blob.size / 1024 / 1024).toFixed(2)} MB` : `${(blob.size / 1024).toFixed(1)} KB`}</p>
-      {url ? (
-        <a
-          href={url}
-          download={filename}
-          className="rounded-full bg-moss px-6 py-3 text-sm font-semibold text-paper hover:bg-moss/85"
-        >
-          Download {filename}
-        </a>
-      ) : (
-        <span className="rounded-full bg-moss/50 px-6 py-3 text-sm font-semibold text-paper">Preparing download…</span>
-      )}
+      {previewImage && <img src={url} alt="Preview" className="max-h-64 rounded-xl border border-ink/10 object-contain" />}
+      <p className="text-sm text-slate">Your file is ready — {(blob.size / 1024).toFixed(1)} KB</p>
+      <a
+        href={url}
+        download={filename}
+        className="rounded-full bg-moss px-6 py-3 text-sm font-semibold text-paper hover:bg-moss/85"
+      >
+        Download {filename}
+      </a>
     </div>
   );
 }
