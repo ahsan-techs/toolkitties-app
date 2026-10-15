@@ -5,6 +5,10 @@
 :root {
   --font-display: "Fraunces", serif;
   --font-body: "Inter", sans-serif;
+  --moss: #1f5c4c;
+  --gold: #c7862b;
+  --ink: #15171a;
+  --paper: #f5f6f3;
 }
 
 html {
@@ -12,13 +16,22 @@ html {
 }
 
 body {
-  background: #F5F6F3;
-  color: #15171A;
+  background:
+    radial-gradient(60vmax 40vmax at 8% -10%, rgba(31, 92, 76, 0.10), transparent 60%),
+    radial-gradient(50vmax 36vmax at 100% 8%, rgba(199, 134, 43, 0.10), transparent 60%),
+    #f5f6f3;
+  background-attachment: fixed;
+  color: #15171a;
 }
 
 ::selection {
-  background: #1F5C4C;
-  color: #F5F6F3;
+  background: #1f5c4c;
+  color: #f5f6f3;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
 }
 
 .container-content {
@@ -27,4 +40,145 @@ body {
   margin-right: auto;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+/* ---------- Glass surfaces ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 8px 30px -12px rgba(21, 23, 26, 0.18);
+}
+
+/* ---------- Tool card: lifts on hover, brand-coloured light circles the edge ---------- */
+@property --kitty-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.tool-card {
+  position: relative;
+  isolation: isolate;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+  will-change: transform;
+}
+
+.tool-card::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  z-index: -2;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--kitty-angle),
+    transparent 0deg,
+    var(--moss) 70deg,
+    var(--gold) 140deg,
+    transparent 210deg,
+    transparent 360deg
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tool-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: #ffffff;
+}
+
+.tool-card:hover,
+.tool-card:focus-visible {
+  transform: translateY(-8px);
+  box-shadow:
+    0 22px 40px -18px rgba(31, 92, 76, 0.45),
+    0 0 36px -8px rgba(199, 134, 43, 0.35);
+}
+
+.tool-card:hover::before,
+.tool-card:focus-visible::before {
+  opacity: 1;
+  animation: kitty-spin 2.4s linear infinite;
+}
+
+@keyframes kitty-spin {
+  to {
+    --kitty-angle: 360deg;
+  }
+}
+
+/* Browsers without @property: soft static glow instead of the spinning light */
+@supports not (background: conic-gradient(from 0deg, red, blue)) {
+  .tool-card:hover::before {
+    background: linear-gradient(135deg, var(--moss), var(--gold));
+  }
+}
+
+/* ---------- Two animated lines: one runs right, one runs left ---------- */
+.kitty-lines {
+  position: relative;
+  height: 14px;
+  overflow: hidden;
+}
+
+.kitty-line {
+  position: absolute;
+  left: 0;
+  height: 2px;
+  width: 34%;
+  border-radius: 999px;
+  will-change: transform;
+}
+
+.kitty-line-right {
+  top: 2px;
+  background: linear-gradient(90deg, transparent, var(--moss), var(--gold));
+  animation: kitty-right 5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.kitty-line-left {
+  top: 9px;
+  background: linear-gradient(270deg, transparent, var(--gold), var(--moss));
+  animation: kitty-left 5s cubic-bezier(0.65, 0, 0.35, 1) infinite 2.5s;
+}
+
+@keyframes kitty-right {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+@keyframes kitty-left {
+  0% { transform: translateX(300%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* ---------- Buttons ---------- */
+.btn-premium {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -10px rgba(31, 92, 76, 0.6);
+}
+.btn-premium:active {
+  transform: translateY(0);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .tool-card,
+  .btn-premium { transition: none; }
+  .tool-card:hover,
+  .tool-card:focus-visible { transform: none; }
+  .tool-card:hover::before,
+  .tool-card:focus-visible::before { animation: none; opacity: 1; }
+  .kitty-line { animation: none; }
 }

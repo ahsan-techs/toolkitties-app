@@ -20,13 +20,14 @@ export default function ToolGroupSection({ group }: { group: ToolGroup }) {
         </div>
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="whitespace-nowrap text-sm font-semibold text-moss hover:text-moss/70"
+          type="button"
+          className="btn-premium whitespace-nowrap rounded-full border border-moss/20 bg-white/60 px-4 py-2 text-sm font-semibold text-moss hover:bg-moss/10"
         >
           {expanded ? "Show less" : `Explore all ${group.title}`} →
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 transition-all duration-300 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-5 transition-all duration-300 md:grid-cols-4">
         {visibleTools.map((tool) => (
           <ToolCard key={tool.slug} tool={tool} />
         ))}

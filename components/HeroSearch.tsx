@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { allTools } from "@/lib/tools-data";
+import AnimatedLines from "./AnimatedLines";
 
 export default function HeroSearch() {
   const [query, setQuery] = useState("");
@@ -14,9 +15,9 @@ export default function HeroSearch() {
   }, [query]);
 
   return (
-    <section className="container-content pt-16 pb-12 text-center md:pt-24">
-      <p className="font-display text-sm font-medium uppercase tracking-widest text-moss">50+ tools, zero installs</p>
-      <h1 className="mx-auto mt-4 max-w-2xl font-display text-4xl font-semibold leading-tight text-ink md:text-5xl">
+    <section className="container-content pt-16 pb-10 text-center md:pt-24">
+      <p className="inline-block rounded-full border border-moss/20 bg-white/60 px-4 py-1.5 font-display text-sm font-medium text-moss backdrop-blur">50+ tools, zero installs</p>
+      <h1 className="mx-auto mt-5 max-w-3xl font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink md:text-6xl">
         Every file tool you reach for, in one clean workspace.
       </h1>
       <p className="mx-auto mt-4 max-w-xl text-base text-slate md:text-lg">
@@ -28,7 +29,7 @@ export default function HeroSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for a tool — try “compress pdf” or “word counter”"
-          className="w-full rounded-full border border-ink/15 bg-white px-6 py-4 text-sm text-ink shadow-sm outline-none transition focus:border-moss md:text-base"
+          className="glass w-full rounded-full px-6 py-4 text-sm text-ink outline-none transition focus:border-moss focus:shadow-[0_0_0_4px_rgba(31,92,76,0.15)] md:text-base"
         />
         {matches.length > 0 && (
           <div className="absolute left-0 right-0 top-full z-40 mt-2 rounded-2xl border border-ink/10 bg-white p-2 text-left shadow-xl">
@@ -48,6 +49,8 @@ export default function HeroSearch() {
           </div>
         )}
       </div>
+
+      <AnimatedLines className="mx-auto mt-10 max-w-xl" />
     </section>
   );
 }

@@ -5,6 +5,7 @@ import ScrollFeatureRows from "@/components/ScrollFeatureRows";
 import ScaleTracker from "@/components/ScaleTracker";
 import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
+import AnimatedLines from "@/components/AnimatedLines";
 import HomeGeo, { HomeSchema } from "@/components/HomeGeo";
 import { toolGroups } from "@/lib/tools-data";
 
@@ -22,6 +23,7 @@ export default function Home() {
           ))}
         </section>
 
+        <div className="container-content"><AnimatedLines /></div>
         <ScrollFeatureRows />
         <ScaleTracker />
         <PricingSection />
