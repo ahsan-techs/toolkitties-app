@@ -21,6 +21,7 @@ const tools: Record<string, ComponentType> = {
   "days-between-dates": dynamic(() => import("./DaysBetweenDates")),
   "pdf-to-jpg": dynamic(() => import("./PdfToJpg")),
   "pdf-to-word": dynamic(() => import("./PdfToWord")),
+  "esign-pdf": dynamic(() => import("./EsignPdf")),
   "protect-pdf": dynamic(() => import("./ProtectPdf")),
   "unlock-pdf": dynamic(() => import("./UnlockPdf")),
   "vat-calculator": dynamic(() => import("./VatCalculator")),

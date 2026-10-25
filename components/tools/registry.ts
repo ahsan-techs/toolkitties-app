@@ -17,6 +17,7 @@ export const MINI_TOOL_SLUGS = [
   "days-between-dates",
   "pdf-to-jpg",
   "pdf-to-word",
+  "esign-pdf",
   "protect-pdf",
   "unlock-pdf",
   "vat-calculator",
