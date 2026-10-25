@@ -144,9 +144,10 @@ function Timeline({ fee, maxDay, grace, capAmt, day, onPick, fmt }: { fee: (d: n
 // Main component
 // ==========================================================================
 
-export default function InvoiceGenerator() {
+export default function InvoiceGenerator({ mode = "invoice" }: { mode?: "invoice" | "quote" }) {
+  const isQuote = mode === "quote";
   const [dark, setDark] = useState(false);
-  const [inv, setInv] = useState({ number: "INV-001", issueDate: "", terms: "15", currency: "USD", tax: "0", discount: "0", fromName: "", fromDetails: "", toName: "", toDetails: "", notes: "" });
+  const [inv, setInv] = useState({ number: mode === "quote" ? "QUO-001" : "INV-001", issueDate: "", terms: mode === "quote" ? "30" : "15", currency: "USD", tax: "0", discount: "0", fromName: "", fromDetails: "", toName: "", toDetails: "", notes: "" });
   const [items, setItems] = useState<Item[]>([
     { id: 1, description: "Website design", qty: "1", rate: "1200" },
     { id: 2, description: "Hosting (12 months)", qty: "12", rate: "15" },
@@ -203,10 +204,14 @@ export default function InvoiceGenerator() {
 
   // ---- Derived numbers ----
   const t = totals(items, inv.tax, inv.discount);
+  // The PDF uses standard fonts, which only cover Latin letters. Anything else would print as "?".
+  const hasNonLatin = /[^\u0000-\u00FF\u20AC\u2013\u2014\u2018-\u201E\u2022\u2026]/.test(
+    [inv.fromName, inv.fromDetails, inv.toName, inv.toDetails, inv.notes, ...items.map((i) => i.description)].join("")
+  );
   const cur = inv.currency;
   const termDays = parseInt(inv.terms, 10) || 0;
   const dueDate = inv.issueDate ? addDays(inv.issueDate, termDays) : null;
-  const dueText = termDays === 0 ? "Due on receipt" : dueDate ? fmtDate(dueDate) : "";
+  const dueText = isQuote ? (dueDate ? fmtDate(dueDate) : "") : termDays === 0 ? "Due on receipt" : dueDate ? fmtDate(dueDate) : "";
   const previews = preview.filter((c) => c !== cur);
   const feeAt = (d: number) => lateFee(t.total, late, d);
   const feeNow = feeAt(day);
@@ -252,7 +257,10 @@ export default function InvoiceGenerator() {
           discountPct: num(inv.discount),
           totals: t,
           notes: inv.notes,
-          lateTerms: pdf.lateTerms ? lateTermsText(late, cur) : "",
+          lateTerms: !isQuote && pdf.lateTerms ? lateTermsText(late, cur) : "",
+          docTitle: isQuote ? "QUOTATION" : undefined,
+          numberLabel: isQuote ? "Quote #" : undefined,
+          dueLabel: isQuote ? "Valid until" : undefined,
           converted,
         },
         { size: pdf.size, accent: pdf.accent, compact: pdf.compact }
@@ -260,7 +268,7 @@ export default function InvoiceGenerator() {
       const url = URL.createObjectURL(new Blob([bytes as unknown as BlobPart], { type: "application/pdf" }));
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${(pdf.fileName.trim() || `invoice-${inv.number}`).replace(/[^\w.-]+/g, "-")}.pdf`;
+      a.download = `${(pdf.fileName.trim() || `${isQuote ? "quote" : "invoice"}-${inv.number}`).replace(/[^\w.-]+/g, "-")}.pdf`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 2000);
     } catch (e) {
@@ -278,10 +286,10 @@ export default function InvoiceGenerator() {
         {/* Header */}
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-xl text-white shadow-lg shadow-emerald-600/25">🧾</span>
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-xl text-white shadow-lg shadow-emerald-600/25">{isQuote ? "📝" : "🧾"}</span>
             <div>
-              <h2 className="text-lg font-semibold tracking-tight">Invoice Studio</h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">Live totals · late-fee simulator · multi-currency · PDF export</p>
+              <h2 className="text-lg font-semibold tracking-tight">{isQuote ? "Quotation Studio" : "Invoice Studio"}</h2>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">{isQuote ? "Live totals · multi-currency · PDF export" : "Live totals · late-fee simulator · multi-currency · PDF export"}</p>
             </div>
           </div>
           <button
@@ -301,13 +309,13 @@ export default function InvoiceGenerator() {
         <div className="mt-6 flex flex-col-reverse gap-6">
           {/* ---------------- Editor ---------------- */}
           <div className="min-w-0 space-y-6">
-            <Card title="Invoice details">
+            <Card title={isQuote ? "Quotation details" : "Invoice details"}>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <Label text="Invoice #"><input className={inp} value={inv.number} onChange={(e) => setField("number")(e.target.value)} /></Label>
+                <Label text={isQuote ? "Quote #" : "Invoice #"}><input className={inp} value={inv.number} onChange={(e) => setField("number")(e.target.value)} /></Label>
                 <Label text="Issue date"><input type="date" className={inp} value={inv.issueDate} onChange={(e) => setField("issueDate")(e.target.value)} /></Label>
-                <Label text="Payment terms">
+                <Label text={isQuote ? "Valid for" : "Payment terms"}>
                   <select className={inp} value={inv.terms} onChange={(e) => setField("terms")(e.target.value)}>
-                    {[["0", "Due on receipt"], ["7", "Net 7"], ["15", "Net 15"], ["30", "Net 30"], ["45", "Net 45"], ["60", "Net 60"]].map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    {(isQuote ? [["7", "7 days"], ["14", "14 days"], ["30", "30 days"], ["45", "45 days"], ["60", "60 days"]] : [["0", "Due on receipt"], ["7", "Net 7"], ["15", "Net 15"], ["30", "Net 30"], ["45", "Net 45"], ["60", "Net 60"]]).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                   </select>
                 </Label>
                 <Label text="Currency">
@@ -351,6 +359,11 @@ export default function InvoiceGenerator() {
               <textarea rows={3} className={`${inp} resize-none`} placeholder="Bank / payment link, thank-you note…" value={inv.notes} onChange={(e) => setField("notes")(e.target.value)} />
             </Card>
 
+            {hasNonLatin && (
+              <p role="status" className="rounded-xl bg-amber-500/10 px-4 py-3 text-xs text-amber-700 dark:text-amber-300">
+                The PDF can only print English (Latin) letters, numbers and common symbols. Other scripts, such as Urdu or Arabic, would appear as question marks. Please write those parts in English letters.
+              </p>
+            )}
             <Card title="PDF export settings" hint="Controls how your downloaded invoice looks.">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div><p className="mb-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">Page size</p><Seg value={pdf.size} onChange={(v) => setPdf((p) => ({ ...p, size: v }))} options={[["A4", "A4"], ["Letter", "US Letter"]]} /></div>
@@ -364,10 +377,10 @@ export default function InvoiceGenerator() {
                   </div>
                 </div>
                 <div className="space-y-3 sm:col-span-2">
-                  <Toggle on={pdf.lateTerms} onChange={(v) => setPdf((p) => ({ ...p, lateTerms: v }))} label="Print late-payment terms from the simulator" />
+                  {!isQuote && <Toggle on={pdf.lateTerms} onChange={(v) => setPdf((p) => ({ ...p, lateTerms: v }))} label="Print late-payment terms from the simulator" />}
                   <Toggle on={pdf.converted && previews.length > 0} disabled={previews.length === 0} onChange={(v) => setPdf((p) => ({ ...p, converted: v }))} label={`Add approx. total in ${previews[0] ?? "a preview currency"}`} />
                 </div>
-                <div className="sm:col-span-2"><Label text="File name (optional)"><input className={inp} placeholder={`invoice-${inv.number}`} value={pdf.fileName} onChange={(e) => setPdf((p) => ({ ...p, fileName: e.target.value }))} /></Label></div>
+                <div className="sm:col-span-2"><Label text="File name (optional)"><input className={inp} placeholder={`${isQuote ? "quote" : "invoice"}-${inv.number}`} value={pdf.fileName} onChange={(e) => setPdf((p) => ({ ...p, fileName: e.target.value }))} /></Label></div>
                 <button type="button" onClick={exportPdf} disabled={busy} className="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow transition hover:bg-emerald-700 disabled:opacity-60 sm:col-span-2">
                   {busy ? "Building PDF…" : "⬇ Download PDF"}
                 </button>
@@ -379,9 +392,9 @@ export default function InvoiceGenerator() {
           {/* ---------------- Summary + currencies (shown first) ---------------- */}
           <aside className="grid min-w-0 gap-6 md:grid-cols-2">
             <section className="overflow-hidden rounded-2xl border border-emerald-700/30 bg-gradient-to-br from-emerald-600 to-emerald-800 p-5 text-white shadow-lg shadow-emerald-900/10">
-              <p className="text-xs font-medium uppercase tracking-wider text-emerald-100/80">Total due</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-emerald-100/80">{isQuote ? "Quote total" : "Total due"}</p>
               <p className="mt-1 truncate text-3xl font-semibold tabular-nums tracking-tight">{money(t.total, cur)}</p>
-              <p className="mt-1 text-xs text-emerald-100/80">{dueText ? (termDays === 0 ? dueText : `Due ${dueText}`) : "Pick an issue date to see the due date"}</p>
+              <p className="mt-1 text-xs text-emerald-100/80">{dueText ? (isQuote ? `Valid until ${dueText}` : termDays === 0 ? dueText : `Due ${dueText}`) : "Pick an issue date to see the due date"}</p>
               <dl className="mt-4 space-y-1.5 border-t border-white/20 pt-4 text-sm tabular-nums">
                 <div className="flex justify-between"><dt className="text-emerald-100/80">Subtotal</dt><dd>{money(t.subtotal, cur)}</dd></div>
                 {t.discount > 0 && <div className="flex justify-between"><dt className="text-emerald-100/80">Discount</dt><dd>-{money(t.discount, cur)}</dd></div>}
@@ -391,7 +404,7 @@ export default function InvoiceGenerator() {
                 {busy ? "Building PDF…" : "⬇ Download PDF"}
               </button>
               {err && <p className="mt-3 rounded-lg bg-rose-500/20 px-3 py-2 text-xs text-rose-50">{err}</p>}
-              <p className="mt-3 text-[11px] text-emerald-100/70">🔒 Your invoice is created in your browser and never uploaded.</p>
+              <p className="mt-3 text-[11px] text-emerald-100/70">🔒 Your {isQuote ? "quotation" : "invoice"} is created in your browser and never uploaded.</p>
             </section>
 
             <Card title="Currency preview" hint="Toggle currencies to see your total converted.">
@@ -423,7 +436,8 @@ export default function InvoiceGenerator() {
           </aside>
         </div>
 
-        {/* ---------------- Late Fee Matrix ---------------- */}
+        {/* ---------------- Late Fee Matrix (invoices only) ---------------- */}
+        {!isQuote && (
         <Card className="mt-6" title="Late Fee Matrix" hint="Simulate what a late payment would cost — then print the policy on your invoice.">
           <div className="flex flex-wrap items-end gap-4">
             <div>
@@ -474,6 +488,7 @@ export default function InvoiceGenerator() {
             <p className="mt-3 text-[11px] text-zinc-500 dark:text-zinc-400">★ = your current setting. Late-fee and interest limits differ by country and state — check local rules before adding them to a contract.</p>
           </div>
         </Card>
+        )}
       </div>
     </div>
   );

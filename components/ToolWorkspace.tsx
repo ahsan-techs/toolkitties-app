@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import type { Tool } from "@/lib/tools-data";
 import Dropzone from "@/components/workspace/Dropzone";
 import { TextOutput, FileDownload } from "@/components/workspace/OutputPanel";
@@ -10,6 +9,8 @@ import * as text from "@/lib/tool-processors/text-tools";
 import * as image from "@/lib/tool-processors/image-tools";
 import * as pdf from "@/lib/tool-processors/pdf-tools";
 import * as dev from "@/lib/tool-processors/dev-tools";
+import { useRouter } from "next/navigation";
+import { setFileHandoff, consumeFileHandoff } from "@/lib/file-handoff";
 
 const IMAGE_MIME: Record<string, string> = {
   "jpg-to-png": "image/png",
@@ -74,6 +75,7 @@ const NEXT_STEPS: Record<string, { slug: string; label: string }[]> = {
 };
 
 export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initialOpts?: Record<string, string> }) {
+  const router = useRouter();
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,21 +85,38 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   const [inputTextB, setInputTextB] = useState("");
   const [outputText, setOutputText] = useState<string | null>(null);
   const [outputBlob, setOutputBlob] = useState<{ blob: Blob; filename: string; previewImage?: boolean } | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+  const [progress, setProgress] = useState("");
   const [opts, setOpts] = useState<Record<string, string>>(() => initialOpts ?? {});
 
   const setOpt = (key: string, value: string) => setOpts((o) => ({ ...o, [key]: value }));
 
+  // Phase 1: Success Screen Bypass — if a previous tool just handed off a
+  // processed file for this exact tool, load it straight in, no re-upload.
+  useEffect(() => {
+    const handoff = consumeFileHandoff(tool.slug);
+    if (handoff) {
+      const file = new File([handoff.blob], handoff.filename, { type: handoff.blob.type });
+      setFiles([file]);
+      setNote(`✅ "${handoff.filename}" pichle tool se seedha yahan aa gayi — dobara upload ki zaroorat nahi thi.`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const run = async (fn: () => Promise<void> | void) => {
     setError(null);
+    setNote(null);
+    setProgress("");
     setProcessing(true);
     setOutputText(null);
     setOutputBlob(null);
     try {
       await fn();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Please try a different file.");
+      setError(friendlyError(e));
     } finally {
       setProcessing(false);
+      setProgress("");
     }
   };
 
@@ -115,9 +134,17 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
         <p className="text-xs font-medium text-slate">What next?</p>
         <div className="flex flex-wrap gap-2">
           {steps.map((s) => (
-            <Link key={s.slug} href={`/${s.slug}`} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-medium text-ink hover:border-moss/50">
+            <button
+              key={s.slug}
+              type="button"
+              onClick={() => {
+                if (outputBlob) setFileHandoff({ blob: outputBlob.blob, filename: outputBlob.filename, toSlug: s.slug });
+                router.push(`/${s.slug}`);
+              }}
+              className="rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-medium text-ink hover:border-moss/50"
+            >
               {s.label}
-            </Link>
+            </button>
           ))}
         </div>
       </div>
@@ -178,9 +205,10 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
         if (!file) throw new Error("Add an image first.");
 
         if (tool.slug === "favicon-generator") {
-          const set = await image.generateFavicons(file);
-          const biggest = set[set.length - 1];
-          setOutputBlob({ blob: biggest.blob, filename: "favicon-512.png", previewImage: true });
+          const pack = await image.buildFaviconPack(file);
+          setOutputBlob({ blob: pack.zip, filename: "favicons.zip" });
+          setOutputText(pack.html);
+          setNote("The download has favicon.ico, PNG icons (16, 32, 180, 192 and 512 pixels) and a web manifest. Paste the HTML below into the <head> of your website. Non-square pictures are cropped to a centred square.");
           return;
         }
         if (tool.slug === "image-to-base64") {
@@ -207,15 +235,27 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
         }
         if (tool.slug === "compress-image") {
           const quality = Number(opts.quality || 80) / 100;
-          const blob = await image.compressImage(file, quality);
+          const maxSide = Number(opts.maxside || 0);
+          const blob = await image.compressImage(file, quality, maxSide);
+          if (blob.size >= file.size) {
+            setOutputBlob({ blob: file, filename: file.name, previewImage: true });
+            setNote("This image is already small, so compressing it would not make it smaller. Your original file is returned unchanged. Try a lower quality or a smaller largest side.");
+            return;
+          }
           setOutputBlob({ blob, filename: originalName("-compressed.jpg"), previewImage: true });
+          setNote(`${formatBytes(file.size)} to ${formatBytes(blob.size)}, ${Math.round((1 - blob.size / file.size) * 100)}% smaller.`);
           return;
         }
         if (tool.slug === "resize-image") {
-          const w = Number(opts.width || 800);
-          const h = Number(opts.height || 600);
-          const blob = await image.resizeImage(file, w, h);
-          setOutputBlob({ blob, filename: originalName("-resized.png"), previewImage: true });
+          const w = Number(opts.width ?? "800") || 0;
+          const h = Number(opts.height ?? "") || 0;
+          const keep = opts.keep !== "false";
+          if (!keep && (!w || !h)) throw new Error("Enter both a width and a height, or turn on Keep proportions.");
+          const blob = await image.resizeImage(file, w, h, keep);
+          const bmp = await createImageBitmap(blob);
+          setNote(`New size: ${bmp.width} x ${bmp.height} pixels.`);
+          bmp.close();
+          setOutputBlob({ blob, filename: originalName(`-resized${image.extForBlob(blob)}`), previewImage: true });
           return;
         }
         if (tool.slug === "crop-image") {
@@ -224,18 +264,18 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
           const w = Number(opts.width || 300);
           const h = Number(opts.height || 300);
           const blob = await image.cropImage(file, x, y, w, h);
-          setOutputBlob({ blob, filename: originalName("-cropped.png"), previewImage: true });
+          setOutputBlob({ blob, filename: originalName(`-cropped${image.extForBlob(blob)}`), previewImage: true });
           return;
         }
         if (tool.slug === "rotate-image") {
           const deg = Number(opts.degrees || 90);
           const blob = await image.rotateImage(file, deg);
-          setOutputBlob({ blob, filename: originalName("-rotated.png"), previewImage: true });
+          setOutputBlob({ blob, filename: originalName(`-rotated${image.extForBlob(blob)}`), previewImage: true });
           return;
         }
         if (tool.slug === "watermark-image") {
-          const blob = await image.watermarkImage(file, opts.text || "Toolkitties");
-          setOutputBlob({ blob, filename: originalName("-watermarked.png"), previewImage: true });
+          const blob = await image.watermarkImage(file, opts.text || "");
+          setOutputBlob({ blob, filename: originalName(`-watermarked${image.extForBlob(blob)}`), previewImage: true });
           return;
         }
       });
@@ -252,7 +292,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     return (
       <Workspace>
         <Dropzone
-          accept={tool.slug === "heic-to-jpg" ? "image/heic,image/heif,.heic,.heif" : "image/*"}
+          accept={tool.slug === "heic-to-jpg" ? "image/heic,image/heif,.heic,.heif" : tool.slug === "svg-to-png" ? "image/svg+xml,.svg" : "image/*"}
           onFiles={setFiles}
           label={files[0] ? `Selected: ${files[0].name}` : "Drop an image here, or click to browse"}
         />
@@ -261,36 +301,52 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
           <SelectField label="Output size" value={opts.size || "512"} onChange={(v) => setOpt("size", v)} options={[["128", "128px"], ["256", "256px"], ["512", "512px"], ["1024", "1024px"]]} />
         )}
         {tool.slug === "compress-image" && (
-          <Slider label="Quality" value={opts.quality || "80"} onChange={(v) => setOpt("quality", v)} min={10} max={95} unit="%" />
+          <>
+            <Slider label="Quality" value={opts.quality || "80"} onChange={(v) => setOpt("quality", v)} min={10} max={95} unit="%" />
+            <SelectField
+              label="Largest side"
+              value={opts.maxside || "0"}
+              onChange={(v) => setOpt("maxside", v)}
+              options={[["0", "Keep the original size"], ["3840", "3840 px (4K)"], ["2560", "2560 px"], ["1920", "1920 px (Full HD)"], ["1280", "1280 px"]]}
+            />
+            <p className="text-xs text-slate">The result is saved as a JPG. Transparent areas turn white. Shrinking the largest side is the biggest saving for large photos.</p>
+          </>
         )}
         {tool.slug === "resize-image" && (
-          <div className="grid grid-cols-2 gap-3">
-            <NumberField label="Width (px)" value={opts.width || "800"} onChange={(v) => setOpt("width", v)} />
-            <NumberField label="Height (px)" value={opts.height || "600"} onChange={(v) => setOpt("height", v)} />
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <NumberField label="Width (px)" value={opts.width ?? "800"} onChange={(v) => setOpt("width", v)} placeholder="800" />
+              <NumberField label="Height (px)" value={opts.height ?? ""} onChange={(v) => setOpt("height", v)} placeholder="Automatic" />
+            </div>
+            <Checkbox label="Keep proportions (the picture is not stretched)" checked={opts.keep !== "false"} onChange={(v) => setOpt("keep", String(v))} />
+          </>
         )}
         {tool.slug === "crop-image" && (
-          <div className="grid grid-cols-2 gap-3">
-            <NumberField label="X" value={opts.x || "0"} onChange={(v) => setOpt("x", v)} />
-            <NumberField label="Y" value={opts.y || "0"} onChange={(v) => setOpt("y", v)} />
-            <NumberField label="Width (px)" value={opts.width || "300"} onChange={(v) => setOpt("width", v)} />
-            <NumberField label="Height (px)" value={opts.height || "300"} onChange={(v) => setOpt("height", v)} />
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <NumberField label="X: pixels from the left" value={opts.x ?? "0"} onChange={(v) => setOpt("x", v)} />
+              <NumberField label="Y: pixels from the top" value={opts.y ?? "0"} onChange={(v) => setOpt("y", v)} />
+              <NumberField label="Width (px)" value={opts.width ?? "300"} onChange={(v) => setOpt("width", v)} />
+              <NumberField label="Height (px)" value={opts.height ?? "300"} onChange={(v) => setOpt("height", v)} />
+            </div>
+            <p className="text-xs text-slate">The crop starts at X and Y and goes right and down. If it reaches past the edge, it is trimmed to fit.</p>
+          </>
         )}
         {tool.slug === "rotate-image" && (
-          <SelectField label="Rotate by" value={opts.degrees || "90"} onChange={(v) => setOpt("degrees", v)} options={[["90", "90°"], ["180", "180°"], ["270", "270°"]]} />
+          <SelectField label="Rotate by" value={opts.degrees || "90"} onChange={(v) => setOpt("degrees", v)} options={[["90", "90° clockwise"], ["180", "180°"], ["270", "90° anticlockwise"]]} />
         )}
         {tool.slug === "watermark-image" && (
-          <TextField label="Watermark text" value={opts.text || ""} onChange={(v) => setOpt("text", v)} placeholder="Toolkitties" />
+          <TextField label="Watermark text" value={opts.text || ""} onChange={(v) => setOpt("text", v)} placeholder="Your name or website" />
         )}
 
         <PrimaryButton onClick={doProcess} disabled={!files[0] || processing}>
-          Process image
+          {tool.slug === "favicon-generator" ? "Create favicons" : "Process image"}
         </PrimaryButton>
 
         {processing && <WaveLoader />}
         {error && <ErrorNote message={error} />}
         {outputBlob && <FileDownload {...outputBlob} />}
+        {note && <ResultNote message={note} />}
         {outputText && <TextOutput value={outputText} />}
         <NextSteps />
       </Workspace>
@@ -300,56 +356,46 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // --------------------------------------------------------------------
   // PDF tools
   // --------------------------------------------------------------------
-  if (["merge-pdf", "split-pdf", "compress-pdf", "rotate-pdf", "delete-pdf-pages", "organize-pdf", "watermark-pdf", "pdf-page-numbers"].includes(tool.slug)) {
+  if (["compress-pdf", "rotate-pdf", "delete-pdf-pages", "organize-pdf", "watermark-pdf", "pdf-page-numbers"].includes(tool.slug)) {
     const doProcess = () =>
       run(async () => {
-        if (tool.slug === "merge-pdf") {
-          if (files.length < 2) throw new Error("Add at least two PDFs to merge.");
-          const bytes = await pdf.mergePdfs(files);
-          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: "merged.pdf" });
-          return;
-        }
         const file = files[0];
         if (!file) throw new Error("Add a PDF first.");
 
-        if (tool.slug === "split-pdf") {
-          const pages = (opts.pages || "1").split(",").map((n) => parseInt(n.trim(), 10)).filter(Boolean);
-          const bytes = await pdf.splitPdf(file, pages);
-          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-split.pdf") });
-          return;
-        }
+        const finish = (res: pdf.ToolResult, suffix: string, name = originalName(suffix)) => {
+          setOutputBlob({ blob: pdf.bytesToBlob(res.bytes), filename: name });
+          if (res.note) setNote(res.note);
+        };
+
         if (tool.slug === "compress-pdf") {
-          const bytes = await pdf.compressPdf(file);
-          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-compressed.pdf") });
+          const level = (opts.level || "recommended") as pdf.CompressLevel;
+          const res = await pdf.compressPdf(file, level, (done, total) => setProgress(`Working on ${done} of ${total}…`));
+          finish(res, "-compressed.pdf", res.kept ? file.name : originalName("-compressed.pdf"));
           return;
         }
         if (tool.slug === "rotate-pdf") {
-          const bytes = await pdf.rotatePdf(file, Number(opts.degrees || 90));
-          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-rotated.pdf") });
+          finish(await pdf.rotatePdf(file, Number(opts.degrees || 90), opts.pages || ""), "-rotated.pdf");
           return;
         }
         if (tool.slug === "delete-pdf-pages") {
-          const pages = (opts.pages || "").split(",").map((n) => parseInt(n.trim(), 10)).filter(Boolean);
-          if (!pages.length) throw new Error("List which page numbers to remove, e.g. 2, 4");
-          const bytes = await pdf.deletePages(file, pages);
-          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-edited.pdf") });
+          finish(await pdf.deletePages(file, opts.pages || ""), "-edited.pdf");
           return;
         }
         if (tool.slug === "organize-pdf") {
-          const order = (opts.order || "").split(",").map((n) => parseInt(n.trim(), 10)).filter(Boolean);
-          if (!order.length) throw new Error("List the new page order, e.g. 3, 1, 2");
-          const bytes = await pdf.reorderPages(file, order);
-          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-reordered.pdf") });
+          finish(await pdf.reorderPages(file, opts.order || ""), "-reordered.pdf");
           return;
         }
         if (tool.slug === "watermark-pdf") {
-          const bytes = await pdf.watermarkPdf(file, opts.text || "Toolkitties");
-          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-watermarked.pdf") });
+          finish(await pdf.watermarkPdf(file, opts.text || ""), "-watermarked.pdf");
           return;
         }
         if (tool.slug === "pdf-page-numbers") {
-          const bytes = await pdf.addPageNumbers(file);
-          setOutputBlob({ blob: pdf.bytesToBlob(bytes), filename: originalName("-numbered.pdf") });
+          const res = await pdf.addPageNumbers(file, {
+            format: (opts.format || "number") as pdf.NumberFormat,
+            position: (opts.position || "bottom-center") as pdf.NumberPosition,
+            start: Number(opts.start || 1),
+          });
+          finish(res, "-numbered.pdf");
           return;
         }
       });
@@ -368,26 +414,52 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       <Workspace>
         <Dropzone
           accept="application/pdf"
-          multiple={tool.slug === "merge-pdf"}
           onFiles={setFiles}
           label={files.length ? `Selected: ${files.map((f) => f.name).join(", ")}` : "Drop your PDF here, or click to browse"}
         />
 
-        {tool.slug === "split-pdf" && <TextField label="Pages to keep (comma separated)" value={opts.pages || ""} onChange={(v) => setOpt("pages", v)} placeholder="1, 2, 5" />}
-        {tool.slug === "delete-pdf-pages" && <TextField label="Pages to delete (comma separated)" value={opts.pages || ""} onChange={(v) => setOpt("pages", v)} placeholder="2, 4" />}
-        {tool.slug === "organize-pdf" && <TextField label="New page order (comma separated)" value={opts.order || ""} onChange={(v) => setOpt("order", v)} placeholder="3, 1, 2" />}
-        {tool.slug === "rotate-pdf" && (
-          <SelectField label="Rotate by" value={opts.degrees || "90"} onChange={(v) => setOpt("degrees", v)} options={[["90", "90°"], ["180", "180°"], ["270", "270°"]]} />
+        {tool.slug === "compress-pdf" && (
+          <SelectField
+            label="How much to compress"
+            value={opts.level || "recommended"}
+            onChange={(v) => setOpt("level", v)}
+            options={[
+              ["recommended", "Recommended: smaller file, text stays sharp"],
+              ["smaller", "Smaller: stronger picture compression, text stays sharp"],
+              ["smallest", "Smallest: pages become pictures (text is not selectable)"],
+            ]}
+          />
         )}
-        {tool.slug === "watermark-pdf" && <TextField label="Watermark text" value={opts.text || ""} onChange={(v) => setOpt("text", v)} placeholder="Toolkitties" />}
+        {tool.slug === "delete-pdf-pages" && <TextField label="Pages to delete" value={opts.pages || ""} onChange={(v) => setOpt("pages", v)} placeholder="2, 4-6, 9" />}
+        {tool.slug === "organize-pdf" && (
+          <>
+            <TextField label="New page order" value={opts.order || ""} onChange={(v) => setOpt("order", v)} placeholder="3, 1, 2 or 5-1" />
+            <p className="text-xs text-slate">Only the pages you list are kept, in the order you type. Ranges can go backwards (5-1), and a page can repeat.</p>
+          </>
+        )}
+        {tool.slug === "rotate-pdf" && (
+          <>
+            <SelectField label="Rotate by" value={opts.degrees || "90"} onChange={(v) => setOpt("degrees", v)} options={[["90", "90° clockwise"], ["180", "180°"], ["270", "90° anticlockwise"]]} />
+            <TextField label="Pages to rotate (leave empty for all pages)" value={opts.pages || ""} onChange={(v) => setOpt("pages", v)} placeholder="All pages, or for example 2, 4-6" />
+          </>
+        )}
+        {tool.slug === "watermark-pdf" && <TextField label="Watermark text" value={opts.text || ""} onChange={(v) => setOpt("text", v)} placeholder="CONFIDENTIAL" />}
+        {tool.slug === "pdf-page-numbers" && (
+          <div className="grid gap-3 md:grid-cols-3">
+            <SelectField label="Format" value={opts.format || "number"} onChange={(v) => setOpt("format", v)} options={[["number", "1, 2, 3"], ["page", "Page 1, Page 2"], ["of", "Page 1 of 10"]]} />
+            <SelectField label="Position" value={opts.position || "bottom-center"} onChange={(v) => setOpt("position", v)} options={[["bottom-center", "Bottom centre"], ["bottom-right", "Bottom right"], ["bottom-left", "Bottom left"], ["top-center", "Top centre"]]} />
+            <NumberField label="Start at" value={opts.start ?? "1"} onChange={(v) => setOpt("start", v)} />
+          </div>
+        )}
 
-        <PrimaryButton onClick={doProcess} disabled={processing || (tool.slug === "merge-pdf" ? files.length < 2 : !files[0])}>
+        <PrimaryButton onClick={doProcess} disabled={processing || !files[0]}>
           Process PDF
         </PrimaryButton>
 
-        {processing && <WaveLoader label="Working on your PDF…" />}
+        {processing && <WaveLoader label={progress || "Working on your PDF…"} />}
         {error && <ErrorNote message={error} />}
         {outputBlob && <FileDownload {...outputBlob} />}
+        {note && <ResultNote message={note} />}
         <NextSteps />
       </Workspace>
     );
@@ -413,6 +485,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
             lower: opts.lower !== "false",
             numbers: opts.numbers !== "false",
             symbols: opts.symbols !== "false",
+            avoidAmbiguous: opts.ambiguous === "true",
           });
           setOutputText(pw);
           return;
@@ -422,7 +495,9 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
           return;
         }
         if (tool.slug === "lorem-ipsum") {
-          setOutputText(text.generateLorem(Number(opts.paragraphs || 3)));
+          const count = Number(opts.paragraphs || 3);
+          if (!Number.isFinite(count) || count < 1 || count > 50) throw new Error("Choose between 1 and 50 paragraphs.");
+          setOutputText(text.generateLorem(count));
           return;
         }
       });
@@ -430,8 +505,19 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     return (
       <Workspace>
         {tool.slug === "qr-code-generator" && <TextField label="Link or text" value={inputText} onChange={setInputText} placeholder="https://example.com" />}
-        {tool.slug === "password-generator" && <NumberField label="Length" value={opts.length || "16"} onChange={(v) => setOpt("length", v)} />}
-        {tool.slug === "lorem-ipsum" && <NumberField label="Paragraphs" value={opts.paragraphs || "3"} onChange={(v) => setOpt("paragraphs", v)} />}
+        {tool.slug === "password-generator" && (
+          <>
+            <NumberField label="Length (4 to 128)" value={opts.length ?? "16"} onChange={(v) => setOpt("length", v)} />
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Checkbox label="Uppercase letters (A-Z)" checked={opts.upper !== "false"} onChange={(v) => setOpt("upper", String(v))} />
+              <Checkbox label="Lowercase letters (a-z)" checked={opts.lower !== "false"} onChange={(v) => setOpt("lower", String(v))} />
+              <Checkbox label="Numbers (0-9)" checked={opts.numbers !== "false"} onChange={(v) => setOpt("numbers", String(v))} />
+              <Checkbox label="Symbols (!@#$...)" checked={opts.symbols !== "false"} onChange={(v) => setOpt("symbols", String(v))} />
+              <Checkbox label="Avoid look-alike characters (0, O, 1, l, I)" checked={opts.ambiguous === "true"} onChange={(v) => setOpt("ambiguous", String(v))} />
+            </div>
+          </>
+        )}
+        {tool.slug === "lorem-ipsum" && <NumberField label="Paragraphs (1 to 50)" value={opts.paragraphs ?? "3"} onChange={(v) => setOpt("paragraphs", v)} />}
 
         <PrimaryButton onClick={doProcess} disabled={processing}>
           Generate
@@ -450,81 +536,134 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // Calculators / converters
   // --------------------------------------------------------------------
   if (["unit-converter", "percentage-calculator", "age-calculator", "color-picker", "timestamp-converter"].includes(tool.slug)) {
+    const unitKind = (opts.kind || "length") as dev.UnitKind;
+    const unitList = dev.UNIT_CATALOG[unitKind].units;
+    const unitFrom = unitList.some((u) => u.id === opts.from) ? (opts.from as string) : unitList[0].id;
+    const unitTo = unitList.some((u) => u.id === opts.to) ? (opts.to as string) : unitList[1].id;
+    const pctMode = opts.mode || "is";
+    const colorRgb = dev.hexToRgb(opts.hex || "#1F5C4C");
+    const colorHex = colorRgb ? "#" + [colorRgb.r, colorRgb.g, colorRgb.b].map((v) => v.toString(16).padStart(2, "0")).join("").toUpperCase() : "#1F5C4C";
+
     const calcResult = useMemo(() => {
       try {
         if (tool.slug === "unit-converter") {
-          const value = Number(opts.value || 0);
-          const from = opts.from || "meters";
-          const to = opts.to || "feet";
-          const kind = opts.kind || "length";
-          const result = kind === "length" ? dev.convertLength(value, from, to) : dev.convertWeight(value, from, to);
-          return `${value} ${from} = ${result.toFixed(4)} ${to}`;
+          const raw = (opts.value ?? "1").trim();
+          if (raw === "" || !Number.isFinite(Number(raw))) return "Enter a number to convert.";
+          const value = Number(raw);
+          const result = dev.convertUnit(unitKind, value, unitFrom, unitTo);
+          const label = (id: string) => unitList.find((u) => u.id === id)?.label ?? id;
+          return `${formatNumber(value)} ${label(unitFrom)} = ${formatNumber(result)} ${label(unitTo)}`;
         }
         if (tool.slug === "percentage-calculator") {
-          const a = Number(opts.a || 0);
-          const b = Number(opts.b || 0);
-          return `${a} is ${dev.calcPercentage(a, b).toFixed(2)}% of ${b}`;
+          const a = Number(opts.a ?? "0");
+          const b = Number(opts.b ?? "100");
+          if (!Number.isFinite(a) || !Number.isFinite(b)) return "Enter numbers in both boxes.";
+          if (pctMode === "of") return `${formatNumber(a)}% of ${formatNumber(b)} = ${formatNumber((a / 100) * b)}`;
+          if (pctMode === "change") {
+            if (a === 0) return "The starting value can't be 0.";
+            const change = dev.calcPercentageChange(a, b);
+            return `${formatNumber(Math.abs(change))}% ${change >= 0 ? "increase" : "decrease"} (from ${formatNumber(a)} to ${formatNumber(b)})`;
+          }
+          if (b === 0) return "The second number can't be 0.";
+          return `${formatNumber(a)} is ${formatNumber(dev.calcPercentage(a, b))}% of ${formatNumber(b)}`;
         }
         if (tool.slug === "age-calculator") {
           if (!opts.birthdate) return "";
-          const r = dev.calcAge(new Date(opts.birthdate));
-          return `${r.years} years, ${r.months} months, ${r.days} days old`;
+          const birth = dev.parseLocalDate(opts.birthdate);
+          if (!birth) return "Enter a valid date of birth.";
+          const now = new Date();
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          if (birth.getTime() > today.getTime()) return "That date is in the future. Enter a past date of birth.";
+          const r = dev.calcAge(birth, today);
+          const totalDays = Math.round((today.getTime() - birth.getTime()) / 86400000);
+          let next = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+          if (next.getTime() < today.getTime()) next = new Date(today.getFullYear() + 1, birth.getMonth(), birth.getDate());
+          const untilBirthday = Math.round((next.getTime() - today.getTime()) / 86400000);
+          return `${r.years} years, ${r.months} months, ${r.days} days old\nTotal days lived: ${totalDays.toLocaleString("en-US")}\nNext birthday: ${untilBirthday === 0 ? "today!" : `in ${untilBirthday} day${untilBirthday === 1 ? "" : "s"}`}`;
         }
         if (tool.slug === "color-picker") {
-          const hex = opts.hex || "#1F5C4C";
-          const rgb = dev.hexToRgb(hex);
-          const hsl = dev.rgbToHsl(rgb.r, rgb.g, rgb.b);
-          return `HEX: ${hex}\nRGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})\nHSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+          if (!colorRgb) return "Enter a valid HEX colour such as #1F5C4C.";
+          const hsl = dev.rgbToHsl(colorRgb.r, colorRgb.g, colorRgb.b);
+          return `HEX: ${colorHex}\nRGB: rgb(${colorRgb.r}, ${colorRgb.g}, ${colorRgb.b})\nHSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
         }
         if (tool.slug === "timestamp-converter") {
           if (opts.mode === "toTimestamp") {
             if (!opts.date) return "";
-            return String(dev.dateToTimestamp(new Date(opts.date)));
+            const d = new Date(opts.date);
+            if (isNaN(d.getTime())) return "Pick a valid date and time.";
+            return `Seconds: ${dev.dateToTimestamp(d)}\nMilliseconds: ${d.getTime()}\nUTC: ${d.toISOString()}`;
           }
           if (!opts.timestamp) return "";
-          return dev.timestampToDate(Number(opts.timestamp)).toString();
+          const n = Number(opts.timestamp);
+          if (!Number.isFinite(n)) return "Enter a Unix timestamp (numbers only).";
+          const d = dev.timestampToDate(n);
+          if (isNaN(d.getTime())) return "That timestamp is out of range.";
+          return `Local time: ${d.toString()}\nUTC: ${d.toISOString()}\n(Read as ${Math.abs(n) >= 1e11 ? "milliseconds" : "seconds"})`;
         }
         return "";
       } catch {
-        return "";
+        return "That input could not be converted. Check the values and try again.";
       }
-    }, [tool.slug, opts]);
+    }, [tool.slug, opts, unitKind, unitFrom, unitTo, pctMode, colorRgb, colorHex, unitList]);
 
     return (
       <Workspace>
         {tool.slug === "unit-converter" && (
-          <div className="grid grid-cols-2 gap-3">
-            <SelectField label="Kind" value={opts.kind || "length"} onChange={(v) => setOpt("kind", v)} options={[["length", "Length"], ["weight", "Weight"]]} />
-            <NumberField label="Value" value={opts.value || "1"} onChange={(v) => setOpt("value", v)} />
-            <TextField label="From unit" value={opts.from || "meters"} onChange={(v) => setOpt("from", v)} placeholder="meters" />
-            <TextField label="To unit" value={opts.to || "feet"} onChange={(v) => setOpt("to", v)} placeholder="feet" />
+          <div className="grid gap-3 md:grid-cols-2">
+            <SelectField
+              label="What are you converting?"
+              value={unitKind}
+              onChange={(v) => {
+                const list = dev.UNIT_CATALOG[v as dev.UnitKind].units;
+                setOpts((o) => ({ ...o, kind: v, from: list[0].id, to: list[1].id }));
+              }}
+              options={(Object.keys(dev.UNIT_CATALOG) as dev.UnitKind[]).map((k) => [k, dev.UNIT_CATALOG[k].label] as [string, string])}
+            />
+            <NumberField label="Value" value={opts.value ?? "1"} onChange={(v) => setOpt("value", v)} />
+            <SelectField label="From" value={unitFrom} onChange={(v) => setOpt("from", v)} options={unitList.map((u) => [u.id, u.label] as [string, string])} />
+            <SelectField label="To" value={unitTo} onChange={(v) => setOpt("to", v)} options={unitList.map((u) => [u.id, u.label] as [string, string])} />
+            <button
+              type="button"
+              onClick={() => setOpts((o) => ({ ...o, from: unitTo, to: unitFrom }))}
+              className="w-fit rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-semibold text-ink hover:border-moss/50"
+            >
+              ⇄ Swap units
+            </button>
           </div>
         )}
         {tool.slug === "percentage-calculator" && (
-          <div className="grid grid-cols-2 gap-3">
-            <NumberField label="Value" value={opts.a || "0"} onChange={(v) => setOpt("a", v)} />
-            <NumberField label="Out of" value={opts.b || "100"} onChange={(v) => setOpt("b", v)} />
+          <div className="grid gap-3 md:grid-cols-3">
+            <SelectField
+              label="What do you want to find?"
+              value={pctMode}
+              onChange={(v) => setOpt("mode", v)}
+              options={[["is", "X is what % of Y"], ["of", "What is X% of Y"], ["change", "% change from X to Y"]]}
+            />
+            <NumberField label={pctMode === "of" ? "Percentage (X)" : pctMode === "change" ? "From (X)" : "Value (X)"} value={opts.a ?? "0"} onChange={(v) => setOpt("a", v)} />
+            <NumberField label={pctMode === "of" ? "Of the number (Y)" : pctMode === "change" ? "To (Y)" : "Out of (Y)"} value={opts.b ?? "100"} onChange={(v) => setOpt("b", v)} />
           </div>
         )}
         {tool.slug === "age-calculator" && (
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-ink">Birthdate</label>
+            <label className="mb-1.5 block text-sm font-medium text-ink">Date of birth</label>
             <input type="date" value={opts.birthdate || ""} onChange={(e) => setOpt("birthdate", e.target.value)} className="w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-sm" />
           </div>
         )}
         {tool.slug === "color-picker" && (
-          <div className="flex items-center gap-3">
-            <input type="color" value={opts.hex || "#1F5C4C"} onChange={(e) => setOpt("hex", e.target.value)} className="h-12 w-16 rounded-lg border border-ink/15" />
-            <TextField label="" value={opts.hex || "#1F5C4C"} onChange={(v) => setOpt("hex", v)} placeholder="#1F5C4C" />
+          <div className="flex items-end gap-3">
+            <input type="color" aria-label="Pick a colour" value={colorHex.toLowerCase()} onChange={(e) => setOpt("hex", e.target.value)} className="h-12 w-16 rounded-lg border border-ink/15" />
+            <div className="flex-1">
+              <TextField label="HEX colour" value={opts.hex ?? "#1F5C4C"} onChange={(v) => setOpt("hex", v)} placeholder="#1F5C4C" />
+            </div>
           </div>
         )}
         {tool.slug === "timestamp-converter" && (
           <div className="flex flex-col gap-3">
             <SelectField label="Direction" value={opts.mode || "fromTimestamp"} onChange={(v) => setOpt("mode", v)} options={[["fromTimestamp", "Timestamp → Date"], ["toTimestamp", "Date → Timestamp"]]} />
             {opts.mode === "toTimestamp" ? (
-              <input type="datetime-local" value={opts.date || ""} onChange={(e) => setOpt("date", e.target.value)} className="w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-sm" />
+              <input type="datetime-local" aria-label="Date and time" value={opts.date || ""} onChange={(e) => setOpt("date", e.target.value)} className="w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-sm" />
             ) : (
-              <NumberField label="Unix timestamp" value={opts.timestamp || ""} onChange={(v) => setOpt("timestamp", v)} />
+              <NumberField label="Unix timestamp (seconds or milliseconds)" value={opts.timestamp ?? ""} onChange={(v) => setOpt("timestamp", v)} />
             )}
           </div>
         )}
@@ -547,14 +686,21 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
           <TextArea label="Changed text" value={inputTextB} onChange={setInputTextB} />
         </div>
         {(inputText || inputTextB) && (
-          <div className="overflow-hidden rounded-2xl border border-ink/10">
-            {rows.map((r) => (
-              <div key={r.line} className={`grid grid-cols-2 gap-px text-sm ${r.changed ? "bg-gold/10" : "bg-white"}`}>
-                <div className="px-3 py-1.5 font-mono text-xs text-ink/80">{r.a}</div>
-                <div className="px-3 py-1.5 font-mono text-xs text-ink/80">{r.b}</div>
-              </div>
-            ))}
-          </div>
+          <>
+            <p className="text-sm text-slate">
+              {rows.filter((r) => r.changed).length === 0
+                ? "The two texts are identical."
+                : `${rows.filter((r) => r.changed).length} line${rows.filter((r) => r.changed).length === 1 ? "" : "s"} differ. Red is only in the original, green is only in the changed text.`}
+            </p>
+            <div className="overflow-hidden rounded-2xl border border-ink/10">
+              {rows.map((r) => (
+                <div key={r.line} className="grid grid-cols-2 gap-px bg-ink/5 text-sm">
+                  <div className={`whitespace-pre-wrap break-words px-3 py-1.5 font-mono text-xs text-ink/80 ${r.changed && r.a !== "" ? "bg-[#FBE9E7]" : "bg-white"}`}>{r.a || "\u00A0"}</div>
+                  <div className={`whitespace-pre-wrap break-words px-3 py-1.5 font-mono text-xs text-ink/80 ${r.changed && r.b !== "" ? "bg-[#E5F3EC]" : "bg-white"}`}>{r.b || "\u00A0"}</div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
         <NextSteps show={!!(inputText || inputTextB)} />
       </Workspace>
@@ -619,7 +765,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       )}
 
       {liveTextResult && tool.slug === "markdown-renderer" && (
-        <div className="rounded-2xl border border-ink/10 bg-white p-5 text-sm" dangerouslySetInnerHTML={{ __html: liveTextResult }} />
+        <div className="tk-prose rounded-2xl border border-ink/10 bg-white p-5 text-sm" dangerouslySetInnerHTML={{ __html: liveTextResult }} />
       )}
       {liveTextResult && tool.slug !== "markdown-renderer" && <TextOutput value={liveTextResult} />}
       {!inputText && <p className="text-center text-sm text-slate">Start typing above and your result appears instantly.</p>}
@@ -666,13 +812,14 @@ function TextField({ label, value, onChange, placeholder }: { label: string; val
   );
 }
 
-function NumberField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function NumberField({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
       <label className="mb-1.5 block text-sm font-medium text-ink">{label}</label>
       <input
         type="number"
         value={value}
+        placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-sm outline-none focus:border-moss"
       />
@@ -724,4 +871,39 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
       />
     </div>
   );
+}
+
+function Checkbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2.5 text-sm text-ink">
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-moss" />
+      {label}
+    </label>
+  );
+}
+
+function ResultNote({ message }: { message: string }) {
+  return (
+    <p role="status" className="rounded-xl bg-moss/10 px-4 py-3 text-sm text-moss">
+      {message}
+    </p>
+  );
+}
+
+function formatBytes(bytes: number) {
+  return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(2)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+// Numbers shown to people: separators and up to 10 meaningful digits, never "1e-7" style output for normal values.
+function formatNumber(n: number) {
+  if (!Number.isFinite(n)) return "not a number";
+  return n.toLocaleString("en-US", { maximumSignificantDigits: 10 });
+}
+
+// Turns technical library messages into something a visitor can act on.
+function friendlyError(e: unknown): string {
+  const msg = e instanceof Error ? e.message : "";
+  if (/encrypt/i.test(msg)) return "This PDF is password protected. Remove the password with Unlock PDF first.";
+  if (/Failed to parse|No PDF header|Invalid object ref/i.test(msg)) return "This file does not look like a valid PDF, or it is damaged.";
+  return msg || "Something went wrong. Please try a different file.";
 }

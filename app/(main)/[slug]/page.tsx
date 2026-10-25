@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ToolWorkspace from "@/components/ToolWorkspace";
 import ToolsSidebar from "@/components/ToolsSidebar";
+import MobileToolsDrawer from "@/components/MobileToolsDrawer";
+import MiniTool from "@/components/tools/MiniTool";
+import { MINI_TOOL_SLUGS } from "@/components/tools/registry";
 import { allTools, findTool, toolGroups } from "@/lib/tools-data";
 import { toolVariants, findVariant, variantsForTool } from "@/lib/tool-variants";
-import { generateHowTo, generateBenefits, generateFaqs, generatePrivacyNote, generateSeoTitle, generateSeoDescription } from "@/lib/seo-content";
+import { generateHowTo, generateBenefits, generateFaqs, generatePrivacyNote, generateSeoTitle, generateSeoDescription, generateDirectAnswer, generateQuickFacts, detectKind, fitVariantTitle, fitVariantDescription } from "@/lib/seo-content";
+import { toolSeo } from "@/lib/tool-seo";
+import ToolShowcase from "@/components/ToolShowcase";
+import TutorialCards from "@/components/TutorialCards";
 import { locales } from "@/lib/i18n/config";
 import { toolTranslations } from "@/lib/i18n/tool-translations";
+
+const InvoiceGenerator = dynamic(() => import("@/components/InvoiceGenerator"));
+const ProposalGenerator = dynamic(() => import("@/components/ProposalGenerator"));
 
 // Slugs that are reserved for other top-level routes and must never be treated as a tool page.
 const RESERVED_SLUGS = new Set(["sitemap.xml", "robots.txt", "favicon.ico"]);
@@ -37,24 +47,30 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
       }
     }
 
+    const seo = toolSeo[tool.slug];
     return {
       title,
       description,
+      keywords: [tool.name, ...(seo?.also ?? []), "free online tool", "no signup"],
       alternates: { canonical: url, languages: languageAlternates },
-      openGraph: { title, description, url, siteName: "Toolkitties", type: "website" },
-      twitter: { card: "summary", title, description },
+      openGraph: { title, description, url, siteName: "Toolkitties", type: "website", images: [{ url: `/og/${tool.slug}.png`, width: 1200, height: 630, alt: title }] },
+      twitter: { card: "summary_large_image", title, description, images: [`/og/${tool.slug}.png`] },
     };
   }
 
   const variant = findVariant(params.slug);
   if (variant) {
     const url = `https://toolkitties.com/${variant.slug}`;
+    const title = fitVariantTitle(variant.title);
+    const description = fitVariantDescription(variant.description);
+    const vseo = toolSeo[variant.toolSlug];
     return {
-      title: variant.title,
-      description: variant.description,
+      title,
+      description,
+      keywords: [variant.name, ...(vseo?.also ?? []), "free online tool", "no signup"],
       alternates: { canonical: url },
-      openGraph: { title: variant.title, description: variant.description, url, siteName: "Toolkitties", type: "website" },
-      twitter: { card: "summary", title: variant.title, description: variant.description },
+      openGraph: { title, description, url, siteName: "Toolkitties", type: "website", images: [{ url: `/og/${variant.toolSlug}.png`, width: 1200, height: 630, alt: title }] },
+      twitter: { card: "summary_large_image", title, description, images: [`/og/${variant.toolSlug}.png`] },
     };
   }
 
@@ -80,7 +96,13 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
   const displayIcon = tool.icon;
   const canonicalSlug = variant?.slug ?? tool.slug;
 
+  const wide = !!tool.wide;
   const relatedTools = group.tools.filter((t) => t.slug !== tool.slug).slice(0, 4);
+  const POPULAR_SLUGS = ["merge-pdf", "compress-pdf", "pdf-to-jpg", "jpg-to-png", "word-counter", "qr-code-generator", "invoice-generator", "password-generator"];
+  const alsoUseful = POPULAR_SLUGS.filter((slug) => slug !== tool.slug && !relatedTools.some((t) => t.slug === slug))
+    .map((slug) => findTool(slug)?.tool)
+    .filter((t): t is NonNullable<typeof t> => Boolean(t))
+    .slice(0, 4);
   const siblingVariants = variantsForTool(tool.slug).filter((v) => v.slug !== canonicalSlug);
   // On a variant page, always link back to the base tool it's powered by.
   const relatedSearches = variant ? [{ slug: tool.slug, name: tool.name }, ...siblingVariants.map((v) => ({ slug: v.slug, name: v.name }))] : siblingVariants.map((v) => ({ slug: v.slug, name: v.name }));
@@ -88,17 +110,39 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
   const benefits = generateBenefits(tool, group);
   const faqs = generateFaqs(tool, group);
   const privacyNote = generatePrivacyNote(tool);
+  const seo = toolSeo[tool.slug];
 
+  const kind = detectKind(tool, group);
+  const directAnswer = generateDirectAnswer(displayName, displayDescription, kind);
+  const quickFacts = generateQuickFacts(group, kind);
+  const pageUrl = `https://toolkitties.com/${canonicalSlug}`;
+
+  // Only facts that are true are published here: no ratings or review counts are invented.
   const appSchema = {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
+    "@type": "WebApplication",
     name: displayName,
-    applicationCategory: "UtilitiesApplication",
-    operatingSystem: "Any (runs in browser)",
+    url: pageUrl,
     description: displayDescription,
-    url: `https://toolkitties.com/${canonicalSlug}`,
+    applicationCategory: group.id === "business" ? "BusinessApplication" : "UtilitiesApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript and a modern web browser",
+    isAccessibleForFree: true,
+    inLanguage: "en",
+    ...(seo ? { alternateName: seo.also } : {}),
+    featureList: benefits,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", ratingCount: "18400" },
+    publisher: { "@type": "Organization", name: "Toolkitties", url: "https://toolkitties.com" },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://toolkitties.com" },
+      { "@type": "ListItem", position: 2, name: group.title, item: "https://toolkitties.com/#tools" },
+      { "@type": "ListItem", position: 3, name: displayName, item: pageUrl },
+    ],
   };
 
   const howToSchema = {
@@ -121,6 +165,7 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
@@ -137,15 +182,29 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
             <span className="text-ink">{displayName}</span>
           </nav>
 
+          <div className="mb-5">
+            <MobileToolsDrawer currentSlug={tool.slug} />
+          </div>
+
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-4xl">{displayIcon}</span>
             <h1 className="mt-3 font-display text-3xl font-semibold text-ink md:text-4xl">{displayName}</h1>
             <p className="mt-3 text-base text-slate">{displayDescription}</p>
           </div>
 
-          <div className="mx-auto mt-10 max-w-2xl">
+          <div className={wide ? "tk-workspace-wide" : "tk-workspace"}>
             {tool.functional ? (
-              <ToolWorkspace tool={tool} initialOpts={variant?.presetOpts} />
+              tool.slug === "invoice-generator" ? (
+                <InvoiceGenerator />
+              ) : tool.slug === "quotation-generator" ? (
+                <InvoiceGenerator mode="quote" />
+              ) : tool.slug === "proposal-generator" ? (
+                <ProposalGenerator />
+              ) : (MINI_TOOL_SLUGS as readonly string[]).includes(tool.slug) ? (
+                <MiniTool slug={tool.slug} />
+              ) : (
+                <ToolWorkspace key={tool.slug} tool={tool} initialOpts={variant?.presetOpts} />
+              )
             ) : (
               <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-ink/15 bg-sand/40 p-12 text-center">
                 <span className="text-3xl">🛠️</span>
@@ -157,8 +216,45 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
             )}
           </div>
 
+          {/* Direct answer: a short, quotable definition for search and AI answer engines */}
+          <section className="mx-auto mt-14 max-w-2xl">
+            <h2 className="font-display text-xl font-semibold text-ink">What is {displayName}?</h2>
+            <p className="mt-3 text-base leading-7 text-ink/85">{directAnswer}</p>
+            {seo && (
+              <p className="mt-3 text-sm text-slate">
+                Also searched as: {seo.also.join(", ")}.
+              </p>
+            )}
+          </section>
+
+          <section className="mx-auto mt-12 max-w-2xl">
+            <h2 className="font-display text-xl font-semibold text-ink">{displayName} at a glance</h2>
+            <dl className="mt-4 grid gap-px overflow-hidden rounded-2xl border border-ink/10 bg-ink/10 sm:grid-cols-2">
+              {quickFacts.map((f) => (
+                <div key={f.label} className="bg-white p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-slate">{f.label}</dt>
+                  <dd className="mt-1 text-sm text-ink">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          {seo && (
+            <section className="mx-auto mt-14 max-w-2xl">
+              <h2 className="font-display text-xl font-semibold text-ink">When to use {displayName}</h2>
+              <ul className="mt-5 flex flex-col gap-3">
+                {seo.uses.map((u) => (
+                  <li key={u} className="flex items-start gap-3 text-sm text-ink/85">
+                    <span className="mt-0.5 text-moss">→</span>
+                    {u}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {/* How to use */}
-          <section className="mx-auto mt-16 max-w-2xl">
+          <section className="mx-auto mt-14 max-w-2xl">
             <h2 className="font-display text-xl font-semibold text-ink">How to use {displayName}</h2>
             <ol className="mt-5 flex flex-col gap-4">
               {howTo.map((step, i) => (
@@ -182,6 +278,9 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
               ))}
             </ul>
           </section>
+
+          <ToolShowcase slug={tool.slug} name={displayName} />
+          <TutorialCards toolSlug={tool.slug} name={displayName} />
 
           {/* Privacy */}
           <section className="mx-auto mt-14 max-w-2xl rounded-2xl border border-ink/10 bg-sand/40 p-6">
@@ -215,6 +314,20 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
                     className="rounded-full border border-ink/15 bg-white px-4 py-2 text-sm text-ink/80 hover:border-moss/50 hover:text-ink"
                   >
                     {r.name}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {alsoUseful.length > 0 && (
+            <section className="mx-auto mt-14 max-w-2xl">
+              <h2 className="font-display text-lg font-semibold text-ink">Popular free tools</h2>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                {alsoUseful.map((t) => (
+                  <Link key={t.slug} href={`/${t.slug}`} className="flex items-center gap-2 rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink hover:border-moss/40">
+                    <span>{t.icon}</span>
+                    {t.name}
                   </Link>
                 ))}
               </div>

@@ -19,6 +19,10 @@ export type PdfInvoice = {
   notes: string;
   lateTerms: string;
   converted: string; // e.g. "Approx. EUR 920.00 at 1 USD = 0.9200 EUR"
+  // Optional wording, so the same layout can print a quotation instead of an invoice.
+  docTitle?: string;
+  numberLabel?: string;
+  dueLabel?: string;
 };
 
 export type PdfOptions = { size: "A4" | "Letter"; accent: string; compact: boolean };
@@ -30,7 +34,7 @@ function parseHex(h: string): [number, number, number] {
 
 export async function buildInvoicePdf(inv: PdfInvoice, opt: PdfOptions): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
-  doc.setTitle(`Invoice ${inv.number}`.trim());
+  doc.setTitle(`${inv.docTitle ? inv.docTitle[0] + inv.docTitle.slice(1).toLowerCase() : "Invoice"} ${inv.number}`.trim());
   doc.setProducer("Toolkitties");
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
@@ -114,9 +118,9 @@ export async function buildInvoicePdf(inv: PdfInvoice, opt: PdfOptions): Promise
   };
 
   // ---- Header ----
-  put("INVOICE", M, y, 26, { b: true, c: accent });
+  put(inv.docTitle ?? "INVOICE", M, y, 26, { b: true, c: accent });
   let my = y;
-  for (const [k, v] of [["Invoice #", inv.number || "-"], ["Issued", inv.issueDate], ["Due", inv.dueText]] as [string, string][]) {
+  for (const [k, v] of [[inv.numberLabel ?? "Invoice #", inv.number || "-"], ["Issued", inv.issueDate], [inv.dueLabel ?? "Due", inv.dueText]] as [string, string][]) {
     if (!v) continue;
     put(v, W - M, my, fs, { b: true, r: true });
     put(k, W - M - bold.widthOfTextAtSize(clean(v), fs) - 12, my, fs, { c: mute, r: true });

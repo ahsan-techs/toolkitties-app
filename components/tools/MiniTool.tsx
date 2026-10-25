@@ -4,8 +4,6 @@ import dynamic from "next/dynamic";
 import type { ComponentType } from "react";
 
 // Each tool loads only when its page is opened, so the other pages stay light.
-const CompressPdf = dynamic(() => import("./CompressPdf"));
-
 const tools: Record<string, ComponentType> = {
   "merge-pdf": dynamic(() => import("./MergePdf")),
   "split-pdf": dynamic(() => import("./SplitPdf")),
@@ -25,10 +23,11 @@ const tools: Record<string, ComponentType> = {
   "pdf-to-word": dynamic(() => import("./PdfToWord")),
   "protect-pdf": dynamic(() => import("./ProtectPdf")),
   "unlock-pdf": dynamic(() => import("./UnlockPdf")),
+  "vat-calculator": dynamic(() => import("./VatCalculator")),
+  "profit-margin-calculator": dynamic(() => import("./ProfitMarginCalculator")),
 };
 
-export default function MiniTool({ slug, initialOpts }: { slug: string; initialOpts?: Record<string, string> }) {
-  if (slug === "compress-pdf") return <CompressPdf initialOpts={initialOpts} />;
+export default function MiniTool({ slug }: { slug: string }) {
   const Tool = tools[slug];
   return Tool ? <Tool /> : null;
 }

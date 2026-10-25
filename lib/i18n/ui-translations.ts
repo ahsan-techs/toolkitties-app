@@ -211,11 +211,11 @@ export const kindTemplates: Record<Locale, KindTemplates> = {
     benefits: () => [
       "Funciona totalmente en tu navegador — tu archivo nunca se sube a un servidor.",
       "No necesitas cuenta, registro ni correo electrónico.",
-      "Completamente gratis, sin límite diario en el plan Starter.",
+      "Completamente gratis, sin límite diario.",
       "Resultado instantáneo, sin esperas.",
     ],
     faqs: (n) => [
-      { q: `¿${n} es gratis?`, a: `Sí. ${n} es gratis en el plan Starter. El plan Pro elimina el límite diario y acelera el procesamiento.` },
+      { q: `¿${n} es gratis?`, a: `Sí. ${n} es 100 % gratis, sin registro, sin límite diario y sin planes de pago.` },
       { q: `¿Necesito una cuenta para usar ${n}?`, a: `No. Abre la página y empieza a usar ${n} de inmediato.` },
       { q: `¿Es seguro usar ${n} con archivos privados?`, a: `Sí. ${n} procesa tu archivo localmente en tu navegador. Nunca se sube a los servidores de Toolkitties.` },
     ],
@@ -231,11 +231,11 @@ export const kindTemplates: Record<Locale, KindTemplates> = {
     benefits: () => [
       "Funciona totalmente no seu navegador — seu arquivo nunca é enviado a um servidor.",
       "Não precisa de conta, cadastro ou e-mail.",
-      "Totalmente grátis, sem limite diário no plano Starter.",
+      "Totalmente grátis, sem limite diário.",
       "Resultado instantâneo, sem espera.",
     ],
     faqs: (n) => [
-      { q: `${n} é grátis?`, a: `Sim. ${n} é grátis no plano Starter. O plano Pro remove o limite diário e acelera o processamento.` },
+      { q: `${n} é grátis?`, a: `Sim. ${n} é 100% grátis, sem cadastro, sem limite diário e sem planos pagos.` },
       { q: `Preciso de conta para usar ${n}?`, a: `Não. Abra a página e comece a usar ${n} imediatamente.` },
       { q: `É seguro usar ${n} com arquivos privados?`, a: `Sim. ${n} processa seu arquivo localmente no navegador. Nunca é enviado aos servidores do Toolkitties.` },
     ],
@@ -251,11 +251,11 @@ export const kindTemplates: Record<Locale, KindTemplates> = {
     benefits: () => [
       "Läuft komplett in deinem Browser — deine Datei wird nie auf einen Server hochgeladen.",
       "Kein Konto, keine Anmeldung, keine E-Mail nötig.",
-      "Komplett kostenlos, ohne Tageslimit im Starter-Plan.",
+      "Komplett kostenlos, ohne Tageslimit.",
       "Sofortiges Ergebnis, keine Wartezeit.",
     ],
     faqs: (n) => [
-      { q: `Ist ${n} kostenlos?`, a: `Ja. ${n} ist im Starter-Plan kostenlos. Der Pro-Plan entfernt das Tageslimit und beschleunigt die Verarbeitung.` },
+      { q: `Ist ${n} kostenlos?`, a: `Ja. ${n} ist zu 100 % kostenlos – ohne Anmeldung, ohne Tageslimit und ohne Bezahlpläne.` },
       { q: `Brauche ich ein Konto für ${n}?`, a: `Nein. Öffne die Seite und nutze ${n} sofort.` },
       { q: `Ist ${n} sicher für private Dateien?`, a: `Ja. ${n} verarbeitet deine Datei lokal in deinem Browser. Sie wird nie auf Toolkitties-Server hochgeladen.` },
     ],
@@ -271,11 +271,11 @@ export const kindTemplates: Record<Locale, KindTemplates> = {
     benefits: () => [
       "Fonctionne entièrement dans votre navigateur — votre fichier n'est jamais envoyé à un serveur.",
       "Aucun compte, inscription ou e-mail requis.",
-      "Entièrement gratuit, sans limite quotidienne sur le plan Starter.",
+      "Entièrement gratuit, sans limite quotidienne.",
       "Résultat instantané, sans attente.",
     ],
     faqs: (n) => [
-      { q: `${n} est-il gratuit ?`, a: `Oui. ${n} est gratuit sur le plan Starter. Le plan Pro supprime la limite quotidienne et accélère le traitement.` },
+      { q: `${n} est-il gratuit ?`, a: `Oui. ${n} est 100 % gratuit, sans inscription, sans limite quotidienne et sans abonnement payant.` },
       { q: `Ai-je besoin d'un compte pour ${n} ?`, a: `Non. Ouvrez la page et utilisez ${n} immédiatement.` },
       { q: `Est-il sûr d'utiliser ${n} avec des fichiers privés ?`, a: `Oui. ${n} traite votre fichier localement dans votre navigateur. Il n'est jamais envoyé aux serveurs de Toolkitties.` },
     ],
@@ -291,11 +291,11 @@ export const kindTemplates: Record<Locale, KindTemplates> = {
     benefits: () => [
       "पूरी तरह आपके ब्राउज़र में चलता है — आपकी फ़ाइल कभी सर्वर पर अपलोड नहीं होती।",
       "कोई अकाउंट, साइनअप या ईमेल की ज़रूरत नहीं।",
-      "पूरी तरह मुफ़्त, स्टार्टर प्लान में कोई डेली लिमिट नहीं।",
+      "पूरी तरह मुफ़्त, कोई डेली लिमिट नहीं।",
       "तुरंत परिणाम, कोई इंतज़ार नहीं।",
     ],
     faqs: (n) => [
-      { q: `क्या ${n} मुफ़्त है?`, a: `हां। ${n} स्टार्टर प्लान में मुफ़्त है। प्रो प्लान डेली लिमिट हटाता है और प्रोसेसिंग तेज़ करता है।` },
+      { q: `क्या ${n} मुफ़्त है?`, a: `हां। ${n} 100% मुफ़्त है — न साइन-अप, न डेली लिमिट, न कोई पेड प्लान।` },
       { q: `क्या ${n} इस्तेमाल करने के लिए अकाउंट चाहिए?`, a: `नहीं। पेज खोलें और तुरंत ${n} इस्तेमाल करें।` },
       { q: `क्या प्राइवेट फ़ाइलों के लिए ${n} सुरक्षित है?`, a: `हां। ${n} आपकी फ़ाइल को आपके ब्राउज़र में ही प्रोसेस करता है। ये कभी Toolkitties सर्वर पर अपलोड नहीं होती।` },
     ],
@@ -311,11 +311,11 @@ export const kindTemplates: Record<Locale, KindTemplates> = {
     benefits: () => [
       "Berjalan sepenuhnya di browser Anda — file Anda tidak pernah diunggah ke server.",
       "Tidak perlu akun, pendaftaran, atau email.",
-      "Sepenuhnya gratis, tanpa batas harian di paket Starter.",
+      "Sepenuhnya gratis, tanpa batas harian.",
       "Hasil instan, tanpa menunggu.",
     ],
     faqs: (n) => [
-      { q: `Apakah ${n} gratis?`, a: `Ya. ${n} gratis di paket Starter. Paket Pro menghapus batas harian dan mempercepat pemrosesan.` },
+      { q: `Apakah ${n} gratis?`, a: `Ya. ${n} 100% gratis, tanpa pendaftaran, tanpa batas harian, dan tanpa paket berbayar.` },
       { q: `Apakah saya perlu akun untuk ${n}?`, a: `Tidak. Buka halamannya dan langsung gunakan ${n}.` },
       { q: `Apakah aman menggunakan ${n} untuk file pribadi?`, a: `Ya. ${n} memproses file Anda secara lokal di browser. File tidak pernah diunggah ke server Toolkitties.` },
     ],
@@ -331,11 +331,11 @@ export const kindTemplates: Record<Locale, KindTemplates> = {
     benefits: () => [
       "完全にブラウザ内で動作します — ファイルがサーバーにアップロードされることはありません。",
       "アカウント、登録、メールアドレスは不要です。",
-      "完全無料、スタータープランに1日の制限はありません。",
+      "完全無料、1日の制限はありません。",
       "即座に結果が得られ、待ち時間はありません。",
     ],
     faqs: (n) => [
-      { q: `${n}は無料ですか？`, a: `はい。${n}はスタータープランで無料です。Proプランでは1日の制限がなくなり、処理も高速化されます。` },
+      { q: `${n}は無料ですか？`, a: `はい。${n}は100%無料です。登録不要、1日の制限なし、有料プランもありません。` },
       { q: `${n}を使うのにアカウントは必要ですか？`, a: `いいえ。ページを開けばすぐに${n}を使えます。` },
       { q: `プライベートなファイルに${n}を使っても安全ですか？`, a: `はい。${n}はブラウザ内でローカルに処理されます。Toolkitiesのサーバーにアップロードされることはありません。` },
     ],
@@ -351,11 +351,11 @@ export const kindTemplates: Record<Locale, KindTemplates> = {
     benefits: () => [
       "يعمل بالكامل داخل متصفحك — لا يتم رفع ملفك أبدًا إلى خادم.",
       "لا حاجة لحساب أو تسجيل أو بريد إلكتروني.",
-      "مجاني بالكامل، بدون حد يومي في خطة Starter.",
+      "مجاني بالكامل، بدون حد يومي.",
       "نتيجة فورية، بدون انتظار.",
     ],
     faqs: (n) => [
-      { q: `هل ${n} مجاني؟`, a: `نعم. ${n} مجاني في خطة Starter. خطة Pro تزيل الحد اليومي وتسرّع المعالجة.` },
+      { q: `هل ${n} مجاني؟`, a: `نعم. ${n} مجاني 100%، بدون تسجيل وبدون حد يومي وبدون خطط مدفوعة.` },
       { q: `هل أحتاج حسابًا لاستخدام ${n}؟`, a: `لا. افتح الصفحة وابدأ استخدام ${n} فورًا.` },
       { q: `هل استخدام ${n} آمن للملفات الخاصة؟`, a: `نعم. ${n} يعالج ملفك محليًا داخل متصفحك. لا يُرفع أبدًا إلى خوادم Toolkitties.` },
     ],

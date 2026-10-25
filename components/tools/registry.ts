@@ -19,4 +19,6 @@ export const MINI_TOOL_SLUGS = [
   "pdf-to-word",
   "protect-pdf",
   "unlock-pdf",
+  "vat-calculator",
+  "profit-margin-calculator",
 ] as const;

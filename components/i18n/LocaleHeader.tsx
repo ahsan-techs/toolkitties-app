@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LanguageMenu from "@/components/i18n/LanguageMenu";
 import { locales, localeLabels, type Locale } from "@/lib/i18n/config";
 import { uiStrings } from "@/lib/i18n/ui-translations";
 
@@ -30,25 +31,13 @@ export default function LocaleHeader({
         <div className="flex items-center gap-3">
           <span className="hidden rounded-full bg-moss/10 px-3 py-1.5 text-xs font-semibold text-moss md:inline-block">{t.badge}</span>
 
-          <div className="group relative">
-            <button className="rounded-full border border-ink/15 px-3 py-1.5 text-xs font-medium text-ink/80 hover:bg-sand">
-              {localeLabels[locale].native} ▾
-            </button>
-            <div className="invisible absolute right-0 top-full mt-1 flex w-44 flex-col rounded-xl border border-ink/10 bg-white py-1 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">
-              <Link href={englishHref} className="px-4 py-2 text-sm text-ink/80 hover:bg-sand">
-                🇬🇧 English
-              </Link>
-              {locales.map((l) => {
-                const href = localizedHrefs[l];
-                if (!href) return null;
-                return (
-                  <Link key={l} href={href} className={`px-4 py-2 text-sm hover:bg-sand ${l === locale ? "font-semibold text-moss" : "text-ink/80"}`}>
-                    {localeLabels[l].native}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
+          <LanguageMenu
+            current={localeLabels[locale].native}
+            items={[
+              { href: englishHref, label: "🇬🇧 English" },
+              ...locales.flatMap((l) => (localizedHrefs[l] ? [{ href: localizedHrefs[l] as string, label: localeLabels[l].native, active: l === locale }] : [])),
+            ]}
+          />
         </div>
       </div>
     </header>

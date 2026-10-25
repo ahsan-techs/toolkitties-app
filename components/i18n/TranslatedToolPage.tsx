@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import LocaleHeader from "@/components/i18n/LocaleHeader";
 import LocaleFooter from "@/components/i18n/LocaleFooter";
 import ToolWorkspace from "@/components/ToolWorkspace";
+import MiniTool from "@/components/tools/MiniTool";
+import { MINI_TOOL_SLUGS } from "@/components/tools/registry";
 import { findTool } from "@/lib/tools-data";
 import { locales, localeLabels, type Locale } from "@/lib/i18n/config";
 import { toolTranslations, findToolByLocalizedSlug } from "@/lib/i18n/tool-translations";
@@ -58,7 +60,8 @@ export function getToolMetadata(locale: Locale, slug: string): Metadata {
     title: `${translated.name} | Toolkitties`,
     description: kindTemplates[locale].privacy(translated.name).slice(0, 155),
     alternates: { canonical: url, languages: languageAlternates },
-    openGraph: { title: `${translated.name} | Toolkitties`, url, siteName: "Toolkitties", type: "website", locale: OG_LOCALE[locale] },
+    openGraph: { title: `${translated.name} | Toolkitties`, url, siteName: "Toolkitties", type: "website", locale: OG_LOCALE[locale], images: [{ url: `/og/${r.baseSlug}.png`, width: 1200, height: 630, alt: translated.name }] },
+    twitter: { card: "summary_large_image", images: [`/og/${r.baseSlug}.png`] },
   };
 }
 
@@ -118,7 +121,7 @@ export default function TranslatedToolPage({ locale, slug }: { locale: Locale; s
         </div>
 
         <div className="mx-auto mt-10 max-w-2xl">
-          <ToolWorkspace tool={tool} />
+          {(MINI_TOOL_SLUGS as readonly string[]).includes(tool.slug) ? <MiniTool slug={tool.slug} /> : <ToolWorkspace key={tool.slug} tool={tool} />}
         </div>
 
         <section className="mx-auto mt-16 max-w-2xl">

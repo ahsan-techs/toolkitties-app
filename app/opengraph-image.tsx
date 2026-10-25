@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Toolkitties — 50+ Free Online Tools";
+export const alt = "Toolkitties — 60+ Free Online Tools";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -30,7 +30,7 @@ export default function Image() {
           <div style={{ fontSize: 64, fontWeight: 700, color: "#15171A" }}>Toolkitties</div>
         </div>
         <div style={{ fontSize: 32, color: "#5B5D63", marginTop: 24 }}>
-          50+ free tools. No signup. Runs in your browser.
+          60+ free tools. No signup. Runs in your browser.
         </div>
       </div>
     ),

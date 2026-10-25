@@ -10,7 +10,7 @@ Built with **Next.js 14 (App Router) + TypeScript + Tailwind CSS**, ready to dep
 - Hero with instant, type-ahead tool search
 - 4 tool groups (Document & PDF, Image & Media, Text & Data, Developer & Calculators) with "View all tools →" expand
 - 37 fully functional client-side tools + 7 tools flagged "coming soon" (ready to wire up later)
-- Alternating scroll feature rows, a scale/trust tracker, and a 3-tier pricing section
+- Alternating scroll feature rows, a scale/trust tracker, and a single "100% free" card (no paid plans)
 - Per-tool page at `/tools/[slug]` with its own metadata, JSON-LD `SoftwareApplication` schema, and a working input → process → download workspace
 - `sitemap.xml` and `robots.txt` generated automatically from the tool list
 
@@ -31,20 +31,9 @@ Open `http://localhost:3000`.
 4. Click **Deploy**. That's it — no environment variables are required for the site to work.
 5. Once live, point your domain (e.g. `toolkitties.com`) to the Vercel project under **Settings → Domains**.
 
-## Connect Lemon Squeezy payments
+## Pricing
 
-The two paid pricing cards (`components/PricingSection.tsx`) currently link to placeholder checkout URLs:
-
-```
-https://toolkitties.lemonsqueezy.com/checkout?plan=pro
-https://toolkitties.lemonsqueezy.com/checkout?plan=business
-```
-
-To go live:
-1. Create your store and two products (Ultimate Pro Bundle, Business Matrix) at `app.lemonsqueezy.com`.
-2. Copy each product's real **Checkout URL** from Lemon Squeezy.
-3. Paste those URLs into the `href` fields in `components/PricingSection.tsx`.
-4. (Optional) Add a Lemon Squeezy webhook later if you want to gate the "Pro" tool limits server-side — the current build treats all tools as open/unlimited since there's no backend yet.
+The whole site is free. There are no paid plans: the old pricing section was replaced by one "100% free" card (`components/FreeBanner.tsx`).
 
 ## Adding more tools
 
@@ -65,7 +54,7 @@ app/
   sitemap.ts, robots.ts
 components/
   Navbar, HeroSearch, ToolGroupSection, ToolCard, ScrollFeatureRows,
-  ScaleTracker, PricingSection, Footer, ToolWorkspace, WaveLoader
+  ScaleTracker, FreeBanner, ToolMarquee, Footer, ToolWorkspace, WaveLoader
   workspace/Dropzone.tsx, workspace/OutputPanel.tsx
 lib/
   tools-data.ts               → the master list of every tool

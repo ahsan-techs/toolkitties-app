@@ -244,7 +244,11 @@ export function parseYmd(s: string): number | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
   if (!m) return null;
   const ms = Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  return isNaN(ms) ? null : ms;
+  if (isNaN(ms)) return null;
+  // Reject dates that do not exist (such as 2024-02-30), which JavaScript would roll forward.
+  const check = new Date(ms);
+  if (check.getUTCFullYear() !== +m[1] || check.getUTCMonth() !== +m[2] - 1 || check.getUTCDate() !== +m[3]) return null;
+  return ms;
 }
 
 export function dateDiff(aMs: number, bMs: number, includeEnd: boolean) {
@@ -273,4 +277,40 @@ export function dateDiff(aMs: number, bMs: number, includeEnd: boolean) {
     }
   }
   return { days, weeks: Math.floor(days / 7), leftoverDays: days % 7, years, months, d, business, reversed: aMs > bMs };
+}
+
+// ---------------------------------------------------------------------------
+// Business calculators
+// ---------------------------------------------------------------------------
+
+export type TaxMode = "add" | "remove";
+
+// "add": the amount is the price before tax. "remove": the amount already includes tax.
+export function taxBreakdown(amount: number, ratePct: number, mode: TaxMode) {
+  const r = ratePct / 100;
+  if (mode === "add") {
+    const tax = amount * r;
+    return { net: amount, tax, gross: amount + tax };
+  }
+  const net = amount / (1 + r);
+  return { net, tax: amount - net, gross: amount };
+}
+
+export function marginBreakdown(cost: number, price: number) {
+  const profit = price - cost;
+  return {
+    profit,
+    marginPct: price !== 0 ? (profit / price) * 100 : NaN,
+    markupPct: cost !== 0 ? (profit / cost) * 100 : NaN,
+  };
+}
+
+// The selling price that gives a target profit margin (a share of the price). Needs a margin below 100%.
+export function priceForMargin(cost: number, marginPct: number) {
+  return cost / (1 - marginPct / 100);
+}
+
+// The selling price that adds a markup (a share of the cost) on top of the cost.
+export function priceForMarkup(cost: number, markupPct: number) {
+  return cost * (1 + markupPct / 100);
 }

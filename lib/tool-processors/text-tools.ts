@@ -17,11 +17,12 @@ export function toLowerCase(text: string) {
   return text.toLowerCase();
 }
 export function toTitleCase(text: string) {
-  return text.replace(/\w\S*/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
+  // Capitalises the first letter of every word (letters from any language), lower-cases the rest.
+  return text.toLowerCase().replace(/(^|[\s(\[{"\u201C/])(\p{L})/gu, (_m, pre: string, ch: string) => pre + ch.toUpperCase());
 }
 export function toSentenceCase(text: string) {
   const lower = text.toLowerCase();
-  return lower.replace(/(^\s*\w|[.!?]\s*\w)/g, (c) => c.toUpperCase());
+  return lower.replace(/(^\s*\p{L}|\n\s*\p{L}|[.!?]\s+\p{L})/gu, (c) => c.toUpperCase());
 }
 
 export function formatJson(raw: string) {
@@ -42,26 +43,86 @@ export function decodeBase64(text: string) {
   return decodeURIComponent(escape(window.atob(text)));
 }
 
-// Small, dependency-free Markdown -> HTML renderer covering the common cases.
+// Small, dependency-free Markdown -> HTML renderer. Everything is escaped first, and links are
+// only kept when they are safe (http, https, mailto, tel or relative), so pasted text can never
+// run a script in the preview.
+function escapeHtml(v: string) {
+  return v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function isSafeUrl(url: string) {
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(url);
+  return !scheme || ["http", "https", "mailto", "tel"].includes(scheme[1].toLowerCase());
+}
+
+function renderInline(raw: string) {
+  const codes: string[] = [];
+  let t = raw.replace(/`([^`]+)`/g, (_m, c: string) => {
+    codes.push(`<code>${escapeHtml(c)}</code>`);
+    return `\u0000${codes.length - 1}\u0000`;
+  });
+  t = escapeHtml(t);
+  t = t.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, label: string, url: string) => {
+    const plain = url.replace(/&amp;/g, "&").replace(/&quot;/g, '"');
+    return isSafeUrl(plain) ? `<a href="${escapeHtml(plain)}" target="_blank" rel="noopener noreferrer">${label}</a>` : label;
+  });
+  t = t
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+    .replace(/~~([^~]+)~~/g, "<del>$1</del>")
+    .replace(/\*([^*\n]+)\*/g, "<em>$1</em>")
+    .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, "$1<em>$2</em>");
+  return t.replace(/\u0000(\d+)\u0000/g, (_m, i: string) => codes[Number(i)]);
+}
+
 export function renderMarkdown(md: string) {
-  let html = md
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  const lines = md.replace(/\r\n?/g, "\n").split("\n");
+  const out: string[] = [];
+  let i = 0;
+  const isBlank = (l: string) => l.trim() === "";
+  const special = (l: string) =>
+    /^(#{1,6})\s+/.test(l) || /^\s*([-*+]|\d+[.)])\s+/.test(l) || /^>\s?/.test(l) || /^```/.test(l) || /^(-{3,}|\*{3,}|_{3,})\s*$/.test(l);
 
-  html = html
-    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/^\- (.*$)/gim, "<li>$1</li>")
-    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
-    .replace(/\n{2,}/g, "</p><p>")
-    .replace(/\n/g, "<br/>");
+  while (i < lines.length) {
+    const line = lines[i];
+    if (isBlank(line)) { i++; continue; }
 
-  return `<p>${html}</p>`;
+    if (/^```/.test(line)) {
+      const code: string[] = [];
+      i++;
+      while (i < lines.length && !/^```/.test(lines[i])) code.push(lines[i++]);
+      i++;
+      out.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
+      continue;
+    }
+    const heading = /^(#{1,6})\s+(.*)$/.exec(line);
+    if (heading) {
+      out.push(`<h${heading[1].length}>${renderInline(heading[2].trim())}</h${heading[1].length}>`);
+      i++;
+      continue;
+    }
+    if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { out.push("<hr/>"); i++; continue; }
+    if (/^>\s?/.test(line)) {
+      const quote: string[] = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) quote.push(lines[i++].replace(/^>\s?/, ""));
+      out.push(`<blockquote>${quote.map(renderInline).join("<br/>")}</blockquote>`);
+      continue;
+    }
+    const bullet = /^\s*[-*+]\s+/;
+    const numbered = /^\s*\d+[.)]\s+/;
+    if (bullet.test(line) || numbered.test(line)) {
+      const ordered = numbered.test(line);
+      const re = ordered ? numbered : bullet;
+      const items: string[] = [];
+      while (i < lines.length && re.test(lines[i])) items.push(`<li>${renderInline(lines[i++].replace(re, ""))}</li>`);
+      out.push(`<${ordered ? "ol" : "ul"}>${items.join("")}</${ordered ? "ol" : "ul"}>`);
+      continue;
+    }
+    const para: string[] = [];
+    while (i < lines.length && !isBlank(lines[i]) && (para.length === 0 || !special(lines[i]))) para.push(lines[i++]);
+    out.push(`<p>${para.map(renderInline).join("<br/>")}</p>`);
+  }
+  return out.join("\n");
 }
 
 export function encodeUrl(text: string) {
@@ -121,49 +182,159 @@ export async function generateHash(text: string, algorithm: "MD5" | "SHA-1" | "S
   return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export function diffLines(a: string, b: string) {
-  const linesA = a.split("\n");
-  const linesB = b.split("\n");
-  const max = Math.max(linesA.length, linesB.length);
-  const rows: { line: number; a: string; b: string; changed: boolean }[] = [];
-  for (let i = 0; i < max; i++) {
-    const la = linesA[i] ?? "";
-    const lb = linesB[i] ?? "";
-    rows.push({ line: i + 1, a: la, b: lb, changed: la !== lb });
+export type DiffRow = { line: number; a: string; b: string; changed: boolean };
+
+// Compares two texts line by line. A line added or removed in the middle only marks that
+// line, instead of marking everything after it.
+export function diffLines(a: string, b: string): DiffRow[] {
+  const A = a.split("\n");
+  const B = b.split("\n");
+  const n = A.length;
+  const m = B.length;
+  const rows: DiffRow[] = [];
+
+  if (n * m > 4_000_000) {
+    // Very large inputs: fall back to a simple same-position comparison.
+    for (let i = 0; i < Math.max(n, m); i++) {
+      const la = A[i] ?? "";
+      const lb = B[i] ?? "";
+      rows.push({ line: i + 1, a: la, b: lb, changed: la !== lb });
+    }
+    return rows;
   }
-  return rows;
+
+  const w = m + 1;
+  const dp = new Uint16Array((n + 1) * w);
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      dp[i * w + j] = A[i] === B[j] ? dp[(i + 1) * w + j + 1] + 1 : Math.max(dp[(i + 1) * w + j], dp[i * w + j + 1]);
+    }
+  }
+
+  const removed: string[] = [];
+  const added: string[] = [];
+  const flush = () => {
+    const pairs = Math.max(removed.length, added.length);
+    for (let k = 0; k < pairs; k++) rows.push({ line: 0, a: removed[k] ?? "", b: added[k] ?? "", changed: true });
+    removed.length = 0;
+    added.length = 0;
+  };
+
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (A[i] === B[j]) {
+      flush();
+      rows.push({ line: 0, a: A[i], b: B[j], changed: false });
+      i++;
+      j++;
+    } else if (dp[(i + 1) * w + j] >= dp[i * w + j + 1]) {
+      removed.push(A[i++]);
+    } else {
+      added.push(B[j++]);
+    }
+  }
+  while (i < n) removed.push(A[i++]);
+  while (j < m) added.push(B[j++]);
+  flush();
+  return rows.map((r, idx) => ({ ...r, line: idx + 1 }));
 }
 
 export function slugify(text: string) {
   return text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Reads CSV the way spreadsheets write it: quoted cells, commas and line breaks inside quotes,
+// doubled quotes, Windows line endings, and comma / semicolon / tab / pipe separators.
+function parseCsv(input: string, delimiter: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cell = "";
+  let inQuotes = false;
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (input[i + 1] === '"') { cell += '"'; i++; } else inQuotes = false;
+      } else cell += ch;
+      continue;
+    }
+    if (ch === '"' && cell === "") inQuotes = true;
+    else if (ch === delimiter) { row.push(cell); cell = ""; }
+    else if (ch === "\n" || ch === "\r") {
+      if (ch === "\r" && input[i + 1] === "\n") i++;
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+    } else cell += ch;
+  }
+  if (cell !== "" || row.length > 0) { row.push(cell); rows.push(row); }
+  return rows;
+}
+
+function detectDelimiter(input: string) {
+  const firstLine = input.split(/\r?\n/, 1)[0] ?? "";
+  let best = ",";
+  let bestCount = 0;
+  for (const d of [",", ";", "\t", "|"]) {
+    let count = 0;
+    let quoted = false;
+    for (const ch of firstLine) {
+      if (ch === '"') quoted = !quoted;
+      else if (ch === d && !quoted) count++;
+    }
+    if (count > bestCount) { best = d; bestCount = count; }
+  }
+  return best;
 }
 
 export function csvToJson(csv: string) {
-  const [headerLine, ...rows] = csv.trim().split("\n");
-  const headers = headerLine.split(",").map((h) => h.trim());
-  const data = rows
-    .filter((r) => r.trim().length)
-    .map((row) => {
-      const cells = row.split(",").map((c) => c.trim());
-      const obj: Record<string, string> = {};
-      headers.forEach((h, i) => (obj[h] = cells[i] ?? ""));
-      return obj;
-    });
+  const src = csv.replace(/^\uFEFF/, "");
+  if (!src.trim()) return "[]";
+  const rows = parseCsv(src, detectDelimiter(src)).filter((r) => r.some((c) => c.trim() !== ""));
+  if (rows.length === 0) return "[]";
+  const used = new Map<string, number>();
+  const headers = rows[0].map((h, i) => {
+    const base = h.trim() || `column_${i + 1}`;
+    const seen = used.get(base) ?? 0;
+    used.set(base, seen + 1);
+    return seen === 0 ? base : `${base}_${seen + 1}`;
+  });
+  const data = rows.slice(1).map((cells) => {
+    const obj: Record<string, string> = {};
+    headers.forEach((h, i) => (obj[h] = (cells[i] ?? "").trim()));
+    return obj;
+  });
   return JSON.stringify(data, null, 2);
 }
 
 const LOREM_WORDS =
-  "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua".split(" ");
+  "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat duis aute irure in reprehenderit voluptate velit esse cillum fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt culpa qui officia deserunt mollit anim id est laborum".split(" ");
+const LOREM_OPENING = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+
+function loremSentence() {
+  const length = 8 + Math.floor(Math.random() * 9);
+  const words = Array.from({ length }, () => LOREM_WORDS[Math.floor(Math.random() * LOREM_WORDS.length)]);
+  if (length > 10) words[Math.floor(length / 2)] += ",";
+  const text = words.join(" ");
+  return text[0].toUpperCase() + text.slice(1) + ".";
+}
+
 export function generateLorem(paragraphs: number) {
+  const count = Math.min(50, Math.max(1, Math.floor(paragraphs) || 1));
   const out: string[] = [];
-  for (let p = 0; p < paragraphs; p++) {
-    const sentence = Array.from({ length: 24 }, () => LOREM_WORDS[Math.floor(Math.random() * LOREM_WORDS.length)]).join(" ");
-    out.push(sentence[0].toUpperCase() + sentence.slice(1) + ".");
+  for (let p = 0; p < count; p++) {
+    const sentences = p === 0 ? [LOREM_OPENING] : [];
+    const total = 4 + Math.floor(Math.random() * 3);
+    while (sentences.length < total) sentences.push(loremSentence());
+    out.push(sentences.join(" "));
   }
   return out.join("\n\n");
 }
