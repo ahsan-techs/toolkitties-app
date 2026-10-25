@@ -18,6 +18,7 @@ export const MINI_TOOL_SLUGS = [
   "pdf-to-jpg",
   "pdf-to-word",
   "esign-pdf",
+  "excel-to-pdf",
   "protect-pdf",
   "unlock-pdf",
   "vat-calculator",
