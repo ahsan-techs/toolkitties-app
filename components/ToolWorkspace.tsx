@@ -11,6 +11,8 @@ import * as pdf from "@/lib/tool-processors/pdf-tools";
 import * as dev from "@/lib/tool-processors/dev-tools";
 import { useRouter } from "next/navigation";
 import { setFileHandoff, consumeFileHandoff } from "@/lib/file-handoff";
+import { runBatchJobs } from "@/lib/batch-runner";
+import { makeZip } from "@/lib/tool-processors/zip";
 
 const IMAGE_MIME: Record<string, string> = {
   "jpg-to-png": "image/png",
@@ -22,6 +24,10 @@ const IMAGE_MIME: Record<string, string> = {
 // automatically the instant a file is dropped — no extra click needed.
 const AUTO_PROCESS_IMAGE = new Set(["jpg-to-png", "png-to-jpg", "webp-to-jpg", "compress-image", "resize-image", "rotate-image", "image-to-base64", "favicon-generator", "svg-to-png", "heic-to-jpg"]);
 const AUTO_PROCESS_PDF = new Set(["compress-pdf", "rotate-pdf", "pdf-page-numbers"]);
+
+// Phase 2: tools where dropping many files at once runs them all through
+// the same settings, concurrently, instead of one file at a time.
+const BATCH_IMAGE_TOOLS = new Set(["compress-image", "resize-image", "rotate-image"]);
 
 // A couple of relevant next steps to suggest once a result is ready, so
 // people don't have to think about what to do next.
@@ -87,6 +93,8 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   const [outputBlob, setOutputBlob] = useState<{ blob: Blob; filename: string; previewImage?: boolean } | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [progress, setProgress] = useState("");
+  const [batchResults, setBatchResults] = useState<{ name: string; blob: Blob }[] | null>(null);
+  const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
   const [opts, setOpts] = useState<Record<string, string>>(() => initialOpts ?? {});
 
   const setOpt = (key: string, value: string) => setOpts((o) => ({ ...o, [key]: value }));
@@ -282,8 +290,66 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
 
     // Auto-process the moment a file lands, for tools whose defaults are
     // already good enough — no extra "click to process" step needed.
+    const isBatchTool = BATCH_IMAGE_TOOLS.has(tool.slug);
+    const isBatchMode = isBatchTool && files.length > 1;
+
+    const computeBatchImage = async (file: File): Promise<{ blob: Blob; name: string }> => {
+      const base = file.name.replace(/\.[^.]+$/, "");
+      if (tool.slug === "compress-image") {
+        const quality = Number(opts.quality || 80) / 100;
+        const maxSide = Number(opts.maxside || 0);
+        const blob = await image.compressImage(file, quality, maxSide);
+        if (blob.size >= file.size) return { blob: file, name: file.name };
+        return { blob, name: `${base}-compressed.jpg` };
+      }
+      if (tool.slug === "resize-image") {
+        const w = Number(opts.width ?? "800") || 0;
+        const h = Number(opts.height ?? "") || 0;
+        const keep = opts.keep !== "false";
+        const blob = await image.resizeImage(file, w, h, keep);
+        return { blob, name: `${base}-resized${image.extForBlob(blob)}` };
+      }
+      const deg = Number(opts.degrees || 90);
+      const blob = await image.rotateImage(file, deg);
+      return { blob, name: `${base}-rotated${image.extForBlob(blob)}` };
+    };
+
+    const doBatchProcess = async () => {
+      setError(null);
+      setNote(null);
+      setBatchResults(null);
+      setProcessing(true);
+      setBatchProgress({ done: 0, total: files.length });
+      try {
+        let done = 0;
+        const results = await runBatchJobs(files, 3, async (file) => {
+          const r = await computeBatchImage(file);
+          done += 1;
+          setBatchProgress({ done, total: files.length });
+          return { name: r.name, blob: r.blob };
+        });
+        setBatchResults(results);
+      } catch (e) {
+        setError(friendlyError(e));
+      } finally {
+        setProcessing(false);
+      }
+    };
+
+    const downloadAllAsZip = async () => {
+      if (!batchResults) return;
+      const entries = await Promise.all(batchResults.map(async (r) => ({ name: r.name, data: new Uint8Array(await r.blob.arrayBuffer()) })));
+      const zipBlob = new Blob([makeZip(entries) as unknown as BlobPart], { type: "application/zip" });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `toolkitties-${tool.slug}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
     useEffect(() => {
-      if (files[0] && AUTO_PROCESS_IMAGE.has(tool.slug)) {
+      if (files[0] && AUTO_PROCESS_IMAGE.has(tool.slug) && !isBatchMode) {
         doProcess();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -293,8 +359,13 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       <Workspace>
         <Dropzone
           accept={tool.slug === "heic-to-jpg" ? "image/heic,image/heif,.heic,.heif" : tool.slug === "svg-to-png" ? "image/svg+xml,.svg" : "image/*"}
-          onFiles={setFiles}
-          label={files[0] ? `Selected: ${files[0].name}` : "Drop an image here, or click to browse"}
+          multiple={isBatchTool}
+          onFiles={(fs) => {
+            setBatchResults(null);
+            setBatchProgress(null);
+            setFiles(fs);
+          }}
+          label={files.length > 1 ? `${files.length} images selected` : files[0] ? `Selected: ${files[0].name}` : isBatchTool ? "Drop one or many images here, or click to browse" : "Drop an image here, or click to browse"}
         />
 
         {tool.slug === "svg-to-png" && (
@@ -339,16 +410,39 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
           <TextField label="Watermark text" value={opts.text || ""} onChange={(v) => setOpt("text", v)} placeholder="Your name or website" />
         )}
 
-        <PrimaryButton onClick={doProcess} disabled={!files[0] || processing}>
-          {tool.slug === "favicon-generator" ? "Create favicons" : "Process image"}
+        <PrimaryButton onClick={isBatchMode ? doBatchProcess : doProcess} disabled={!files[0] || processing}>
+          {isBatchMode ? `Process ${files.length} images` : tool.slug === "favicon-generator" ? "Create favicons" : "Process image"}
         </PrimaryButton>
 
         {processing && <WaveLoader />}
+        {processing && batchProgress && (
+          <p className="text-xs text-slate">⚙️ Processing {batchProgress.done} of {batchProgress.total}…</p>
+        )}
         {error && <ErrorNote message={error} />}
-        {outputBlob && <FileDownload {...outputBlob} />}
-        {note && <ResultNote message={note} />}
-        {outputText && <TextOutput value={outputText} />}
-        <NextSteps />
+        {!isBatchMode && outputBlob && <FileDownload {...outputBlob} />}
+        {!isBatchMode && note && <ResultNote message={note} />}
+        {!isBatchMode && outputText && <TextOutput value={outputText} />}
+
+        {batchResults && (
+          <div className="flex flex-col gap-3 rounded-2xl border border-ink/10 bg-sand/30 p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-ink">✅ {batchResults.length} images ready</p>
+              <button onClick={downloadAllAsZip} className="rounded-full bg-moss px-4 py-2 text-xs font-semibold text-white hover:bg-moss/90">
+                ⬇️ Download all as ZIP
+              </button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {batchResults.map((r, i) => (
+                <div key={i} className="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-xs">
+                  <span className="truncate text-ink">{r.name}</span>
+                  <span className="text-slate">{formatBytes(r.blob.size)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <NextSteps show={!isBatchMode ? undefined : !!batchResults} />
       </Workspace>
     );
   }
