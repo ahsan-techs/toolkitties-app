@@ -2,13 +2,14 @@ import type { Post } from "./types";
 import { pdfPosts } from "./posts-pdf";
 import { morePosts } from "./posts-more";
 import { guidePosts } from "./posts-guides";
+import { comparisonPosts } from "./posts-comparisons";
 import { expansions } from "./posts-expand";
 
 export type { Post, Block, Section, PostCategory } from "./types";
 
 // Newest first. Posts with the same date keep the order they are written in (a stable sort),
 // so the first post in posts-pdf.ts is the featured one on the blog page.
-const merged: Post[] = [...pdfPosts, ...morePosts, ...guidePosts].map((p) => {
+const merged: Post[] = [...pdfPosts, ...morePosts, ...guidePosts, ...comparisonPosts].map((p) => {
   const extra = expansions[p.slug];
   return extra ? { ...p, sections: [...p.sections, ...extra.sections], faqs: [...p.faqs, ...(extra.faqs ?? [])] } : p;
 });
