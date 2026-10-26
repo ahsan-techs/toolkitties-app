@@ -1,6 +1,6 @@
 import { PDFDocument } from "pdf-lib";
 import { openPdf, type PdfPage } from "./pdfjs-loader";
-import { pageToParagraphs, type TextItem } from "./pdf-text";
+import { pageToStructuredParagraphs, type TextItem } from "./pdf-text";
 import { buildDocx, type DocBlock } from "./docx-lite";
 import { encryptPdfDocument } from "./pdf-encrypt";
 
@@ -53,25 +53,41 @@ export async function pdfToJpgPages(
 export async function pdfToDocx(file: File, password: string | undefined, onProgress?: Progress): Promise<Blob> {
   const doc = await openPdf(file, password);
   try {
-    const blocks: DocBlock[] = [];
+    const pagesParas: { text: string; size: number }[][] = [];
     let chars = 0;
     for (let n = 1; n <= doc.numPages; n++) {
       const page = await doc.getPage(n);
       const content = await page.getTextContent();
-      const paragraphs = pageToParagraphs(content.items as TextItem[]);
-      if (n > 1) blocks.push({ type: "pagebreak" });
-      for (const text of paragraphs) {
-        chars += text.length;
-        blocks.push({ type: "p", text });
-      }
+      const paras = pageToStructuredParagraphs(content.items as TextItem[]);
+      pagesParas.push(paras);
+      for (const p of paras) chars += p.text.length;
       page.cleanup();
       onProgress?.(n, doc.numPages);
     }
     if (chars < 10) {
       throw new Error(
-        "No selectable text was found in this PDF. It is probably a scanned document (pictures of pages), and reading those needs text recognition (OCR), which this tool does not do."
+        "No selectable text was found in this PDF — it looks like a scanned document (pictures of pages). Use the PDF OCR tool instead, which reads text out of scanned pages."
       );
     }
+
+    // Body size = the most common paragraph size across the document.
+    // Anything noticeably larger is treated as a heading — a simple,
+    // honest heuristic (not true layout reconstruction, just a readable
+    // structure instead of one flat wall of text).
+    const allSizes = pagesParas.flat().map((p) => Math.round(p.size));
+    const freq = new Map<number, number>();
+    for (const s of allSizes) freq.set(s, (freq.get(s) ?? 0) + 1);
+    const bodySize = [...freq.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 11;
+
+    const blocks: DocBlock[] = [];
+    pagesParas.forEach((paras, n) => {
+      if (n > 0) blocks.push({ type: "pagebreak" });
+      for (const p of paras) {
+        if (p.size >= bodySize * 1.45) blocks.push({ type: "heading", text: p.text, level: 1 });
+        else if (p.size >= bodySize * 1.15) blocks.push({ type: "heading", text: p.text, level: 2 });
+        else blocks.push({ type: "p", text: p.text });
+      }
+    });
     const bytes = buildDocx(blocks);
     return new Blob([bytes as unknown as BlobPart], {
       type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

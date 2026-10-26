@@ -2,7 +2,7 @@ import { makeZip } from "./zip";
 
 // A small, dependency-free .docx writer: paragraphs and page breaks only.
 
-export type DocBlock = { type: "p"; text: string } | { type: "pagebreak" };
+export type DocBlock = { type: "p"; text: string } | { type: "heading"; text: string; level: 1 | 2 } | { type: "pagebreak" };
 
 const XML_HEAD = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
 
@@ -20,6 +20,8 @@ export function buildDocx(blocks: DocBlock[]): Uint8Array {
     .map((b) =>
       b.type === "pagebreak"
         ? '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+        : b.type === "heading"
+        ? `<w:p><w:pPr><w:pStyle w:val="Heading${b.level}"/></w:pPr><w:r><w:t xml:space="preserve">${esc(b.text)}</w:t></w:r></w:p>`
         : `<w:p><w:r><w:t xml:space="preserve">${esc(b.text)}</w:t></w:r></w:p>`
     )
     .join("");
@@ -48,7 +50,10 @@ export function buildDocx(blocks: DocBlock[]): Uint8Array {
       '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults>' +
       '<w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:rPrDefault>' +
       '<w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault>' +
-      "</w:docDefaults></w:styles>",
+      "</w:docDefaults>" +
+      '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:pPr><w:spacing w:before="280" w:after="120"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr></w:style>' +
+      '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:pPr><w:spacing w:before="220" w:after="100"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr></w:style>' +
+      "</w:styles>",
     "word/document.xml":
       XML_HEAD +
       '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' +

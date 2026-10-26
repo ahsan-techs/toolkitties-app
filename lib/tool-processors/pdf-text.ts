@@ -5,6 +5,12 @@ export type TextItem = { str?: string; transform?: number[]; width?: number; hei
 type Line = { y: number; size: number; items: { x: number; w: number; str: string }[]; text: string; left: number; right: number };
 
 export function pageToParagraphs(rawItems: TextItem[]): string[] {
+  return pageToStructuredParagraphs(rawItems).map((p) => p.text);
+}
+
+// Same paragraph grouping as pageToParagraphs, but also reports each
+// paragraph's average font size — used to tell headings from body text.
+export function pageToStructuredParagraphs(rawItems: TextItem[]): { text: string; size: number }[] {
   const items = rawItems.filter(
     (i): i is Required<Pick<TextItem, "str" | "transform">> & TextItem =>
       typeof i.str === "string" && i.str.trim() !== "" && Array.isArray(i.transform) && i.transform.length >= 6
@@ -43,19 +49,23 @@ export function pageToParagraphs(rawItems: TextItem[]): string[] {
   const gaps = kept.slice(1).map((l, i) => kept[i].y - l.y).filter((g) => g > 0).sort((a, b) => a - b);
   const median = gaps.length ? gaps[Math.floor(gaps.length / 2)] : 0;
 
-  const paragraphs: string[] = [];
+  const paragraphs: { text: string; size: number }[] = [];
   let current = kept[0].text;
+  let sizes = [kept[0].size];
   for (let i = 1; i < kept.length; i++) {
     const prev = kept[i - 1];
     const gap = prev.y - kept[i].y;
     const flows =
       median > 0 && gap > 0 && gap <= median * 1.35 && prev.right - prev.left >= Math.max(widest * 0.8, 180) && !/[.!?:;]$/.test(prev.text);
-    if (flows) current += " " + kept[i].text;
-    else {
-      paragraphs.push(current);
+    if (flows) {
+      current += " " + kept[i].text;
+      sizes.push(kept[i].size);
+    } else {
+      paragraphs.push({ text: current, size: sizes.reduce((a, b) => a + b, 0) / sizes.length });
       current = kept[i].text;
+      sizes = [kept[i].size];
     }
   }
-  paragraphs.push(current);
+  paragraphs.push({ text: current, size: sizes.reduce((a, b) => a + b, 0) / sizes.length });
   return paragraphs;
 }

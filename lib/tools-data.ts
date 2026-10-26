@@ -30,7 +30,7 @@ export const toolGroups: ToolGroup[] = [
       { slug: "excel-to-pdf", name: "Excel to PDF", description: "Turn a spreadsheet into a clean, print-ready PDF — no cut-off columns, header row repeats on every page.", icon: "📊", functional: true },
       { slug: "esign-pdf", name: "eSign PDF", description: "Draw your signature, place it on the page, and download a signed PDF — no account, no upload.", icon: "✍️", functional: true },
       { slug: "protect-pdf", name: "Protect PDF", description: "Lock a PDF with a password (AES-256 encryption) before you send it out.", icon: "🔒", functional: true },
-      { slug: "pdf-to-word", name: "PDF to Word (text only)", description: "Copy the text of a PDF into an editable Word document. Images and layout are not kept.", icon: "📝", functional: true },
+      { slug: "pdf-to-word", name: "PDF to Word", description: "Copy a PDF's text into an editable Word document, with headings kept. Images and exact layout are not kept.", icon: "📝", functional: true },
       { slug: "rotate-pdf", name: "Rotate PDF", description: "Fix sideways or upside-down pages in seconds.", icon: "🔄", functional: true },
       { slug: "delete-pdf-pages", name: "Delete PDF Pages", description: "Remove the pages you don't need and keep the rest.", icon: "🗑️", functional: true },
       { slug: "organize-pdf", name: "Organize PDF", description: "Choose the page order you want by typing it, and keep only the pages you list.", icon: "📑", functional: true },
