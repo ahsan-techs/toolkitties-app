@@ -25,6 +25,7 @@ export const toolGroups: ToolGroup[] = [
       { slug: "merge-pdf", name: "Merge PDF", description: "Combine several PDFs into one file. Drag to reorder, pick pages from each file, and download instantly.", icon: "🧩", functional: true },
       { slug: "split-pdf", name: "Split PDF", description: "Extract pages, split every page or every N pages, or cut custom ranges. Pick pages visually with previews.", icon: "✂️", functional: true },
       { slug: "compress-pdf", name: "Compress PDF", description: "Shrink a PDF's file size for easier sharing and uploading.", icon: "🗜️", functional: true },
+      { slug: "ai-pdf-chat", name: "AI PDF Chat", description: "Get an instant summary and ask questions about any PDF — a small AI model runs in your browser, your document never uploads.", icon: "🤖", functional: true },
       { slug: "pdf-ocr", name: "PDF OCR", description: "Pull out text from scanned PDFs or photos — no signup, no page limits, runs fully in your browser.", icon: "🔎", functional: true },
       { slug: "pdf-to-excel", name: "PDF to Excel", description: "Pull tables and text out of a PDF straight into an editable .xlsx — each page becomes a sheet.", icon: "📥", functional: true },
       { slug: "excel-to-pdf", name: "Excel to PDF", description: "Turn a spreadsheet into a clean, print-ready PDF — no cut-off columns, header row repeats on every page.", icon: "📊", functional: true },

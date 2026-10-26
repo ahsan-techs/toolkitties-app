@@ -21,6 +21,7 @@ export const MINI_TOOL_SLUGS = [
   "excel-to-pdf",
   "pdf-to-excel",
   "pdf-ocr",
+  "ai-pdf-chat",
   "protect-pdf",
   "unlock-pdf",
   "vat-calculator",

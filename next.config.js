@@ -16,6 +16,19 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // The AI PDF Chat tool's local AI library (@xenova/transformers) only ever
+  // runs in the browser, where it uses onnxruntime-web — but its source
+  // also references the Node-only onnxruntime-node native binary, which
+  // webpack would otherwise try (and fail) to bundle. Marking it as `false`
+  // tells webpack it's not needed for the client build.
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "onnxruntime-node$": false,
+      sharp$: false,
+    };
+    return config;
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

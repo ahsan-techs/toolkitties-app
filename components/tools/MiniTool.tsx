@@ -25,6 +25,7 @@ const tools: Record<string, ComponentType> = {
   "excel-to-pdf": dynamic(() => import("./ExcelToPdf")),
   "pdf-to-excel": dynamic(() => import("./PdfToExcel")),
   "pdf-ocr": dynamic(() => import("./PdfOcr")),
+  "ai-pdf-chat": dynamic(() => import("./PdfAiChat")),
   "protect-pdf": dynamic(() => import("./ProtectPdf")),
   "unlock-pdf": dynamic(() => import("./UnlockPdf")),
   "vat-calculator": dynamic(() => import("./VatCalculator")),
