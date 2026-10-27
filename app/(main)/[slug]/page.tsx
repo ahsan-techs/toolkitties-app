@@ -8,6 +8,7 @@ import ToolWorkspace from "@/components/ToolWorkspace";
 import ToolsSidebar from "@/components/ToolsSidebar";
 import MobileToolsDrawer from "@/components/MobileToolsDrawer";
 import MiniTool from "@/components/tools/MiniTool";
+import PrivacyBadge from "@/components/PrivacyBadge";
 import { MINI_TOOL_SLUGS } from "@/components/tools/registry";
 import { allTools, findTool, toolGroups } from "@/lib/tools-data";
 import { toolVariants, findVariant, variantsForTool } from "@/lib/tool-variants";
@@ -191,6 +192,8 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
             <h1 className="mt-3 font-display text-3xl font-semibold text-ink md:text-4xl">{displayName}</h1>
             <p className="mt-3 text-base text-slate">{displayDescription}</p>
           </div>
+
+          {tool.functional && <PrivacyBadge />}
 
           <div className={wide ? "tk-workspace-wide" : "tk-workspace"}>
             {tool.functional ? (
