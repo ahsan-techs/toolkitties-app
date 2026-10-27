@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import InstallPrompt from "@/components/InstallPrompt";
 
 export const metadata: Metadata = {
-  title: "Toolkitties — 50+ Free Online Tools, No Signup Required",
+  title: "Toolkitties — 67+ Free Online Tools, No Signup Required",
   description:
     "Compress, convert, and clean up PDFs, images, and text — free, private, and instant. Every tool runs in your browser. No signup, no login.",
   metadataBase: new URL("https://toolkitties.com"),
   openGraph: {
-    title: "Toolkitties — 50+ Free Online Tools",
+    title: "Toolkitties — 67+ Free Online Tools",
     description: "Every tool runs locally in your browser. No signup. No login. Start instantly.",
     url: "https://toolkitties.com",
     siteName: "Toolkitties",
@@ -15,9 +17,18 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Toolkitties — 50+ Free Online Tools",
+    title: "Toolkitties — 67+ Free Online Tools",
     description: "Every tool runs locally in your browser. No signup. No login.",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Toolkitties",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#F5F6F3",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -29,7 +40,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">{children}</body>
+      <body className="font-body antialiased">
+        {children}
+        <ServiceWorkerRegister />
+        <InstallPrompt />
+      </body>
     </html>
   );
 }
