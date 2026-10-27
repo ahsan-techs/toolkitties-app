@@ -189,6 +189,7 @@ export const phase4Batch2: Post[] = [
         blocks: [
           "A JWT's payload is base64-encoded, not encrypted — anyone who has the token can already read its contents without a secret key. That's by design. But the token itself is often a live session credential, and pasting an active auth token into a random online decoder means trusting that site with it, even briefly.",
           { note: "Decoding happens entirely in your browser here — the token is never sent anywhere, which matters if it's a live credential for a system you care about." },
+          "If you're decoding JWTs inside your own code rather than in a browser tab, the same logic this tool uses is also available as a small open-source package: [tiny-jwt-decode](https://github.com/ahsan-techs/tiny-jwt-decode) on GitHub — zero dependencies, about 500 bytes gzipped.",
         ],
       },
     ],
