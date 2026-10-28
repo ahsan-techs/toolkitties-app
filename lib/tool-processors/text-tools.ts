@@ -186,28 +186,39 @@ export type DiffRow = { line: number; a: string; b: string; changed: boolean };
 
 // Compares two texts line by line. A line added or removed in the middle only marks that
 // line, instead of marking everything after it.
-export function diffLines(a: string, b: string): DiffRow[] {
+export type DiffOptions = { ignoreWhitespace?: boolean; ignoreCase?: boolean };
+
+export function diffLines(a: string, b: string, opts: DiffOptions = {}): DiffRow[] {
   const A = a.split("\n");
   const B = b.split("\n");
   const n = A.length;
   const m = B.length;
   const rows: DiffRow[] = [];
 
+  const normalize = (line: string) => {
+    let out = opts.ignoreWhitespace ? line.trim().replace(/\s+/g, " ") : line;
+    if (opts.ignoreCase) out = out.toLowerCase();
+    return out;
+  };
+
   if (n * m > 4_000_000) {
     // Very large inputs: fall back to a simple same-position comparison.
     for (let i = 0; i < Math.max(n, m); i++) {
       const la = A[i] ?? "";
       const lb = B[i] ?? "";
-      rows.push({ line: i + 1, a: la, b: lb, changed: la !== lb });
+      rows.push({ line: i + 1, a: la, b: lb, changed: normalize(la) !== normalize(lb) });
     }
     return rows;
   }
+
+  const NA = opts.ignoreWhitespace || opts.ignoreCase ? A.map(normalize) : A;
+  const NB = opts.ignoreWhitespace || opts.ignoreCase ? B.map(normalize) : B;
 
   const w = m + 1;
   const dp = new Uint16Array((n + 1) * w);
   for (let i = n - 1; i >= 0; i--) {
     for (let j = m - 1; j >= 0; j--) {
-      dp[i * w + j] = A[i] === B[j] ? dp[(i + 1) * w + j + 1] + 1 : Math.max(dp[(i + 1) * w + j], dp[i * w + j + 1]);
+      dp[i * w + j] = NA[i] === NB[j] ? dp[(i + 1) * w + j + 1] + 1 : Math.max(dp[(i + 1) * w + j], dp[i * w + j + 1]);
     }
   }
 
@@ -223,7 +234,7 @@ export function diffLines(a: string, b: string): DiffRow[] {
   let i = 0;
   let j = 0;
   while (i < n && j < m) {
-    if (A[i] === B[j]) {
+    if (NA[i] === NB[j]) {
       flush();
       rows.push({ line: 0, a: A[i], b: B[j], changed: false });
       i++;

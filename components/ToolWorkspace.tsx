@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Tool } from "@/lib/tools-data";
 import Dropzone from "@/components/workspace/Dropzone";
 import { TextOutput, FileDownload } from "@/components/workspace/OutputPanel";
@@ -207,6 +207,71 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // Image tools
   // --------------------------------------------------------------------
   if (["jpg-to-png", "png-to-jpg", "webp-to-jpg", "compress-image", "resize-image", "crop-image", "rotate-image", "image-to-base64", "watermark-image", "favicon-generator", "svg-to-png", "heic-to-jpg"].includes(tool.slug)) {
+    // Interactive crop box (Crop Image only): drag to move, drag the handle to resize.
+    // Stored as fractions (0..1) of the image, then converted to real pixel
+    // coordinates for the numeric fields and the actual crop call.
+    const [cropPreviewUrl, setCropPreviewUrl] = useState<string | null>(null);
+    const [cropNatural, setCropNatural] = useState<{ w: number; h: number } | null>(null);
+    const [cropBox, setCropBox] = useState({ xFrac: 0.1, yFrac: 0.1, wFrac: 0.5, hFrac: 0.5 });
+    const cropBoxRef = useRef(cropBox);
+    cropBoxRef.current = cropBox;
+    const cropContainerRef = useRef<HTMLDivElement>(null);
+    const cropDrag = useRef<"move" | "resize" | null>(null);
+    const cropStart = useRef({ px: 0, py: 0, box: cropBox });
+
+    useEffect(() => {
+      if (tool.slug !== "crop-image" || !files[0]) {
+        setCropPreviewUrl(null);
+        setCropNatural(null);
+        return;
+      }
+      const url = URL.createObjectURL(files[0]);
+      setCropPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [files[0]]);
+
+    const applyCropBoxToOpts = (box: typeof cropBox) => {
+      if (!cropNatural) return;
+      setOpt("x", String(Math.round(box.xFrac * cropNatural.w)));
+      setOpt("y", String(Math.round(box.yFrac * cropNatural.h)));
+      setOpt("width", String(Math.max(1, Math.round(box.wFrac * cropNatural.w))));
+      setOpt("height", String(Math.max(1, Math.round(box.hFrac * cropNatural.h))));
+    };
+
+    const onCropPointerDown = (mode: "move" | "resize") => (e: React.PointerEvent) => {
+      cropDrag.current = mode;
+      cropStart.current = { px: e.clientX, py: e.clientY, box: cropBoxRef.current };
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      e.stopPropagation();
+    };
+    const onCropPointerMove = (e: React.PointerEvent) => {
+      if (!cropDrag.current || !cropContainerRef.current) return;
+      const rect = cropContainerRef.current.getBoundingClientRect();
+      const dxFrac = (e.clientX - cropStart.current.px) / rect.width;
+      const dyFrac = (e.clientY - cropStart.current.py) / rect.height;
+      const start = cropStart.current.box;
+      let next = start;
+      if (cropDrag.current === "move") {
+        next = {
+          ...start,
+          xFrac: Math.min(1 - start.wFrac, Math.max(0, start.xFrac + dxFrac)),
+          yFrac: Math.min(1 - start.hFrac, Math.max(0, start.yFrac + dyFrac)),
+        };
+      } else {
+        next = {
+          ...start,
+          wFrac: Math.min(1 - start.xFrac, Math.max(0.03, start.wFrac + dxFrac)),
+          hFrac: Math.min(1 - start.yFrac, Math.max(0.03, start.hFrac + dyFrac)),
+        };
+      }
+      setCropBox(next);
+      applyCropBoxToOpts(next);
+    };
+    const onCropPointerUp = () => {
+      cropDrag.current = null;
+    };
+
     const doProcess = () =>
       run(async () => {
         const file = files[0];
@@ -392,16 +457,83 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
             <Checkbox label="Keep proportions (the picture is not stretched)" checked={opts.keep !== "false"} onChange={(v) => setOpt("keep", String(v))} />
           </>
         )}
-        {tool.slug === "crop-image" && (
-          <>
-            <div className="grid grid-cols-2 gap-3">
-              <NumberField label="X: pixels from the left" value={opts.x ?? "0"} onChange={(v) => setOpt("x", v)} />
-              <NumberField label="Y: pixels from the top" value={opts.y ?? "0"} onChange={(v) => setOpt("y", v)} />
-              <NumberField label="Width (px)" value={opts.width ?? "300"} onChange={(v) => setOpt("width", v)} />
-              <NumberField label="Height (px)" value={opts.height ?? "300"} onChange={(v) => setOpt("height", v)} />
+        {tool.slug === "crop-image" && cropPreviewUrl && (
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-medium text-ink">Drag the box to move it, drag the bottom-right handle to resize</p>
+            <div
+              ref={cropContainerRef}
+              onPointerMove={onCropPointerMove}
+              onPointerUp={onCropPointerUp}
+              className="relative w-full select-none overflow-hidden rounded-xl border border-ink/15 bg-ink/5"
+              style={cropNatural ? { aspectRatio: `${cropNatural.w} / ${cropNatural.h}` } : undefined}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={cropPreviewUrl}
+                alt="Crop preview"
+                className="pointer-events-none absolute inset-0 h-full w-full"
+                onLoad={(e) => {
+                  const img = e.currentTarget;
+                  const natural = { w: img.naturalWidth, h: img.naturalHeight };
+                  setCropNatural(natural);
+                  setOpt("x", String(Math.round(cropBox.xFrac * natural.w)));
+                  setOpt("y", String(Math.round(cropBox.yFrac * natural.h)));
+                  setOpt("width", String(Math.round(cropBox.wFrac * natural.w)));
+                  setOpt("height", String(Math.round(cropBox.hFrac * natural.h)));
+                }}
+              />
+              <div
+                onPointerDown={onCropPointerDown("move")}
+                className="absolute cursor-move border-2 border-moss bg-moss/10"
+                style={{
+                  left: `${cropBox.xFrac * 100}%`,
+                  top: `${cropBox.yFrac * 100}%`,
+                  width: `${cropBox.wFrac * 100}%`,
+                  height: `${cropBox.hFrac * 100}%`,
+                }}
+              >
+                <div
+                  onPointerDown={onCropPointerDown("resize")}
+                  className="absolute -bottom-2 -right-2 h-4 w-4 cursor-nwse-resize rounded-full border-2 border-white bg-moss"
+                />
+              </div>
             </div>
-            <p className="text-xs text-slate">The crop starts at X and Y and goes right and down. If it reaches past the edge, it is trimmed to fit.</p>
-          </>
+            <div className="grid grid-cols-2 gap-3">
+              <NumberField
+                label="X: pixels from the left"
+                value={opts.x ?? "0"}
+                onChange={(v) => {
+                  setOpt("x", v);
+                  if (cropNatural) setCropBox((b) => ({ ...b, xFrac: Math.min(1 - b.wFrac, Math.max(0, Number(v) / cropNatural.w)) }));
+                }}
+              />
+              <NumberField
+                label="Y: pixels from the top"
+                value={opts.y ?? "0"}
+                onChange={(v) => {
+                  setOpt("y", v);
+                  if (cropNatural) setCropBox((b) => ({ ...b, yFrac: Math.min(1 - b.hFrac, Math.max(0, Number(v) / cropNatural.h)) }));
+                }}
+              />
+              <NumberField
+                label="Width (px)"
+                value={opts.width ?? "300"}
+                onChange={(v) => {
+                  setOpt("width", v);
+                  if (cropNatural) setCropBox((b) => ({ ...b, wFrac: Math.min(1 - b.xFrac, Math.max(0.03, Number(v) / cropNatural.w)) }));
+                }}
+              />
+              <NumberField
+                label="Height (px)"
+                value={opts.height ?? "300"}
+                onChange={(v) => {
+                  setOpt("height", v);
+                  if (cropNatural) setCropBox((b) => ({ ...b, hFrac: Math.min(1 - b.yFrac, Math.max(0.03, Number(v) / cropNatural.h)) }));
+                }}
+              />
+            </div>
+            <p className="text-xs text-slate">Image is {cropNatural ? `${cropNatural.w} × ${cropNatural.h}px` : "loading…"}. The crop is trimmed to fit if it reaches past the edge.</p>
+          </div>
         )}
         {tool.slug === "rotate-image" && (
           <SelectField label="Rotate by" value={opts.degrees || "90"} onChange={(v) => setOpt("degrees", v)} options={[["90", "90° clockwise"], ["180", "180°"], ["270", "90° anticlockwise"]]} />
@@ -567,7 +699,12 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       run(async () => {
         if (tool.slug === "qr-code-generator") {
           if (!inputText.trim()) throw new Error("Enter a link or text first.");
-          const dataUrl = await dev.generateQrDataUrl(inputText);
+          const dataUrl = await dev.generateQrDataUrl(inputText, {
+            size: Number(opts.qrSize || 320),
+            dark: opts.qrDark || "#15171A",
+            light: opts.qrLight || "#F5F6F3",
+            errorCorrectionLevel: (opts.qrEcc as "L" | "M" | "Q" | "H") || "M",
+          });
           const res = await fetch(dataUrl);
           const blob = await res.blob();
           setOutputBlob({ blob, filename: "qr-code.png", previewImage: true });
@@ -585,7 +722,9 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
           return;
         }
         if (tool.slug === "uuid-generator") {
-          setOutputText(dev.generateUuid());
+          const count = Number(opts.count || 1);
+          if (!Number.isFinite(count) || count < 1 || count > 100) throw new Error("Choose between 1 and 100 UUIDs.");
+          setOutputText(dev.generateUuids(count));
           return;
         }
         if (tool.slug === "lorem-ipsum") {
@@ -598,7 +737,33 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
 
     return (
       <Workspace>
-        {tool.slug === "qr-code-generator" && <TextField label="Link or text" value={inputText} onChange={setInputText} placeholder="https://example.com" />}
+        {tool.slug === "qr-code-generator" && (
+          <>
+            <TextField label="Link or text" value={inputText} onChange={setInputText} placeholder="https://example.com" />
+            <SelectField
+              label="Size"
+              value={opts.qrSize || "320"}
+              onChange={(v) => setOpt("qrSize", v)}
+              options={[["200", "200 × 200 px"], ["320", "320 × 320 px"], ["512", "512 × 512 px"], ["1024", "1024 × 1024 px"]]}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+                Foreground color
+                <input type="color" value={opts.qrDark || "#15171A"} onChange={(e) => setOpt("qrDark", e.target.value)} className="h-10 w-full cursor-pointer rounded-lg border border-ink/15 bg-white" />
+              </label>
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+                Background color
+                <input type="color" value={opts.qrLight || "#F5F6F3"} onChange={(e) => setOpt("qrLight", e.target.value)} className="h-10 w-full cursor-pointer rounded-lg border border-ink/15 bg-white" />
+              </label>
+            </div>
+            <SelectField
+              label="Error correction (higher survives more damage/dirt, but denser pattern)"
+              value={opts.qrEcc || "M"}
+              onChange={(v) => setOpt("qrEcc", v)}
+              options={[["L", "Low"], ["M", "Medium (recommended)"], ["Q", "Quartile"], ["H", "High"]]}
+            />
+          </>
+        )}
         {tool.slug === "password-generator" && (
           <>
             <NumberField label="Length (4 to 128)" value={opts.length ?? "16"} onChange={(v) => setOpt("length", v)} />
@@ -612,6 +777,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
           </>
         )}
         {tool.slug === "lorem-ipsum" && <NumberField label="Paragraphs (1 to 50)" value={opts.paragraphs ?? "3"} onChange={(v) => setOpt("paragraphs", v)} />}
+        {tool.slug === "uuid-generator" && <NumberField label="How many (1 to 100)" value={opts.count ?? "1"} onChange={(v) => setOpt("count", v)} />}
 
         <PrimaryButton onClick={doProcess} disabled={processing}>
           Generate
@@ -772,12 +938,21 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // Text diff (two inputs)
   // --------------------------------------------------------------------
   if (tool.slug === "text-diff") {
-    const rows = useMemo(() => text.diffLines(inputText, inputTextB), [inputText, inputTextB]);
+    const ignoreWhitespace = opts.ignoreWhitespace === "true";
+    const ignoreCase = opts.ignoreCase === "true";
+    const rows = useMemo(
+      () => text.diffLines(inputText, inputTextB, { ignoreWhitespace, ignoreCase }),
+      [inputText, inputTextB, ignoreWhitespace, ignoreCase]
+    );
     return (
       <Workspace>
         <div className="grid gap-4 md:grid-cols-2">
           <TextArea label="Original text" value={inputText} onChange={setInputText} />
           <TextArea label="Changed text" value={inputTextB} onChange={setInputTextB} />
+        </div>
+        <div className="flex flex-wrap gap-4">
+          <Checkbox label="Ignore whitespace differences" checked={ignoreWhitespace} onChange={(v) => setOpt("ignoreWhitespace", String(v))} />
+          <Checkbox label="Ignore case" checked={ignoreCase} onChange={(v) => setOpt("ignoreCase", String(v))} />
         </div>
         {(inputText || inputTextB) && (
           <>
@@ -805,35 +980,41 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // Hash generator (async — uses the browser's native crypto API)
   // --------------------------------------------------------------------
   if (tool.slug === "hash-generator") {
-    const [hashResult, setHashResult] = useState("");
+    const ALGOS = ["MD5", "SHA-1", "SHA-256", "SHA-512"] as const;
+    const [hashResults, setHashResults] = useState<Record<string, string>>({});
     useEffect(() => {
-      const algo = (opts.algo || "SHA-256") as "MD5" | "SHA-1" | "SHA-256" | "SHA-512";
       if (!inputText) {
-        setHashResult("");
+        setHashResults({});
         return;
       }
       let cancelled = false;
-      text.generateHash(inputText, algo).then((h) => {
-        if (!cancelled) setHashResult(h);
+      Promise.all(ALGOS.map((a) => text.generateHash(inputText, a))).then((results) => {
+        if (cancelled) return;
+        const next: Record<string, string> = {};
+        ALGOS.forEach((a, i) => (next[a] = results[i]));
+        setHashResults(next);
       });
       return () => {
         cancelled = true;
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inputText, opts.algo]);
+    }, [inputText]);
 
     return (
       <Workspace>
         <TextArea label="Text to hash" value={inputText} onChange={setInputText} />
-        <SelectField
-          label="Algorithm"
-          value={opts.algo || "SHA-256"}
-          onChange={(v) => setOpt("algo", v)}
-          options={[["MD5", "MD5"], ["SHA-1", "SHA-1"], ["SHA-256", "SHA-256"], ["SHA-512", "SHA-512"]]}
-        />
-        {hashResult && <TextOutput value={hashResult} />}
-        {!inputText && <p className="text-center text-sm text-slate">Start typing above and your hash appears instantly.</p>}
-        <NextSteps show={!!hashResult} />
+        {Object.keys(hashResults).length > 0 && (
+          <div className="flex flex-col gap-3">
+            {ALGOS.map((a) => (
+              <div key={a}>
+                <p className="mb-1 text-xs font-medium text-slate">{a}</p>
+                <TextOutput value={hashResults[a]} />
+              </div>
+            ))}
+          </div>
+        )}
+        {!inputText && <p className="text-center text-sm text-slate">Start typing above — MD5, SHA-1, SHA-256 and SHA-512 all appear instantly, together.</p>}
+        <NextSteps show={Object.keys(hashResults).length > 0} />
       </Workspace>
     );
   }

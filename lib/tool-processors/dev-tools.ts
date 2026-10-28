@@ -1,7 +1,19 @@
 import QRCode from "qrcode";
 
-export async function generateQrDataUrl(text: string) {
-  return QRCode.toDataURL(text, { width: 320, margin: 1, color: { dark: "#15171A", light: "#F5F6F3" } });
+export type QrOptions = {
+  size?: number;
+  dark?: string;
+  light?: string;
+  errorCorrectionLevel?: "L" | "M" | "Q" | "H";
+};
+
+export async function generateQrDataUrl(text: string, opts: QrOptions = {}) {
+  return QRCode.toDataURL(text, {
+    width: opts.size ?? 320,
+    margin: 1,
+    errorCorrectionLevel: opts.errorCorrectionLevel ?? "M",
+    color: { dark: opts.dark ?? "#15171A", light: opts.light ?? "#F5F6F3" },
+  });
 }
 
 // ---------------------------------------------------------------- Passwords
@@ -51,6 +63,12 @@ export function generatePassword(
 
 export function generateUuid() {
   return crypto.randomUUID();
+}
+
+// Generates `count` (1–100) v4 UUIDs, one per line.
+export function generateUuids(count: number): string {
+  const n = Math.min(100, Math.max(1, Math.floor(count) || 1));
+  return Array.from({ length: n }, () => crypto.randomUUID()).join("\n");
 }
 
 // ---------------------------------------------------------------- Unit converter
