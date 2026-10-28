@@ -9,6 +9,7 @@ import ToolsSidebar from "@/components/ToolsSidebar";
 import MobileToolsDrawer from "@/components/MobileToolsDrawer";
 import MiniTool from "@/components/tools/MiniTool";
 import PrivacyBadge from "@/components/PrivacyBadge";
+import EthicalAd from "@/components/EthicalAd";
 import { MINI_TOOL_SLUGS } from "@/components/tools/registry";
 import { allTools, findTool, toolGroups } from "@/lib/tools-data";
 import { toolVariants, findVariant, variantsForTool } from "@/lib/tool-variants";
@@ -218,6 +219,8 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
               </div>
             )}
           </div>
+
+          {tool.functional && <EthicalAd />}
 
           {/* Direct answer: a short, quotable definition for search and AI answer engines */}
           <section className="mx-auto mt-14 max-w-2xl">

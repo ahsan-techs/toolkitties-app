@@ -7,6 +7,7 @@ import BackgroundShapes from "@/components/BackgroundShapes";
 import PostBody from "@/components/blog/PostBody";
 import PostCard from "@/components/blog/PostCard";
 import ToolCta from "@/components/blog/ToolCta";
+import EthicalAd from "@/components/EthicalAd";
 import ShareBar from "@/components/blog/ShareBar";
 import { allPosts, findPost, readingMinutes, relatedPosts } from "@/lib/blog";
 
@@ -157,6 +158,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 </div>
               </section>
 
+              <EthicalAd />
               <ToolCta toolSlug={post.tool} />
               <ShareBar url={url} title={post.title} />
             </article>
