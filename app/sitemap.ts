@@ -47,6 +47,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: base, changeFrequency: "daily", priority: 1 },
     { url: `${base}/all-tools`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${base}/blog`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${base}/ilovepdf-alternative-no-limits`, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/smallpdf-alternative-free`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/about`, changeFrequency: "yearly", priority: 0.5 },
     { url: `${base}/contact`, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.3 },
