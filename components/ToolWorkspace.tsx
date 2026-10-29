@@ -95,6 +95,9 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   const [progress, setProgress] = useState("");
   const [batchResults, setBatchResults] = useState<{ name: string; blob: Blob }[] | null>(null);
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
+  // Phase 9: a genuine, measured processing time + the input size that never
+  // had to be uploaded — computed from the real run, never a fabricated number.
+  const [perfInfo, setPerfInfo] = useState<{ seconds: number; inputBytes: number } | null>(null);
   const [opts, setOpts] = useState<Record<string, string>>(() => initialOpts ?? {});
 
   const setOpt = (key: string, value: string) => setOpts((o) => ({ ...o, [key]: value }));
@@ -118,8 +121,12 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     setProcessing(true);
     setOutputText(null);
     setOutputBlob(null);
+    setPerfInfo(null);
+    const startedAt = performance.now();
+    const inputBytes = files.reduce((sum, f) => sum + f.size, 0);
     try {
       await fn();
+      setPerfInfo({ seconds: (performance.now() - startedAt) / 1000, inputBytes });
     } catch (e) {
       setError(friendlyError(e));
     } finally {
@@ -421,7 +428,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     }, [files]);
 
     return (
-      <Workspace>
+      <Workspace perf={perfInfo}>
         <Dropzone
           accept={tool.slug === "heic-to-jpg" ? "image/heic,image/heif,.heic,.heif" : tool.slug === "svg-to-png" ? "image/svg+xml,.svg" : "image/*"}
           multiple={isBatchTool}
@@ -637,7 +644,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     }, [files]);
 
     return (
-      <Workspace>
+      <Workspace perf={perfInfo}>
         <Dropzone
           accept="application/pdf"
           onFiles={setFiles}
@@ -736,7 +743,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       });
 
     return (
-      <Workspace>
+      <Workspace perf={perfInfo}>
         {tool.slug === "qr-code-generator" && (
           <>
             <TextField label="Link or text" value={inputText} onChange={setInputText} placeholder="https://example.com" />
@@ -867,7 +874,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     }, [tool.slug, opts, unitKind, unitFrom, unitTo, pctMode, colorRgb, colorHex, unitList]);
 
     return (
-      <Workspace>
+      <Workspace perf={perfInfo}>
         {tool.slug === "unit-converter" && (
           <div className="grid gap-3 md:grid-cols-2">
             <SelectField
@@ -945,7 +952,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       [inputText, inputTextB, ignoreWhitespace, ignoreCase]
     );
     return (
-      <Workspace>
+      <Workspace perf={perfInfo}>
         <div className="grid gap-4 md:grid-cols-2">
           <TextArea label="Original text" value={inputText} onChange={setInputText} />
           <TextArea label="Changed text" value={inputTextB} onChange={setInputTextB} />
@@ -1001,7 +1008,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     }, [inputText]);
 
     return (
-      <Workspace>
+      <Workspace perf={perfInfo}>
         <TextArea label="Text to hash" value={inputText} onChange={setInputText} />
         {Object.keys(hashResults).length > 0 && (
           <div className="flex flex-col gap-3">
@@ -1023,7 +1030,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // Default: generic text-in / text-out tools
   // --------------------------------------------------------------------
   return (
-    <Workspace>
+    <Workspace perf={perfInfo}>
       <TextArea label="Paste your text" value={inputText} onChange={setInputText} />
 
       {tool.slug === "case-converter" && (
@@ -1053,8 +1060,18 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
 // Small shared field components
 // ==========================================================================
 
-function Workspace({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col gap-5 rounded-3xl border border-ink/10 bg-white p-6 md:p-8">{children}</div>;
+function Workspace({ children, perf }: { children: React.ReactNode; perf?: { seconds: number; inputBytes: number } | null }) {
+  return (
+    <div className="flex flex-col gap-5 rounded-3xl border border-ink/10 bg-white p-6 md:p-8">
+      {children}
+      {perf && (
+        <p className="text-center text-xs text-slate">
+          ⚡ Processed in {perf.seconds < 0.1 ? "<0.1" : perf.seconds.toFixed(1)}s, locally
+          {perf.inputBytes > 0 ? ` — no ${formatBytes(perf.inputBytes)} upload needed` : ""}.
+        </p>
+      )}
+    </div>
+  );
 }
 
 function PrimaryButton({ children, onClick, disabled }: { children: React.ReactNode; onClick: () => void; disabled?: boolean }) {
