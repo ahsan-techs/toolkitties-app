@@ -8,12 +8,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // paper/ink/slate stay fixed (the page background and body text never
+        // change) — only the accent trio below is swappable per theme, via
+        // CSS variables set in globals.css under [data-theme="..."].
         paper: "#F5F6F3",
         ink: "#15171A",
-        moss: "#1F5C4C",
-        gold: "#C7862B",
-        sand: "#EAE7DE",
         slate: "#5B5D63",
+        moss: "rgb(var(--color-moss) / <alpha-value>)",
+        gold: "rgb(var(--color-gold) / <alpha-value>)",
+        sand: "rgb(var(--color-sand) / <alpha-value>)",
       },
       fontFamily: {
         display: ["var(--font-display)"],

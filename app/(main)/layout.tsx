@@ -32,6 +32,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `try{var s=localStorage.getItem("toolkitties-sidebar");var c=s?s==="collapsed":window.innerWidth<1024;if(c)document.documentElement.setAttribute("data-sidebar","collapsed")}catch(e){}`,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("tk-theme");if(t&&t!=="default")document.documentElement.setAttribute("data-theme",t)}catch(e){}`,
+          }}
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"

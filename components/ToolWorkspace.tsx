@@ -12,6 +12,8 @@ import * as dev from "@/lib/tool-processors/dev-tools";
 import { useRouter } from "next/navigation";
 import { setFileHandoff, consumeFileHandoff } from "@/lib/file-handoff";
 import { runBatchJobs } from "@/lib/batch-runner";
+import SuccessBurst from "@/components/SuccessBurst";
+import RatingWidget from "@/components/RatingWidget";
 import { makeZip } from "@/lib/tool-processors/zip";
 
 const IMAGE_MIME: Record<string, string> = {
@@ -98,6 +100,9 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // Phase 9: a genuine, measured processing time + the input size that never
   // had to be uploaded — computed from the real run, never a fabricated number.
   const [perfInfo, setPerfInfo] = useState<{ seconds: number; inputBytes: number } | null>(null);
+  // Phase 12: bumped on every successful run so SuccessBurst remounts (and
+  // therefore replays its animation) each time, via a React `key`.
+  const [successTick, setSuccessTick] = useState(0);
   const [opts, setOpts] = useState<Record<string, string>>(() => initialOpts ?? {});
 
   const setOpt = (key: string, value: string) => setOpts((o) => ({ ...o, [key]: value }));
@@ -127,6 +132,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     try {
       await fn();
       setPerfInfo({ seconds: (performance.now() - startedAt) / 1000, inputBytes });
+      setSuccessTick((n) => n + 1);
     } catch (e) {
       setError(friendlyError(e));
     } finally {
@@ -428,7 +434,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     }, [files]);
 
     return (
-      <Workspace perf={perfInfo}>
+      <Workspace perf={perfInfo} toolSlug={tool.slug} successTick={successTick}>
         <Dropzone
           accept={tool.slug === "heic-to-jpg" ? "image/heic,image/heif,.heic,.heif" : tool.slug === "svg-to-png" ? "image/svg+xml,.svg" : "image/*"}
           multiple={isBatchTool}
@@ -644,7 +650,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     }, [files]);
 
     return (
-      <Workspace perf={perfInfo}>
+      <Workspace perf={perfInfo} toolSlug={tool.slug} successTick={successTick}>
         <Dropzone
           accept="application/pdf"
           onFiles={setFiles}
@@ -743,7 +749,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       });
 
     return (
-      <Workspace perf={perfInfo}>
+      <Workspace perf={perfInfo} toolSlug={tool.slug} successTick={successTick}>
         {tool.slug === "qr-code-generator" && (
           <>
             <TextField label="Link or text" value={inputText} onChange={setInputText} placeholder="https://example.com" />
@@ -874,7 +880,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     }, [tool.slug, opts, unitKind, unitFrom, unitTo, pctMode, colorRgb, colorHex, unitList]);
 
     return (
-      <Workspace perf={perfInfo}>
+      <Workspace perf={perfInfo} toolSlug={tool.slug} successTick={successTick}>
         {tool.slug === "unit-converter" && (
           <div className="grid gap-3 md:grid-cols-2">
             <SelectField
@@ -952,7 +958,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
       [inputText, inputTextB, ignoreWhitespace, ignoreCase]
     );
     return (
-      <Workspace perf={perfInfo}>
+      <Workspace perf={perfInfo} toolSlug={tool.slug} successTick={successTick}>
         <div className="grid gap-4 md:grid-cols-2">
           <TextArea label="Original text" value={inputText} onChange={setInputText} />
           <TextArea label="Changed text" value={inputTextB} onChange={setInputTextB} />
@@ -1008,7 +1014,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
     }, [inputText]);
 
     return (
-      <Workspace perf={perfInfo}>
+      <Workspace perf={perfInfo} toolSlug={tool.slug} successTick={successTick}>
         <TextArea label="Text to hash" value={inputText} onChange={setInputText} />
         {Object.keys(hashResults).length > 0 && (
           <div className="flex flex-col gap-3">
@@ -1030,7 +1036,7 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
   // Default: generic text-in / text-out tools
   // --------------------------------------------------------------------
   return (
-    <Workspace perf={perfInfo}>
+    <Workspace perf={perfInfo} toolSlug={tool.slug} successTick={successTick}>
       <TextArea label="Paste your text" value={inputText} onChange={setInputText} />
 
       {tool.slug === "case-converter" && (
@@ -1060,16 +1066,28 @@ export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initi
 // Small shared field components
 // ==========================================================================
 
-function Workspace({ children, perf }: { children: React.ReactNode; perf?: { seconds: number; inputBytes: number } | null }) {
+function Workspace({
+  children,
+  perf,
+  toolSlug,
+  successTick,
+}: {
+  children: React.ReactNode;
+  perf?: { seconds: number; inputBytes: number } | null;
+  toolSlug?: string;
+  successTick?: number;
+}) {
   return (
     <div className="flex flex-col gap-5 rounded-3xl border border-ink/10 bg-white p-6 md:p-8">
       {children}
+      {perf && successTick ? <SuccessBurst key={successTick} /> : null}
       {perf && (
         <p className="text-center text-xs text-slate">
           ⚡ Processed in {perf.seconds < 0.1 ? "<0.1" : perf.seconds.toFixed(1)}s, locally
           {perf.inputBytes > 0 ? ` — no ${formatBytes(perf.inputBytes)} upload needed` : ""}.
         </p>
       )}
+      {perf && toolSlug && <RatingWidget toolSlug={toolSlug} />}
     </div>
   );
 }

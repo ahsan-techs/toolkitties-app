@@ -7,6 +7,38 @@
   --font-body: "Inter", sans-serif;
 }
 
+/* Phase 11: Workspace accent themes. Each sets the moss/gold/sand trio —
+   buttons, borders, focus rings, links, dropzone highlights all read from
+   these — while the page background and body text stay fixed, so every
+   existing "bg-white" card stays legible under every theme. Default (no
+   data-theme attribute) matches the original site colors exactly. */
+[data-theme="cyberpunk"] {
+  --color-moss: 0 212 255; /* neon cyan */
+  --color-gold: 255 46 166; /* neon pink */
+  --color-sand: 214 235 240;
+}
+[data-theme="dracula"] {
+  --color-moss: 189 147 249; /* purple */
+  --color-gold: 255 121 198; /* pink */
+  --color-sand: 230 222 245;
+}
+[data-theme="coffee"] {
+  --color-moss: 111 78 55; /* coffee brown */
+  --color-gold: 192 133 82; /* caramel */
+  --color-sand: 237 224 208;
+}
+[data-theme="rosegold"] {
+  --color-moss: 216 140 154; /* rose */
+  --color-gold: 232 180 188; /* pastel pink-gold */
+  --color-sand: 251 228 232;
+}
+:root,
+[data-theme="default"] {
+  --color-moss: 31 92 76;
+  --color-gold: 199 134 43;
+  --color-sand: 234 231 222;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -17,8 +49,26 @@ body {
 }
 
 ::selection {
-  background: #1F5C4C;
+  background: rgb(var(--color-moss));
   color: #F5F6F3;
+}
+
+/* Phase 12: a single, subtle ripple when a task finishes — not a mascot,
+   not a confetti burst, just a clean signal that the work is done. */
+@keyframes tk-ripple {
+  0% { transform: scale(0.6); opacity: 0.55; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+.tk-success-ripple {
+  animation: tk-ripple 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+@keyframes tk-check-pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.tk-success-check {
+  animation: tk-check-pop 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
 .container-content {
