@@ -79,7 +79,13 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   return {};
 }
 
-export default function ToolPage({ params }: { params: { slug: string } }) {
+export default function ToolPage({ params, searchParams }: { params: { slug: string }; searchParams: { text?: string } }) {
+  // Phase: AI/deep-link support — a short text snippet can be handed to a
+  // text-based tool via ?text=..., so a chat assistant (or anyone) can link
+  // straight to a pre-filled result instead of "drop your file here".
+  // Capped well under any URL length limit; file-based tools ignore this —
+  // there's no practical way to pass real file bytes through a URL.
+  const initialText = typeof searchParams?.text === "string" ? searchParams.text.slice(0, 5000) : undefined;
   if (RESERVED_SLUGS.has(params.slug)) notFound();
 
   const found = findTool(params.slug);
@@ -207,7 +213,7 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
               ) : (MINI_TOOL_SLUGS as readonly string[]).includes(tool.slug) ? (
                 <MiniTool slug={tool.slug} />
               ) : (
-                <ToolWorkspace key={tool.slug} tool={tool} initialOpts={variant?.presetOpts} />
+                <ToolWorkspace key={tool.slug} tool={tool} initialOpts={variant?.presetOpts} initialText={initialText} />
               )
             ) : (
               <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-ink/15 bg-sand/40 p-12 text-center">

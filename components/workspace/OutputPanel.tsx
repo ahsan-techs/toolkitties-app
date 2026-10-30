@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import P2PShare from "@/components/P2PShare";
 
 export function TextOutput({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
@@ -51,6 +52,9 @@ export function FileDownload({ blob, filename, previewImage }: { blob: Blob; fil
       ) : (
         <span className="rounded-full bg-moss/50 px-6 py-3 text-sm font-semibold text-paper">Preparing download…</span>
       )}
+      <div className="w-full max-w-sm">
+        <P2PShare blob={blob} filename={filename} />
+      </div>
     </div>
   );
 }

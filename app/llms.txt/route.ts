@@ -14,7 +14,9 @@ export function GET() {
 
   lines.push("# Toolkitties");
   lines.push("");
-  lines.push("> Toolkitties is a free collection of 60+ everyday file and text tools (PDF, image, text, developer utilities and calculators) that run entirely in the user's web browser. Files are processed on the user's own device using client-side code and are never uploaded to a server. No signup or login is required.");
+  lines.push("> Toolkitties is a free collection of 67+ everyday file and text tools (PDF, image, text, developer utilities and calculators) that run entirely in the user's web browser. Files are processed on the user's own device using client-side code and are never uploaded to a server. No signup or login is required.");
+  lines.push("");
+  lines.push(`For full detail on every tool (use cases, FAQs): ${base}/llms-full.txt`);
   lines.push("");
   lines.push("## Key facts");
   lines.push("- Privacy: all processing happens locally in the browser; no file uploads, no accounts.");

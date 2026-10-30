@@ -82,14 +82,14 @@ const NEXT_STEPS: Record<string, { slug: string; label: string }[]> = {
   "timestamp-converter": [{ slug: "age-calculator", label: "🎂 Try the age calculator" }],
 };
 
-export default function ToolWorkspace({ tool, initialOpts }: { tool: Tool; initialOpts?: Record<string, string> }) {
+export default function ToolWorkspace({ tool, initialOpts, initialText }: { tool: Tool; initialOpts?: Record<string, string>; initialText?: string }) {
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Generic bags of state reused across tool kinds.
   const [files, setFiles] = useState<File[]>([]);
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState(initialText ?? "");
   const [inputTextB, setInputTextB] = useState("");
   const [outputText, setOutputText] = useState<string | null>(null);
   const [outputBlob, setOutputBlob] = useState<{ blob: Blob; filename: string; previewImage?: boolean } | null>(null);
