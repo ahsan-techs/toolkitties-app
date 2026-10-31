@@ -1,6 +1,7 @@
 import type { Locale } from "@/lib/i18n/config";
 import { localeLabels } from "@/lib/i18n/config";
 import MotionRoot from "@/components/motion/MotionRoot";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 // Each language folder (app/es, app/ar, ...) is its own root layout so the
 // <html> tag carries the correct lang and dir. Crawlers, browsers, and screen
@@ -19,6 +20,7 @@ export default function LocaleRootLayout({ locale, children }: { locale: Locale;
       </head>
       <body className="font-body antialiased">
         <MotionRoot>{children}</MotionRoot>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

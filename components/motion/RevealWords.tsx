@@ -10,12 +10,28 @@ type RevealWordsProps = {
   className?: string;
   /** Seconds before the first word starts. */
   delay?: number;
+  /**
+   * "view" (default): animates in via whileInView, and replays whenever the
+   * heading scrolls back into view — meant for headings further down the page.
+   * "mount": animates in immediately once on mount via `animate`, no
+   * viewport/IntersectionObserver involved at all. Use this for anything
+   * above the fold (e.g. the hero H1): whileInView depends on the element's
+   * position relative to a shrunk viewport box, which for a tall hero can
+   * fail to ever fire on short viewports or slow hydration — leaving the
+   * text stuck at its "initial" (invisible, translated out of its clipped
+   * box) state forever. "mount" can't have that failure mode.
+   */
+  triggerOn?: "view" | "mount";
 };
 
-// Headline reveal: each word rises out of a mask, one after another. Replays whenever
-// the heading scrolls back into view. Screen readers get the full text once.
-export default function RevealWords({ text, className, delay = 0 }: RevealWordsProps) {
+// Headline reveal: each word rises out of a mask, one after another. Screen
+// readers get the full text once regardless of mode.
+export default function RevealWords({ text, className, delay = 0, triggerOn = "view" }: RevealWordsProps) {
   const words = text.split(" ");
+  const motionProps =
+    triggerOn === "mount"
+      ? { initial: { y: "115%" }, animate: { y: "0%" } }
+      : { initial: { y: "115%" }, whileInView: { y: "0%" }, viewport: { once: false, amount: "some" as const, margin: "0px 0px -10% 0px" } };
 
   return (
     <LazyMotion features={domAnimation}>
@@ -28,9 +44,7 @@ export default function RevealWords({ text, className, delay = 0 }: RevealWordsP
                 <m.span
                   data-motion
                   className="inline-block"
-                  initial={{ y: "115%" }}
-                  whileInView={{ y: "0%" }}
-                  viewport={{ once: false, amount: "some", margin: "0px 0px -10% 0px" }}
+                  {...motionProps}
                   transition={{ duration: 0.8, delay: delay + i * 0.06, ease: EASE }}
                 >
                   {word}

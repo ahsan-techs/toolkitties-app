@@ -63,6 +63,7 @@ export default function HeroSearch() {
               text="Every file tool you reach for, in one clean workspace."
               className="font-display text-5xl font-bold leading-[1.02] tracking-tight text-ink md:text-7xl md:leading-[0.98]"
               delay={0.05}
+              triggerOn="mount"
             />
           </h1>
           <p className="hero-rise mx-auto mt-8 max-w-xl text-base leading-relaxed text-slate md:mt-10 md:text-lg" style={{ animationDelay: "180ms" }}>
