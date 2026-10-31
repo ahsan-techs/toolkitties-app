@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LazyMotion, domAnimation, m, useScroll, useTransform } from "framer-motion";
 import { allTools } from "@/lib/tools-data";
+import RevealWords from "@/components/motion/RevealWords";
 
 const workingCount = allTools.filter((t) => t.functional).length;
 
@@ -48,11 +49,21 @@ export default function HeroSearch() {
           >
             100% free: {workingCount} working tools, zero installs
           </p>
-          <h1
-            className="hero-rise mx-auto mt-5 max-w-2xl font-display text-4xl font-semibold leading-[1.18] text-ink [text-wrap:balance] md:text-5xl md:leading-[1.15]"
-            style={{ animationDelay: "90ms" }}
-          >
-            Every file tool you reach for, in one clean workspace.
+          <h1 className="relative mx-auto mt-5 max-w-4xl [text-wrap:balance]">
+            {/* Oversized, heavily blurred ghost copy of the headline sitting behind the real
+                one — the layered "glow type" look big product-marketing sites use for depth.
+                aria-hidden + select-none so it never reaches assistive tech or text selection. */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 -z-10 select-none font-display text-6xl font-bold leading-[0.95] text-moss/10 blur-xl md:text-8xl"
+            >
+              Every file tool you reach for, in one clean workspace.
+            </span>
+            <RevealWords
+              text="Every file tool you reach for, in one clean workspace."
+              className="font-display text-5xl font-bold leading-[1.02] tracking-tight text-ink md:text-7xl md:leading-[0.98]"
+              delay={0.05}
+            />
           </h1>
           <p className="hero-rise mx-auto mt-8 max-w-xl text-base leading-relaxed text-slate md:mt-10 md:text-lg" style={{ animationDelay: "180ms" }}>
             Compress PDFs, convert images, and clean up text — processed on your own device, gone the moment you close the tab.

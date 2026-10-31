@@ -40,9 +40,9 @@ export default function TranslatedHomePage({ locale }: { locale: Locale }) {
       <LocaleHeader locale={locale} englishHref="/" localizedHrefs={localizedHrefs} />
       <main dir={dir}>
         <section className="container-content py-16 text-center">
-          <span className="rounded-full bg-moss/10 px-3 py-1.5 text-xs font-semibold text-moss">{t.heroKicker}</span>
-          <h1 className="mx-auto mt-5 max-w-2xl font-display text-4xl font-semibold text-ink md:text-5xl">{t.heroTitle}</h1>
-          <p className="mx-auto mt-4 max-w-xl text-base text-slate">{t.heroSubtitle}</p>
+          <span className="rounded-full bg-moss/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-moss">{t.heroKicker}</span>
+          <h1 className="mx-auto mt-5 max-w-3xl font-display text-5xl font-bold leading-[1.02] tracking-tight text-ink [text-wrap:balance] md:text-7xl md:leading-[0.98]">{t.heroTitle}</h1>
+          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate md:mt-8 md:text-lg">{t.heroSubtitle}</p>
         </section>
 
         <section className="container-content flex flex-col gap-14 pb-20">
