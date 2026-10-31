@@ -61,6 +61,31 @@ const nextConfig = {
         ["/faq", "/#faq"],
         ["/blogs", "/blog"],
       ].map(([source, destination]) => ({ source, destination, permanent: true })),
+      // Leftover URLs Google indexed from the site's earlier WordPress install
+      // (default "Uncategorized" category, the sample "Hello World" post, the
+      // default sample page, feeds, wp-admin, etc). None of these exist in the
+      // current app, so without a redirect they'd just 404 — a 301 to the
+      // homepage instead tells Google to drop the old URL (and carries over
+      // any link equity), which clears out thin/duplicate content faster than
+      // a plain 404 does.
+      {
+        source: "/category/:path*",
+        destination: "/",
+        permanent: true,
+      },
+      ...[
+        ["/hello-world", "/"],
+        ["/sample-page", "/"],
+        ["/feed", "/"],
+        ["/comments/feed", "/"],
+        ["/wp-login.php", "/"],
+        ["/wp-admin", "/"],
+        ["/wp-admin/:path*", "/"],
+        ["/wp-content/:path*", "/"],
+        ["/wp-includes/:path*", "/"],
+        ["/tag/:path*", "/blog"],
+        ["/author/:path*", "/blog"],
+      ].map(([source, destination]) => ({ source, destination, permanent: true })),
     ];
   },
 };
