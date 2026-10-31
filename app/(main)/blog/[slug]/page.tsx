@@ -87,7 +87,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       <div className="bl-progress" aria-hidden="true" />
       <div className="relative isolate overflow-x-clip">
         <BackgroundShapes />
-        <main className="container-content py-10 md:py-14">
+        <main id="main-content" className="container-content py-10 md:py-14">
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
           <nav aria-label="Breadcrumb" className="text-sm text-slate">

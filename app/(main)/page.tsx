@@ -24,7 +24,7 @@ export default function Home() {
       {/* isolate + overflow-x-clip keep the soft background shapes behind the content and inside the page width */}
       <div className="relative isolate overflow-x-clip">
         <BackgroundShapes />
-        <main>
+        <main id="main-content">
           <HeroSearch />
           <FreeBanner />
           <ToolMarquee />

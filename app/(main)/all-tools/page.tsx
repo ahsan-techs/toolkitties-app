@@ -24,7 +24,7 @@ export default function AllToolsPage() {
       <Navbar />
       <div className="relative isolate overflow-x-clip">
         <BackgroundShapes />
-        <main className="container-content py-12 md:py-16">
+        <main id="main-content" className="container-content py-12 md:py-16">
           <div className="mx-auto mb-10 max-w-2xl text-center">
             <h1 className="font-display text-4xl font-semibold leading-tight text-ink md:text-5xl">All tools</h1>
             <p className="mt-4 text-base text-slate md:text-lg">

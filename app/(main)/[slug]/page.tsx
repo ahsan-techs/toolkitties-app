@@ -178,7 +178,7 @@ export default function ToolPage({ params, searchParams }: { params: { slug: str
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       <Navbar />
-      <main className="container-content flex gap-10 py-10 md:py-14">
+      <main id="main-content" className="container-content flex gap-10 py-10 md:py-14">
         <ToolsSidebar currentSlug={tool.slug} />
 
         <div className="min-w-0 flex-1">

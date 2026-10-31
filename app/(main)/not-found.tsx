@@ -18,7 +18,7 @@ export default function NotFound() {
   return (
     <>
       <Navbar />
-      <main className="container-content flex flex-col items-center gap-4 py-24 text-center">
+      <main id="main-content" className="container-content flex flex-col items-center gap-4 py-24 text-center">
         <span className="text-4xl" aria-hidden="true">🧭</span>
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold">Error 404</p>
         <h1 className="font-display text-3xl font-semibold text-ink md:text-4xl">We couldn&apos;t find that page</h1>

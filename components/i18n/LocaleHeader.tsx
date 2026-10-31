@@ -2,6 +2,7 @@ import Link from "next/link";
 import LanguageMenu from "@/components/i18n/LanguageMenu";
 import { locales, localeLabels, type Locale } from "@/lib/i18n/config";
 import { uiStrings } from "@/lib/i18n/ui-translations";
+import SkipLink from "@/components/SkipLink";
 
 export default function LocaleHeader({
   locale,
@@ -16,7 +17,9 @@ export default function LocaleHeader({
   const dir = localeLabels[locale].dir;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/10 bg-paper/90 backdrop-blur" dir={dir}>
+    <>
+      <SkipLink />
+      <header className="sticky top-0 z-50 border-b border-ink/10 bg-paper/90 backdrop-blur" dir={dir}>
       <div className="container-content flex h-16 items-center justify-between gap-4">
         <Link href={`/${locale}`} className="flex items-center gap-2">
           <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -41,5 +44,6 @@ export default function LocaleHeader({
         </div>
       </div>
     </header>
+    </>
   );
 }

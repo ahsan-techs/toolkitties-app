@@ -108,7 +108,7 @@ export default function TranslatedToolPage({ locale, slug }: { locale: Locale; s
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       <LocaleHeader locale={locale} englishHref={`/${baseSlug}`} localizedHrefs={localizedHrefs} />
-      <main className="container-content py-10 md:py-14" dir={dir}>
+      <main id="main-content" className="container-content py-10 md:py-14" dir={dir}>
         <nav className="mb-6 text-sm text-slate">
           <Link href={`/${locale}`} className="hover:text-moss">{t.home}</Link>
           <span className="mx-2">/</span>

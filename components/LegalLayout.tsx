@@ -15,7 +15,7 @@ export default function LegalLayout({
   return (
     <>
       <Navbar />
-      <main className="container-content py-14 md:py-20">
+      <main id="main-content" className="container-content py-14 md:py-20">
         <header className="max-w-3xl">
           <p className="inline-block rounded-full border border-moss/20 bg-white/60 px-4 py-1.5 text-sm font-medium text-moss">
             Last updated: {LAST_UPDATED}

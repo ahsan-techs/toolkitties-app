@@ -15,7 +15,7 @@ export default function SharedPage({ searchParams }: { searchParams: { peer?: st
   return (
     <>
       <Navbar />
-      <main className="container-content flex min-h-[60vh] flex-col items-center justify-center py-16">
+      <main id="main-content" className="container-content flex min-h-[60vh] flex-col items-center justify-center py-16">
         {peerId ? (
           <ReceiveShare peerId={peerId} expectedName={searchParams?.name} />
         ) : (

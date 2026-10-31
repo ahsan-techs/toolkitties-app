@@ -41,7 +41,7 @@ export default function BlogIndex() {
       <Navbar />
       <div className="relative isolate overflow-x-clip">
         <BackgroundShapes />
-        <main className="container-content py-12 md:py-16">
+        <main id="main-content" className="container-content py-12 md:py-16">
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
           <header className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Guides</p>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import ThemeSwitcher from "./ThemeSwitcher";
 import InstallModal from "./InstallModal";
+import SkipLink from "./SkipLink";
 
 const catalogGroups = [
   { label: "Tools Catalog", href: "/#tools", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
@@ -34,7 +35,9 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header data-scrolled={scrolled} className="glass-nav sticky top-0 z-50">
+    <>
+      <SkipLink />
+      <header data-scrolled={scrolled} className="glass-nav sticky top-0 z-50">
       <div className="container-content flex h-16 items-center justify-between">
         <a href="/" aria-label="Toolkitties home" className="flex items-center gap-2.5">
           <svg width="34" height="34" viewBox="0 0 26 26" fill="none" aria-hidden="true">
@@ -118,5 +121,6 @@ export default function Navbar() {
         </nav>
       )}
     </header>
+    </>
   );
 }

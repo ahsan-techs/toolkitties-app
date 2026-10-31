@@ -36,7 +36,7 @@ export default function Page() {
   return (
     <>
       <Navbar />
-      <main className="container-content py-14 md:py-20">
+      <main id="main-content" className="container-content py-14 md:py-20">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
         <header className="max-w-3xl">

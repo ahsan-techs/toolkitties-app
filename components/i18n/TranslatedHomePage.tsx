@@ -38,7 +38,7 @@ export default function TranslatedHomePage({ locale }: { locale: Locale }) {
   return (
     <>
       <LocaleHeader locale={locale} englishHref="/" localizedHrefs={localizedHrefs} />
-      <main dir={dir}>
+      <main id="main-content" dir={dir}>
         <section className="container-content py-16 text-center">
           <span className="rounded-full bg-moss/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-moss">{t.heroKicker}</span>
           <h1 className="mx-auto mt-5 max-w-3xl font-display text-5xl font-bold leading-[1.02] tracking-tight text-ink [text-wrap:balance] md:text-7xl md:leading-[0.98]">{t.heroTitle}</h1>
