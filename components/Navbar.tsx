@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ThemeSwitcher from "./ThemeSwitcher";
+import InstallModal from "./InstallModal";
 
 const catalogGroups = [
   { label: "Tools Catalog", href: "/#tools", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
@@ -86,6 +87,7 @@ export default function Navbar() {
             <span className="hidden xl:inline">100% Free. No Signup. Start Instantly.</span>
             <span className="xl:hidden">100% Free</span>
           </a>
+          <InstallModal />
           <ThemeSwitcher />
           <button
             type="button"

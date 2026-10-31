@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
-import InstallPrompt from "@/components/InstallPrompt";
 import ThemeScript from "@/components/ThemeScript";
 
 export const metadata: Metadata = {
@@ -45,7 +44,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-body antialiased">
         {children}
         <ServiceWorkerRegister />
-        <InstallPrompt />
       </body>
     </html>
   );
