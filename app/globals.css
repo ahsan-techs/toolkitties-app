@@ -32,7 +32,13 @@
   --color-gold: 232 180 188; /* pastel pink-gold */
   --color-sand: 251 228 232;
 }
-:root,
+/* :not([data-theme]) (not just bare :root) is required here: :root always
+   matches <html> regardless of which theme is set, so an unconditional
+   ":root, [data-theme=\"default\"]" selector would win the cascade over
+   every theme above it (same specificity, declared later in the file) and
+   silently force every theme back to default — which is exactly what was
+   happening before this fix. */
+:root:not([data-theme]),
 [data-theme="default"] {
   --color-moss: 31 92 76;
   --color-gold: 199 134 43;

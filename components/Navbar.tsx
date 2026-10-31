@@ -60,7 +60,13 @@ export default function Navbar() {
               onMouseEnter={() => setOpenMenu(group.label)}
               onMouseLeave={() => setOpenMenu(null)}
             >
-              <button type="button" className="nav-pill" aria-haspopup="true" aria-expanded={openMenu === group.label}>
+              <button
+                type="button"
+                className="nav-pill"
+                aria-haspopup="true"
+                aria-expanded={openMenu === group.label}
+                onClick={() => setOpenMenu((v) => (v === group.label ? null : group.label))}
+              >
                 {group.label}
               </button>
               {openMenu === group.label && (
