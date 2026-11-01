@@ -14,6 +14,7 @@ export default function TermsPage() {
       title="Terms of Service"
       lead="The simple rules for using Toolkitties. Please read them before you use the tools."
       sections={termsSections}
+      path="/terms"
     />
   );
 }

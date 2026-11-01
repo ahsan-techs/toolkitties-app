@@ -112,6 +112,18 @@ export const privacySections: LegalSection[] = [
     ],
   },
   {
+    id: "california",
+    title: "Additional notice for California residents (CCPA/CPRA)",
+    paragraphs: [
+      "If you are a California resident, state law gives you some specific rights over personal information collected about you. Here is how those line up with what we actually collect.",
+    ],
+    bullets: [
+      "We do not sell your personal information, and we do not share it for cross-context behavioural advertising. There is nothing to opt out of, because this never happens in the first place.",
+      "The only personal information we have is what you send us if you email us or use the contact form — your email address and the message itself.",
+      `You can ask us what we hold about you, ask us to delete it, or ask us to correct it, by emailing ${CONTACT_EMAIL}. We will not treat you differently for exercising these rights.`,
+    ],
+  },
+  {
     id: "children",
     title: "Children's privacy",
     paragraphs: [

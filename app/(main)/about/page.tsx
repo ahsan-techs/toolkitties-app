@@ -43,6 +43,15 @@ export default function AboutPage() {
       name: "Toolkitties",
       url: SITE_URL,
       email: CONTACT_EMAIL,
+      logo: `${SITE_URL}/icon`,
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          email: CONTACT_EMAIL,
+          contactType: "customer support",
+          url: `${SITE_URL}/contact`,
+        },
+      ],
     },
   ];
 

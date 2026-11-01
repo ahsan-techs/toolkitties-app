@@ -2,13 +2,32 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FeedbackForm from "@/components/FeedbackForm";
-import { CONTACT_EMAIL } from "@/lib/site-config";
+import { CONTACT_EMAIL, SITE_URL } from "@/lib/site-config";
+
+const title = "Contact and Feedback | Toolkitties";
+const description = "Contact Toolkitties: report a broken tool, suggest a new one, or send feedback. We read every message.";
+const url = `${SITE_URL}/contact`;
 
 export const metadata: Metadata = {
-  title: "Contact and Feedback | Toolkitties",
-  description:
-    "Contact Toolkitties: report a broken tool, suggest a new one, or send feedback. We read every message.",
-  alternates: { canonical: "https://toolkitties.com/contact" },
+  title,
+  description,
+  alternates: { canonical: url },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  name: title,
+  description,
+  url,
+  isPartOf: { "@type": "WebSite", name: "Toolkitties", url: SITE_URL },
+  about: {
+    "@type": "Organization",
+    name: "Toolkitties",
+    url: SITE_URL,
+    email: CONTACT_EMAIL,
+    contactPoint: [{ "@type": "ContactPoint", email: CONTACT_EMAIL, contactType: "customer support" }],
+  },
 };
 
 const reasons = [
@@ -22,6 +41,7 @@ export default function ContactPage() {
     <>
       <Navbar />
       <main id="main-content" className="container-content py-14 md:py-20">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <header className="max-w-3xl">
           <p className="inline-block rounded-full border border-moss/20 bg-white/60 px-4 py-1.5 text-sm font-medium text-moss">
             Contact and feedback

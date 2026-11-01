@@ -15,6 +15,7 @@ export default function PrivacyPage() {
       title="Privacy Policy"
       lead="Plain answers about what happens to your files and your information when you use Toolkitties."
       sections={privacySections}
+      path="/privacy"
     />
   );
 }

@@ -1,21 +1,35 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { LAST_UPDATED } from "@/lib/site-config";
+import { LAST_UPDATED, LAST_UPDATED_ISO, SITE_URL } from "@/lib/site-config";
 import type { LegalSection } from "@/lib/legal-content";
 
 export default function LegalLayout({
   title,
   lead,
   sections,
+  path,
 }: {
   title: string;
   lead: string;
   sections: LegalSection[];
+  /** URL path this page lives at, e.g. "/privacy" — used for the WebPage schema's url/@id. */
+  path: string;
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    description: lead,
+    url: `${SITE_URL}${path}`,
+    dateModified: LAST_UPDATED_ISO,
+    isPartOf: { "@type": "WebSite", name: "Toolkitties", url: SITE_URL },
+  };
+
   return (
     <>
       <Navbar />
       <main id="main-content" className="container-content py-14 md:py-20">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <header className="max-w-3xl">
           <p className="inline-block rounded-full border border-moss/20 bg-white/60 px-4 py-1.5 text-sm font-medium text-moss">
             Last updated: {LAST_UPDATED}
