@@ -20,7 +20,7 @@ export function GET() {
   lines.push("");
   lines.push("## Key facts");
   lines.push("- Privacy: all processing happens locally in the browser; no file uploads, no accounts.");
-  lines.push("- Pricing: completely free. There are no paid plans, subscriptions or hidden fees, and no signup is needed.");
+  lines.push("- Pricing: every tool is free to use, with no signup and nothing gated behind payment. An optional monthly support subscription exists for people who want to help cover hosting costs; it does not unlock anything the free tools don’t already have.");
   lines.push(`- Languages: English plus ${locales.map((l) => localeLabels[l].english).join(", ")}.`);
   lines.push(`- Homepage: ${base}`);
   lines.push("");

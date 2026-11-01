@@ -8,7 +8,7 @@ import Reveal from "@/components/motion/Reveal";
 const faqs = [
   {
     q: "Is Toolkitties really free?",
-    a: "Yes. Every tool on Toolkitties is 100% free to use, with no account, no daily limit and no paid plans.",
+    a: "Yes. Every tool on Toolkitties is 100% free to use, with no account and no daily limit. There’s an optional way to support the project financially, but nothing on the site is gated behind payment.",
   },
   {
     q: "Do my files get uploaded to a server?",
@@ -32,7 +32,7 @@ const faqs = [
   },
   {
     q: "Are there any hidden charges or subscriptions?",
-    a: "No. Toolkitties has no subscriptions, no trials and no hidden fees. Every tool is free, and we never ask for card details.",
+    a: "No hidden charges. Every tool is free to use and never asks for card details. There is an optional monthly support subscription for people who want to help cover hosting costs, but it’s entirely voluntary and doesn’t unlock anything the free tools don’t already have.",
   },
 ];
 

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 const principles = [
-  { icon: "🆓", title: "Free, really", copy: "No account, no trial and no paid plan. You open a tool and use it." },
+  { icon: "🆓", title: "Free, really", copy: "No account, no trial, and nothing gated behind payment. You open a tool and use it — supporting the project is entirely optional." },
   { icon: "🔒", title: "Private by design", copy: "Our tools process files in your browser, so your documents are not uploaded to a Toolkitties server." },
   { icon: "🎯", title: "Honest about limits", copy: "We say what each tool does and does not do. For example, PDF to Word copies text only, and Unlock PDF needs the password." },
   { icon: "⚡", title: "Simple and fast", copy: "No installs, no pop-ups and no waiting for an email. It works on a phone, tablet or computer." },

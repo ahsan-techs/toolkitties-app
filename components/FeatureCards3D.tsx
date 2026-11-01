@@ -136,7 +136,7 @@ export default function FeatureCards3D() {
             <FreeArt />
             <h3 className="f3d-title">Free, start to finish</h3>
             <p className="f3d-copy">Every tool is free to use. There is no paywall waiting at the end of your task.</p>
-            <Ticks items={["No signup or login", "No daily limits", "No paid plans"]} />
+            <Ticks items={["No signup or login", "No daily limits", "Nothing gated by payment"]} />
           </TiltCard>
         </Reveal>
         <Reveal y={36} delay={0.1}>

@@ -1,7 +1,8 @@
-const points = ["No signup or login", "No daily limits", "No subscriptions", "No hidden fees"];
+const points = ["No signup or login", "No daily limits", "Nothing gated by payment", "No hidden fees"];
 
-// One card that replaces the old pricing section: it tells every visitor right away
-// that the whole site is free.
+// One card that tells every visitor right away that the whole site is free —
+// the optional Support section further down is a voluntary way to chip in,
+// never a requirement to use any tool.
 export default function FreeBanner() {
   return (
     <section id="free" aria-labelledby="free-title" className="container-content py-6">
@@ -13,7 +14,8 @@ export default function FreeBanner() {
               Every tool here is free. Forever.
             </h2>
             <p className="mt-3 text-sm text-paper/80 md:text-base">
-              There are no paid plans, no trials and no card details to enter. Open a tool and use it.
+              No trial, no card details needed, nothing gated behind payment. Open a tool and use it — if you’d like to{" "}
+              <a href="#support" className="underline hover:no-underline">support the project</a>, that’s entirely optional.
             </p>
             <a
               href="#tools"

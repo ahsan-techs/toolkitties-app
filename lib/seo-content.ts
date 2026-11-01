@@ -88,7 +88,7 @@ export function generateFaqs(tool: Tool, group: ToolGroup): { q: string; a: stri
   const common: { q: string; a: string }[] = [
     {
       q: `Is ${name} free to use?`,
-      a: `Yes. ${name} is 100% free, with no signup, no daily limit and no paid plans.`,
+      a: `Yes. ${name} is 100% free, with no signup and no daily limit, and nothing is gated behind payment.`,
     },
     {
       q: `Do I need to create an account to use ${name}?`,
@@ -261,7 +261,7 @@ export function generateDirectAnswer(name: string, description: string, kind: st
   if (fit) return fit;
   const fallback = candidates.find((c) => wordCount(c) <= 50) ?? opening;
   if (wordCount(fallback) >= 40) return fallback;
-  const pad = " It is free to use, has no paid plans, and works on any modern browser on desktop and mobile.";
+  const pad = " It is free to use, nothing is gated behind payment, and it works on any modern browser on desktop and mobile.";
   const padded = fallback + pad;
   return wordCount(padded) <= 50 ? padded : fallback;
 }
@@ -269,7 +269,7 @@ export function generateDirectAnswer(name: string, description: string, kind: st
 // Short, factual statements that are easy to quote.
 export function generateQuickFacts(group: ToolGroup, kind: string): { label: string; value: string }[] {
   return [
-    { label: "Price", value: "Free, with no paid plans" },
+    { label: "Price", value: "Free, nothing gated by payment" },
     { label: "Account", value: "No signup or login needed" },
     { label: "Where it runs", value: "In your web browser" },
     {

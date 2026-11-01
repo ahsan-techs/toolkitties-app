@@ -1,86 +1,77 @@
-const plans = [
+// Toolkitties is free for everyone, with no caps and no account — that's true for every
+// visitor, not just a "free tier." This section is a genuinely optional way to chip in
+// and help cover hosting, so the same honest line about the tools stays true going
+// forward: nothing here is gated behind a payment, and nothing on this page claims
+// otherwise. The two paid links are real Lemon Squeezy checkout pages for people who
+// want to support the project monthly — not a feature unlock.
+const tiers = [
   {
-    name: "Starter Framework",
-    price: "$0",
-    period: "/forever",
-    tagline: "Everything you need for occasional use.",
-    features: ["Standard browser-core tools", "3 daily actions", "Files never leave your device", "No account required"],
-    cta: "Use Instantly",
-    href: "#tools",
-    highlighted: false,
-  },
-  {
-    name: "Ultimate Pro Bundle",
+    name: "Supporter",
     price: "$6.99",
     period: "/month",
-    tagline: "For anyone who lives in these tools daily.",
-    features: [
-      "Uncapped access to every tool",
-      "Multi-thread browser processing engine",
-      "Priority operations queue",
-      "No file size caps",
-    ],
-    cta: "Upgrade to Pro",
+    tagline: "A monthly thank-you that helps cover hosting.",
     href: "https://toolkitties.lemonsqueezy.com/checkout/buy/2ae43375-d5a4-4a8f-af75-2ec53e9127ac",
+    cta: "Become a supporter",
     highlighted: true,
   },
   {
-    name: "Business Matrix",
+    name: "Business supporter",
     price: "$12.99",
     period: "/month",
-    tagline: "For teams and studios sharing one workspace.",
-    features: ["Everything in Pro", "Multi-seat environment", "Open developer API modules", "Priority support"],
-    cta: "Talk to Sales",
+    tagline: "For a team that relies on these tools and wants to give back more.",
     href: "https://toolkitties.lemonsqueezy.com/checkout/buy/5297cdd8-584f-4d8a-a6c3-67217113d80a",
+    cta: "Become a business supporter",
     highlighted: false,
   },
 ];
 
 export default function PricingSection() {
   return (
-    <section id="pricing" className="container-content py-20">
+    <section id="support" className="container-content py-20">
       <div className="mx-auto max-w-xl text-center">
-        <h2 className="font-display text-3xl font-semibold text-ink md:text-4xl">Simple pricing, no surprises</h2>
-        <p className="mt-3 text-base text-slate">Start free. Upgrade only when you actually need more.</p>
-        <p className="mt-2 text-xs text-slate">Prices are in US dollars — your bank or card provider converts to your local currency at checkout.</p>
+        <h2 className="font-display text-3xl font-semibold text-ink md:text-4xl">Support Toolkitties</h2>
+        <p className="mt-3 text-base text-slate">
+          Every tool here is free, for everyone, with no caps and no account — that doesn’t change. If Toolkitties has saved you time
+          and you’d like to help keep it running, you can chip in below. It’s entirely optional.
+        </p>
       </div>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-3">
-        {plans.map((plan) => (
+      <div className="mx-auto mt-12 grid max-w-3xl gap-6 md:grid-cols-2">
+        {tiers.map((tier) => (
           <div
-            key={plan.name}
+            key={tier.name}
             className={`flex flex-col rounded-3xl border p-8 ${
-              plan.highlighted ? "border-moss bg-ink text-paper shadow-xl md:-translate-y-3" : "border-ink/10 bg-white text-ink"
+              tier.highlighted ? "border-moss bg-ink text-paper shadow-xl" : "border-ink/10 bg-white text-ink"
             }`}
           >
-            {plan.highlighted && (
-              <span className="mb-4 w-fit rounded-full bg-moss px-3 py-1 text-xs font-semibold text-paper">Most popular</span>
-            )}
-            <h3 className="font-display text-xl font-semibold">{plan.name}</h3>
-            <p className={`mt-1 text-sm ${plan.highlighted ? "text-paper/85" : "text-slate"}`}>{plan.tagline}</p>
+            <h3 className="font-display text-xl font-semibold">{tier.name}</h3>
+            <p className={`mt-1 text-sm ${tier.highlighted ? "text-paper/85" : "text-slate"}`}>{tier.tagline}</p>
             <div className="mt-6 flex items-baseline gap-1">
-              <span className="font-display text-4xl font-semibold">{plan.price}</span>
-              <span className={`text-sm ${plan.highlighted ? "text-paper/80" : "text-slate"}`}>{plan.period}</span>
+              <span className="font-display text-4xl font-semibold">{tier.price}</span>
+              <span className={`text-sm ${tier.highlighted ? "text-paper/80" : "text-slate"}`}>{tier.period}</span>
             </div>
-            <ul className="mt-6 flex flex-1 flex-col gap-3">
-              {plan.features.map((f) => (
-                <li key={f} className={`flex items-start gap-2 text-sm ${plan.highlighted ? "text-paper/90" : "text-ink/80"}`}>
-                  <span className={plan.highlighted ? "text-gold" : "text-moss"}>✓</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
+            <p className={`mt-4 text-sm ${tier.highlighted ? "text-paper/80" : "text-slate"}`}>
+              You’re not unlocking anything extra — every tool is already fully open to you. This just helps pay for hosting so it
+              stays that way. Cancel anytime.
+            </p>
             <a
-              href={plan.href}
+              href={tier.href}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`mt-8 rounded-full px-5 py-3 text-center text-sm font-semibold transition ${
-                plan.highlighted ? "bg-paper text-ink hover:bg-sand" : "bg-ink text-paper hover:bg-ink/85"
+                tier.highlighted ? "bg-paper text-ink hover:bg-sand" : "bg-ink text-paper hover:bg-ink/85"
               }`}
             >
-              {plan.cta}
+              {tier.cta}
             </a>
           </div>
         ))}
       </div>
+
+      <p className="mx-auto mt-8 max-w-xl text-center text-xs text-slate">
+        Prices are in US dollars — your bank or card provider converts to your local currency at checkout. Payments are processed by Lemon
+        Squeezy, our merchant of record.
+      </p>
     </section>
   );
 }

@@ -8,7 +8,7 @@ import SkipLink from "./SkipLink";
 
 const catalogGroups = [
   { label: "Tools Catalog", href: "/#tools", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
-  { label: "Always Free", href: "/#free", items: ["Every tool is free", "No signup or login", "No daily limits", "No subscriptions"] },
+  { label: "Always Free", href: "/#free", items: ["Every tool is free", "No signup or login", "No daily limits", "Nothing gated by payment"] },
   { label: "Privacy & Security", href: "/#tools", items: ["Runs 100% in your browser", "Files never touch a server", "GDPR-friendly by design"] },
 ];
 

@@ -45,7 +45,7 @@ const icons: Record<string, ReactNode> = {
 export default function WhyChoose() {
   const count = allTools.filter((t) => t.functional).length;
   const points = [
-    { icon: "free", title: "Free, really", text: "Every tool is free to use. There is no account, no daily limit, no trial and no paid plan." },
+    { icon: "free", title: "Free, really", text: "Every tool is free to use, for everyone. There is no account, no daily limit and no trial — supporting the project is entirely optional." },
     { icon: "lock", title: "Files stay on your device", text: "Tools run inside your browser, so your PDFs, images and text are not uploaded to our servers." },
     { icon: "bolt", title: "No signup, no install", text: "Open a tool and use it right away. There is nothing to download and no login to remember." },
     { icon: "grid", title: `${count} tools in one place`, text: "PDF, image, text, developer and business tools sit together, so you do not need a new site for each job." },

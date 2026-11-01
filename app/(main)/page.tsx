@@ -6,6 +6,7 @@ import ToolGroupSection from "@/components/ToolGroupSection";
 import ScrollFeatureRows from "@/components/ScrollFeatureRows";
 import ScaleTracker from "@/components/ScaleTracker";
 import FeatureCards3D from "@/components/FeatureCards3D";
+import PricingSection from "@/components/PricingSection";
 import FeedbackCta from "@/components/FeedbackCta";
 import Footer from "@/components/Footer";
 import HomeGeo, { HomeSchema } from "@/components/HomeGeo";
@@ -40,6 +41,7 @@ export default function Home() {
             <ScaleTracker />
           </Reveal>
           <FeatureCards3D />
+          <PricingSection />
           <FeedbackCta />
           <HomeGeo />
           <WhyChoose />
