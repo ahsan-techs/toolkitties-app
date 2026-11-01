@@ -26,6 +26,9 @@ export default function Dropzone({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={label}
       onDragOver={(e) => {
         e.preventDefault();
         setDragging(true);
@@ -37,7 +40,17 @@ export default function Dropzone({
         handleFiles(e.dataTransfer.files);
       }}
       onClick={() => inputRef.current?.click()}
-      className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-14 text-center transition ${
+      onKeyDown={(e) => {
+        // Drag-and-drop zones built on a <div> aren't natively keyboard-operable the
+        // way a real <button> is — without this, anyone navigating by keyboard (or a
+        // screen reader user) could see this control but never actually open the file
+        // picker from it, on every tool that uses this component.
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          inputRef.current?.click();
+        }
+      }}
+      className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-14 text-center outline-none transition focus-visible:border-moss ${
         dragging ? "border-moss bg-moss/5" : "border-ink/15 bg-sand/40 hover:border-moss/50"
       }`}
     >
