@@ -5,6 +5,13 @@ import Link from "next/link";
 import ThemeSwitcher from "./ThemeSwitcher";
 import InstallModal from "./InstallModal";
 import SkipLink from "./SkipLink";
+import LanguageMenu from "./i18n/LanguageMenu";
+import { locales, localeLabels } from "@/lib/i18n/config";
+
+const languageItems: { href: string; label: string; active?: boolean }[] = [
+  { href: "/", label: "English", active: true },
+  ...locales.map((l) => ({ href: `/${l}`, label: localeLabels[l].native })),
+];
 
 const catalogGroups = [
   { label: "Tools Catalog", href: "/#tools", items: ["Document & PDF Suite", "Image & Media", "Text & Data", "Calculators"] },
@@ -16,6 +23,7 @@ const mobileLinks = [
   { href: "/all-tools", label: "All Tools" },
   { href: "/blog", label: "Guides and tutorials" },
   { href: "/#free", label: "Always free" },
+  { href: "/accessibility", label: "Accessibility" },
   { href: "/privacy", label: "Privacy Policy" },
   { href: "/terms", label: "Terms of Service" },
   { href: "/contact", label: "Contact and feedback" },
@@ -96,6 +104,9 @@ export default function Navbar() {
             <span className="hidden xl:inline">100% Free. No Signup. Start Instantly.</span>
             <span className="xl:hidden">100% Free</span>
           </a>
+          <div className="hidden lg:block">
+            <LanguageMenu current="🌐 English" items={languageItems} />
+          </div>
           <InstallModal />
           <ThemeSwitcher />
           <button
@@ -118,6 +129,21 @@ export default function Navbar() {
               {l.label}
             </a>
           ))}
+          <div className="mt-2 border-t border-ink/10 pt-3">
+            <p className="px-3 text-xs font-semibold uppercase tracking-wide text-slate">Language</p>
+            <div className="mt-1 flex flex-wrap gap-2 px-3 py-2">
+              {languageItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`rounded-full border px-3 py-1.5 text-sm ${item.active ? "border-moss bg-moss/10 font-semibold text-moss" : "border-ink/15 text-ink/80"}`}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </div>
         </nav>
       )}
     </header>

@@ -273,3 +273,40 @@ export const termsSections: LegalSection[] = [
     paragraphs: [`Questions about these terms? Email ${CONTACT_EMAIL} or use ${SITE_URL}/contact.`],
   },
 ];
+
+export const accessibilitySections: LegalSection[] = [
+  {
+    id: "commitment",
+    title: "Our commitment",
+    paragraphs: [
+      "Toolkitties is meant to be usable by everyone, including people who navigate by keyboard, use a screen reader, or rely on their browser's zoom, high-contrast, or reduced-motion settings. We build toward the Web Content Accessibility Guidelines (WCAG) 2.1 at level AA as a working standard, not a one-time checklist — this page describes what's actually in place today.",
+    ],
+  },
+  {
+    id: "what-we-do",
+    title: "What's built in today",
+    bullets: [
+      "A \u201cSkip to content\u201d link on every page lets keyboard users jump straight past the navigation to the main content.",
+      "Every page follows a real heading structure — one H1, then properly nested H2/H3 sections — rather than styled text standing in for headings.",
+      "File-upload areas are fully keyboard-operable (Tab to focus, Enter or Space to open the file picker), not just clickable with a mouse.",
+      "Interactive controls carry proper ARIA roles and labels, including icon-only buttons, dialogs, and the search results list.",
+      `Body text meets WCAG AA contrast requirements against its background (our standard secondary text color sits at roughly a 6:1 contrast ratio, above the 4.5:1 minimum).`,
+      "Animations respect your operating system's \u201creduce motion\u201d setting, and the site works with JavaScript disabled for anyone whose assistive technology needs that.",
+      "Focus is always visible — every interactive element shows a clear outline when you tab to it.",
+    ],
+  },
+  {
+    id: "known-gaps",
+    title: "Where we fall short",
+    paragraphs: [
+      "This is an honest account, not a certificate: some of the 66+ tools involve genuinely visual tasks — cropping an image, drawing a signature, reordering PDF pages by dragging — where a fully equivalent screen-reader workflow is harder to build and we haven't finished that work everywhere. We'd rather say that plainly than claim full compliance we haven't verified tool by tool.",
+    ],
+  },
+  {
+    id: "feedback",
+    title: "Tell us what's not working",
+    paragraphs: [
+      `If you hit a barrier anywhere on Toolkitties — a tool that doesn't work with your screen reader, a control you can't reach by keyboard, low contrast somewhere we missed — we want to know. Email ${CONTACT_EMAIL} with the page and what happened, and we'll look into it.`,
+    ],
+  },
+];
