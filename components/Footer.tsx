@@ -51,6 +51,7 @@ export default function Footer() {
         <nav aria-label="Footer" className="flex flex-wrap justify-center gap-x-5 gap-y-2">
           <Link href="/#free" className="hover:text-moss">Free forever</Link>
           <Link href="/#support" className="hover:text-moss">Support us</Link>
+          <Link href="/apps" className="hover:text-moss">Get the app</Link>
           <Link href="/all-tools" className="hover:text-moss">All tools</Link>
           <Link href="/blog" className="hover:text-moss">Guides</Link>
           <Link href="/about" className="hover:text-moss">About</Link>

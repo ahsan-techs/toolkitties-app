@@ -46,6 +46,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: base, changeFrequency: "daily", priority: 1 },
     { url: `${base}/all-tools`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${base}/apps`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${base}/apps/desktop`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/apps/android`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/apps/ios`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/blog`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${base}/ilovepdf-alternative-no-limits`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/smallpdf-alternative-free`, changeFrequency: "monthly", priority: 0.8 },

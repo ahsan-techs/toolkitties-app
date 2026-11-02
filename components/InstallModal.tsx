@@ -124,7 +124,7 @@ export default function InstallModal() {
             ) : isIOS ? (
               <ol className="mt-5 space-y-2 text-sm text-ink">
                 <li className="flex gap-2">
-                  <span className="font-semibold text-moss">1.</span> Tap the <strong>Share</strong> icon <span aria-hidden="true">⬆️</span> in Safari's toolbar.
+                  <span className="font-semibold text-moss">1.</span> Tap the <strong>Share</strong> icon <span aria-hidden="true">⬆️</span> in Safari’s toolbar.
                 </li>
                 <li className="flex gap-2">
                   <span className="font-semibold text-moss">2.</span> Scroll down and tap <strong>Add to Home Screen</strong>.
@@ -135,7 +135,7 @@ export default function InstallModal() {
               </ol>
             ) : (
               <p className="mt-5 rounded-2xl bg-sand/40 px-4 py-3 text-sm text-ink">
-                Look for the install icon <span aria-hidden="true">⊕</span> in your browser's address bar, or use your browser's menu → <strong>Install app</strong>.
+                Look for the install icon <span aria-hidden="true">⊕</span> in your browser’s address bar, or use your browser’s menu → <strong>Install app</strong>.
               </p>
             )}
 
@@ -149,9 +149,12 @@ export default function InstallModal() {
                 )}
               </div>
               <p className="text-sm text-slate">
-                On a different device? <span className="font-medium text-ink">Scan with your phone's camera</span> to open Toolkitties there and install it the same way.
+                On a different device? <span className="font-medium text-ink">Scan with your phone’s camera</span> to open Toolkitties there and install it the same way.
               </p>
             </div>
+            <a href="/apps" className="mt-4 block text-center text-xs font-semibold text-moss underline hover:no-underline">
+              See step-by-step guides for every device →
+            </a>
           </div>
         </div>
       )}
