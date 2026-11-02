@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { generateQrDataUrl } from "@/lib/tool-processors/dev-tools";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -21,6 +22,18 @@ export default function InstallModal() {
   const [isStandalone, setIsStandalone] = useState(false);
   const [installed, setInstalled] = useState(false);
   const [qrSrc, setQrSrc] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  // The navbar (and this modal with it) lives in the shared layout, which Next.js does
+  // NOT remount on a client-side route change — only the page content underneath swaps.
+  // So without this, clicking any link inside the dialog (like "See device guides"
+  // below) left `open` stuck at true: the dialog would still be sitting there,
+  // overlapping the new page, with no way to tell it had actually "worked" short of
+  // hunting for the ✕. Closing automatically whenever the route changes means every
+  // internal link, the back button, anything — always leaves the dialog closed.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const ua = window.navigator.userAgent;
@@ -152,7 +165,11 @@ export default function InstallModal() {
                 On a different device? <span className="font-medium text-ink">Scan with your phone’s camera</span> to open Toolkitties there and install it the same way.
               </p>
             </div>
-            <a href="/apps" className="mt-4 block text-center text-xs font-semibold text-moss underline hover:no-underline">
+            <a
+              href="/apps"
+              onClick={() => setOpen(false)}
+              className="mt-4 block text-center text-xs font-semibold text-moss underline hover:no-underline"
+            >
               See step-by-step guides for every device →
             </a>
           </div>

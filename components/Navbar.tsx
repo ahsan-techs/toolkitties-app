@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import ThemeSwitcher from "./ThemeSwitcher";
 import InstallModal from "./InstallModal";
 import SkipLink from "./SkipLink";
@@ -33,6 +34,15 @@ export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  // Navbar lives in the shared layout and survives client-side route changes, so any
+  // "open" dropdown/menu state here can otherwise get stuck open on the next page —
+  // same bug, same fix, as the Install dialog.
+  useEffect(() => {
+    setOpenMenu(null);
+    setMobileOpen(false);
+  }, [pathname]);
 
   // Navbar glass gets a little more solid once you start scrolling.
   useEffect(() => {
