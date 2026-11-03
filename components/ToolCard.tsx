@@ -17,7 +17,7 @@ export default function ToolCard({ tool }: { tool: Tool }) {
     <Link
       href={`/${tool.slug}`}
       onPointerMove={handlePointerMove}
-      className="glass-card group flex h-full flex-col gap-3 rounded-2xl p-5"
+      className="glass-card group flex h-full flex-col gap-3 rounded-3xl p-5"
     >
       <span aria-hidden="true" className="card-glow">
         <span className="card-glow-ring" />

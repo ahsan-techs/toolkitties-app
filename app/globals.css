@@ -5,6 +5,24 @@
 :root {
   --font-display: "Fraunces", serif;
   --font-body: "Inter", sans-serif;
+
+  /* Named design-token layer (bg-canvas / bg-card / border-subtle / text-primary /
+     text-secondary / accent-action). These are NOT new colors — the site already has
+     an earthy palette (paper/ink/slate + the swappable moss/gold/sand trio below) that
+     sits within a few points of the brief's own suggested hex values (paper #F5F6F3 vs
+     the brief's #F5F3EF; ink #15171A vs its #1C1A17; slate #5B5D63 vs its #6E6A61), and
+     moss is already a sage-green accent — which the brief itself names as an acceptable
+     alternative to terracotta. So this block gives the requested variable names without
+     inventing a second, conflicting color system, and without breaking the theme
+     switcher: --accent-action reads from the same --color-moss variable the Cyberpunk /
+     Dracula / Coffee / Rose Gold themes already swap, so switching themes still changes
+     every element that uses the new tokens too. */
+  --bg-canvas: 245 246 243; /* = paper */
+  --bg-card: 255 255 255; /* used with low alpha for the glass-card effect, as before */
+  --border-subtle: 21 23 26; /* = ink; used at ~6% alpha, e.g. border-[rgb(var(--border-subtle)/0.06)] */
+  --text-primary: 21 23 26; /* = ink */
+  --text-secondary: 91 93 99; /* = slate */
+  --accent-action: var(--color-moss); /* theme-aware: same source as the moss/sage accent */
 }
 
 /* Phase 11: Workspace accent themes. Each sets the moss/gold/sand trio —
