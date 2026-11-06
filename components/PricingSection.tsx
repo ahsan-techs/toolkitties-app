@@ -56,14 +56,22 @@ export default function PricingSection() {
         {tiers.map((tier, i) => (
           <Reveal key={tier.name} delay={i * 0.1} y={20}>
             <div
-              onPointerMove={handlePointerMove}
-              className={`glass-card relative flex h-full flex-col rounded-3xl border p-8 ${
-                tier.highlighted ? "border-moss bg-ink text-paper shadow-xl" : "border-ink/10 bg-white text-ink"
-              }`}
+              onPointerMove={!tier.highlighted ? handlePointerMove : undefined}
+              className={
+                tier.highlighted
+                  ? // .glass-card paints its own light, translucent gradient background and a
+                    // border tuned for a WHITE card — stacking that under bg-ink here is what
+                    // produced the muddy grey card with the stray yellow/green border glow.
+                    // This tier gets its own plain, solid-dark treatment instead.
+                    "relative flex h-full flex-col rounded-3xl border border-moss/40 bg-ink p-8 text-paper shadow-xl shadow-ink/20 transition-transform duration-300 hover:-translate-y-1"
+                  : "glass-card relative flex h-full flex-col rounded-3xl border border-ink/10 bg-white p-8 text-ink"
+              }
             >
-              <span aria-hidden="true" className="card-glow">
-                <span className="card-glow-ring" />
-              </span>
+              {!tier.highlighted && (
+                <span aria-hidden="true" className="card-glow">
+                  <span className="card-glow-ring" />
+                </span>
+              )}
 
               <div className="flex items-center justify-between">
                 <span
