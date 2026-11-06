@@ -5,6 +5,7 @@ import ToolMarquee from "@/components/ToolMarquee";
 import ToolGroupSection from "@/components/ToolGroupSection";
 import ScrollFeatureRows from "@/components/ScrollFeatureRows";
 import ScaleTracker from "@/components/ScaleTracker";
+import HomeDeviceSection from "@/components/HomeDeviceSection";
 import FeatureCards3D from "@/components/FeatureCards3D";
 import PricingSection from "@/components/PricingSection";
 import FeedbackCta from "@/components/FeedbackCta";
@@ -40,6 +41,7 @@ export default function Home() {
           <Reveal>
             <ScaleTracker />
           </Reveal>
+          <HomeDeviceSection />
           <FeatureCards3D />
           <PricingSection />
           <FeedbackCta />
