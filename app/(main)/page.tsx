@@ -31,7 +31,7 @@ export default function Home() {
           <FreeBanner />
           <ToolMarquee />
 
-          <section id="tools" className="container-content divide-y divide-ink/10 py-6">
+          <section id="tools" className="container-content space-y-6 py-6">
             {toolGroups.map((group) => (
               <ToolGroupSection key={group.id} group={group} />
             ))}

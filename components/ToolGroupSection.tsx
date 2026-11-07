@@ -10,7 +10,7 @@ export default function ToolGroupSection({ group }: { group: ToolGroup }) {
   const visibleTools = expanded ? group.tools : group.tools.slice(0, 4);
 
   return (
-    <div className="py-8">
+    <div className="rounded-[24px] border border-ink/[0.06] bg-white/50 p-5 shadow-[0_8px_30px_rgba(21,23,26,0.03)] md:p-7">
       <Reveal className="mb-5 flex items-end justify-between">
         <div>
           <h2 className="flex items-center gap-2 font-display text-2xl font-semibold text-ink">

@@ -89,6 +89,14 @@ export default function HeroSearch() {
   return (
     <section ref={ref} className="container-content relative z-20 pt-16 pb-12 text-center md:pt-24">
       <LazyMotion features={domAnimation}>
+        {/* Only the eyebrow/headline/subtext fade and drift as you scroll away — the search
+            box is a sibling, OUTSIDE this transformed+opacity-faded wrapper, on purpose.
+            opacity is a scroll-linked value (1 at the top, fading to 0 by ~75% down the
+            section), and it was previously wrapping the search box too — so if the dropdown
+            was open while the page was scrolled even a little, its "solid" white background
+            and text inherited that same fade, rendering see-through with whatever sits
+            behind it showing straight through. A functional, actively-in-use control
+            shouldn't be able to fade into transparency underneath the user's cursor. */}
         <m.div data-motion style={{ y, opacity, scale }}>
           <p
             className="hero-rise font-display text-sm font-medium uppercase tracking-widest text-moss"
@@ -113,11 +121,12 @@ export default function HeroSearch() {
               triggerOn="mount"
             />
           </h1>
-          <p className="hero-rise mx-auto mt-8 max-w-xl text-base leading-relaxed text-slate md:mt-10 md:text-lg" style={{ animationDelay: "180ms" }}>
+          <p className="hero-rise mx-auto mt-8 max-w-xl text-base leading-relaxed text-slate md:mb-10 md:mt-10 md:text-lg" style={{ animationDelay: "180ms" }}>
             Compress PDFs, convert images, and clean up text — processed on your own device, gone the moment you close the tab.
           </p>
+        </m.div>
 
-          <div ref={boxRef} className="hero-rise relative mx-auto mt-10 max-w-2xl md:mt-12" style={{ animationDelay: "270ms" }}>
+        <div ref={boxRef} className="hero-rise relative mx-auto mt-12 max-w-2xl md:mt-16" style={{ animationDelay: "270ms" }}>
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
               <div className="absolute -left-6 -top-14 sm:-left-16 sm:top-1/2 sm:-translate-y-1/2 md:-left-40">
                 <div className="orb orb-soft orb-moss drift-b h-14 w-14 md:h-24 md:w-24" />
@@ -165,7 +174,7 @@ export default function HeroSearch() {
             </form>
 
             {open && noMatch && matches.length === 0 && (
-              <p className="absolute left-0 right-0 top-full z-40 mt-2 rounded-2xl border border-ink/10 bg-white p-4 text-left text-sm text-slate shadow-xl">
+              <p className="absolute left-0 right-0 top-full z-50 mt-2 rounded-2xl border border-ink/10 bg-white p-4 text-left text-sm text-slate shadow-xl backdrop-blur-md">
                 No tool found for “{query}”. Try another word, or{" "}
                 <Link href="/all-tools" className="font-semibold text-moss underline" onClick={() => setOpen(false)}>browse all tools</Link>.
               </p>
@@ -175,7 +184,7 @@ export default function HeroSearch() {
               <div
                 id="hero-search-results"
                 role="listbox"
-                className="absolute left-0 right-0 top-full z-40 mt-2 max-h-[60vh] overflow-y-auto rounded-2xl border border-ink/10 bg-white p-2 text-left shadow-xl"
+                className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[60vh] overflow-y-auto rounded-2xl border border-ink/10 bg-white p-2 text-left shadow-xl backdrop-blur-md"
               >
                 {matches.map((tool, i) => (
                   <Link
@@ -198,7 +207,6 @@ export default function HeroSearch() {
               </div>
             )}
           </div>
-        </m.div>
       </LazyMotion>
     </section>
   );

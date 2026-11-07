@@ -205,12 +205,16 @@ body {
     box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.55), 0 14px 34px -20px rgba(21, 23, 26, 0.35);
   }
 
-  /* Header menu buttons: each one is its own small glass box. */
+  /* Header menu buttons: each one is its own small glass box. True pill (fully
+     rounded), and a touch leaner on padding so the five of these plus the logo and
+     the right-side controls actually fit the 1180px container at common laptop
+     widths (1280-1366px) without crowding or wrapping. */
   .nav-pill {
     display: inline-flex;
     align-items: center;
-    border-radius: 0.85rem;
-    padding: 0.5rem 1rem;
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: 0.5rem 0.85rem;
     font-size: 0.875rem;
     font-weight: 600;
     color: rgba(21, 23, 26, 0.85);

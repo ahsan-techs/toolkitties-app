@@ -59,7 +59,7 @@ export default function Navbar() {
           <span className="font-display text-2xl font-bold tracking-tight text-ink md:text-[1.7rem]">Toolkitties</span>
         </a>
 
-        <nav className="hidden items-center gap-2.5 lg:flex" aria-label="Main">
+        <nav className="hidden items-center gap-2 lg:flex" aria-label="Main">
           <Link href="/all-tools" className="nav-pill">
             All Tools
           </Link>
@@ -100,11 +100,10 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <a
             href="/#tools"
-            className="btn-premium flex items-center gap-1.5 rounded-full border border-moss/30 bg-moss/10 px-3.5 py-1.5 text-xs font-semibold text-moss md:text-sm"
+            className="btn-premium flex items-center gap-1.5 whitespace-nowrap rounded-full border border-moss/30 bg-moss/10 px-3.5 py-1.5 text-xs font-semibold text-moss"
           >
-            <span>⚡</span>
-            <span className="hidden xl:inline">100% Free. No Signup. Start Instantly.</span>
-            <span className="xl:hidden">100% Free</span>
+            <span aria-hidden="true">⚡</span>
+            100% Free
           </a>
           <ThemeSwitcher />
           <button
