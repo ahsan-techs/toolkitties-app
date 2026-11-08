@@ -202,7 +202,7 @@ export default function ToolPage({ params, searchParams }: { params: { slug: str
 
           {tool.functional && <PrivacyBadge />}
 
-          <div className={wide ? "tk-workspace-wide" : "tk-workspace"}>
+          <div className={`${wide ? "tk-workspace-wide" : "tk-workspace"} mt-8 rounded-[24px] border border-ink/[0.06] bg-white/40 p-5 shadow-[0_8px_30px_rgba(21,23,26,0.03)] md:p-8`}>
             {tool.functional ? (
               tool.slug === "invoice-generator" ? (
                 <InvoiceGenerator />
@@ -241,7 +241,7 @@ export default function ToolPage({ params, searchParams }: { params: { slug: str
 
           <section className="mx-auto mt-12 max-w-2xl">
             <h2 className="font-display text-xl font-semibold text-ink">{displayName} at a glance</h2>
-            <dl className="mt-4 grid gap-px overflow-hidden rounded-2xl border border-ink/10 bg-ink/10 sm:grid-cols-2">
+            <dl className="mt-4 grid gap-px overflow-hidden rounded-[24px] border border-ink/10 bg-ink/10 sm:grid-cols-2">
               {quickFacts.map((f) => (
                 <div key={f.label} className="bg-white p-4">
                   <dt className="text-xs font-semibold uppercase tracking-wide text-slate">{f.label}</dt>

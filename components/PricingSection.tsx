@@ -120,7 +120,11 @@ export default function PricingSection() {
 
       <p className="mx-auto mt-8 max-w-xl text-center text-xs text-slate">
         Prices are in US dollars — your bank or card provider converts to your local currency at checkout. Payments are processed by
-        Lemon Squeezy, our merchant of record.
+        Lemon Squeezy, our merchant of record. Cancel anytime — see our{" "}
+        <a href="/refund" className="underline hover:no-underline">
+          refund policy
+        </a>
+        .
       </p>
     </section>
   );

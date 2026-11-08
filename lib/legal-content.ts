@@ -310,3 +310,34 @@ export const accessibilitySections: LegalSection[] = [
     ],
   },
 ];
+
+export const refundSections: LegalSection[] = [
+  {
+    id: "overview",
+    title: "The short version",
+    paragraphs: [
+      "Every tool on Toolkitties is free, for everyone, whether or not you ever pay anything — paying doesn’t unlock anything the free tools don’t already have. The Support plans are a voluntary monthly contribution toward hosting costs. Because of that, this policy is simpler than a typical refund policy for a paid product: you’re not buying a feature, you’re choosing to keep sending us a small amount each month, and you can stop whenever you like.",
+    ],
+  },
+  {
+    id: "cancel",
+    title: "Cancelling",
+    paragraphs: [
+      `You can cancel your support subscription at any time through the receipt/confirmation email Lemon Squeezy sends when you sign up, which includes a link to manage or cancel your subscription — no need to email us, though you’re welcome to if you’d rather. Cancelling stops future charges; it doesn’t retroactively refund what’s already been billed.`,
+    ],
+  },
+  {
+    id: "refunds",
+    title: "Refunds",
+    paragraphs: [
+      `If you were charged by mistake — a duplicate charge, a charge after you’d already cancelled, or anything that looks like an error — email ${CONTACT_EMAIL} with the email address or order number from your Lemon Squeezy receipt, and we’ll sort it out. Because supporting the project doesn’t unlock any paid feature to begin with, we don’t operate a “didn’t like the product” refund window the way a typical SaaS does; we handle these case by case and we’re not going to be difficult about an honest mistake.`,
+    ],
+  },
+  {
+    id: "billing",
+    title: "Who handles billing",
+    paragraphs: [
+      `Payments are processed by Lemon Squeezy, our merchant of record, who handles the actual charge, your card details, and tax. Toolkitties never sees or stores your card number. For anything billing-specific — updating a card, a question about a specific charge on your statement — the Lemon Squeezy receipt email is usually the fastest route; for anything else, ${CONTACT_EMAIL} reaches us directly.`,
+    ],
+  },
+];

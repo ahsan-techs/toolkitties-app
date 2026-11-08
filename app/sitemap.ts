@@ -47,6 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: base, changeFrequency: "daily", priority: 1 },
     { url: `${base}/all-tools`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${base}/accessibility`, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${base}/refund`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/apps`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/apps/desktop`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/apps/android`, changeFrequency: "monthly", priority: 0.5 },

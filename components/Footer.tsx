@@ -89,6 +89,7 @@ export default function Footer() {
           <Link href="/accessibility" className="hover:text-moss">Accessibility</Link>
           <Link href="/privacy" className="hover:text-moss">Privacy Policy</Link>
           <Link href="/terms" className="hover:text-moss">Terms of Service</Link>
+          <Link href="/refund" className="hover:text-moss">Refund Policy</Link>
           <Link href="/contact" className="hover:text-moss">Contact</Link>
         </nav>
       </div>
