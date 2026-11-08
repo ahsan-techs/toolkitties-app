@@ -75,7 +75,7 @@ export default function AboutPage() {
           <h2 id="principles" className="font-display text-2xl font-semibold text-ink">What we stand for</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2">
             {principles.map((p) => (
-              <div key={p.title} className="rounded-2xl border border-white/70 bg-white/70 p-6 shadow-sm backdrop-blur">
+              <div key={p.title} className="rounded-[24px] border border-ink/[0.06] bg-white/70 p-6 shadow-[0_8px_30px_rgba(21,23,26,0.03)] backdrop-blur">
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-moss/10 to-gold/20 text-2xl" aria-hidden="true">{p.icon}</span>
                 <h3 className="mt-4 font-display text-lg font-semibold text-ink">{p.title}</h3>
                 <p className="mt-1.5 text-sm leading-6 text-slate">{p.copy}</p>

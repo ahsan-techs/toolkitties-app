@@ -56,7 +56,7 @@ export default function ContactPage() {
 
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {reasons.map((r) => (
-            <div key={r.title} className="rounded-2xl border border-white/70 bg-white/70 p-6 shadow-sm backdrop-blur">
+            <div key={r.title} className="rounded-[24px] border border-ink/[0.06] bg-white/70 p-6 shadow-[0_8px_30px_rgba(21,23,26,0.03)] backdrop-blur">
               <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-moss/10 to-gold/20 text-2xl" aria-hidden="true">
                 {r.icon}
               </span>
@@ -67,7 +67,7 @@ export default function ContactPage() {
         </div>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <section id="feedback" aria-labelledby="feedback-title" className="scroll-mt-24 rounded-3xl border border-white/70 bg-white/70 p-6 shadow-sm backdrop-blur md:p-9">
+          <section id="feedback" aria-labelledby="feedback-title" className="scroll-mt-24 rounded-[24px] border border-ink/[0.06] bg-white/70 p-6 shadow-[0_8px_30px_rgba(21,23,26,0.03)] backdrop-blur md:p-9">
             <h2 id="feedback-title" className="font-display text-2xl font-semibold text-ink">
               Send us a message
             </h2>
@@ -85,7 +85,7 @@ export default function ContactPage() {
               </a>
               <p className="mt-3 text-sm text-paper/75">We read every message and reply as soon as we can.</p>
             </div>
-            <div className="rounded-3xl border border-white/70 bg-white/70 p-7 shadow-sm backdrop-blur">
+            <div className="rounded-[24px] border border-ink/[0.06] bg-white/70 p-7 shadow-[0_8px_30px_rgba(21,23,26,0.03)] backdrop-blur">
               <h2 className="font-display text-lg font-semibold text-ink">Please keep files private</h2>
               <p className="mt-2 text-sm leading-6 text-slate">
                 You never need to send us a file to get help. Describe the problem in words, and never include passwords or

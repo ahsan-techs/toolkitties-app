@@ -40,7 +40,7 @@ export default function LegalLayout({
 
         <div className="mt-12 grid gap-10 lg:grid-cols-[16rem_minmax(0,1fr)]">
           <nav aria-label="On this page" className="lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-2xl border border-white/70 bg-white/70 p-4 shadow-sm backdrop-blur">
+            <div className="rounded-[24px] border border-ink/[0.06] bg-white/70 p-4 shadow-[0_8px_30px_rgba(21,23,26,0.03)] backdrop-blur">
               <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wider text-slate">On this page</p>
               <ol className="flex flex-col">
                 {sections.map((section, i) => (
