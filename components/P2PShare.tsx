@@ -14,7 +14,13 @@ export default function P2PShare({ blob, filename }: { blob: Blob; filename: str
   const [progress, setProgress] = useState(0);
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [elapsedSeconds, setElapsedSeconds] = useState<number | null>(null);
   const sessionRef = useRef<ShareSession | null>(null);
+  // Real, measured transfer time — timed from the moment the two browsers actually
+  // connect to the moment the receiver confirms delivery, using performance.now().
+  // Never a hardcoded number: how long a browser-to-browser transfer takes genuinely
+  // depends on the file size and both people's connections.
+  const transferStartRef = useRef<number | null>(null);
 
   useEffect(() => () => sessionRef.current?.close(), []);
 
@@ -26,12 +32,20 @@ export default function P2PShare({ blob, filename }: { blob: Blob; filename: str
       setErrorMsg(e);
       setStatus("error");
     });
-    session.onConnected(() => setStatus("connected"));
+    session.onConnected(() => {
+      transferStartRef.current = performance.now();
+      setStatus("connected");
+    });
     session.onProgress((p) => {
       setStatus("sending");
       setProgress(Math.round((p.sent / p.total) * 100));
     });
-    session.onDelivered(() => setStatus("done"));
+    session.onDelivered(() => {
+      if (transferStartRef.current !== null) {
+        setElapsedSeconds((performance.now() - transferStartRef.current) / 1000);
+      }
+      setStatus("done");
+    });
     try {
       const id = await session.peerId;
       setLink(`${window.location.origin}/shared?peer=${id}&name=${encodeURIComponent(filename)}`);
@@ -80,7 +94,12 @@ export default function P2PShare({ blob, filename }: { blob: Blob; filename: str
         </>
       )}
 
-      {status === "done" && <p className="font-medium text-moss">✅ Delivered — the file went straight to their browser.</p>}
+      {status === "done" && (
+        <p className="font-medium text-moss">
+          ✅ Delivered{elapsedSeconds !== null ? ` in ${elapsedSeconds < 1 ? elapsedSeconds.toFixed(2) : elapsedSeconds.toFixed(1)}s` : ""} —
+          straight to their browser over a peer-to-peer WebRTC connection.
+        </p>
+      )}
       {status === "error" && <p className="text-[#b3473c]">{errorMsg}</p>}
 
       <p className="text-[11px] text-slate">

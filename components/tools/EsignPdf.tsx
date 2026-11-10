@@ -20,6 +20,7 @@ export default function EsignPdf() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Blob | null>(null);
+  const [checksum, setChecksum] = useState<string | null>(null);
 
   const padRef = useRef<HTMLCanvasElement>(null);
   const previewBoxRef = useRef<HTMLDivElement>(null);
@@ -43,6 +44,33 @@ export default function EsignPdf() {
       cancelled = true;
     };
   }, [file]);
+
+  // A real, locally-computed SHA-256 checksum of the signed file — not a cryptographic
+  // signature (that would need a private key, which nobody here has or should fake),
+  // just a fingerprint anyone can use to confirm a copy of this file is byte-for-byte
+  // identical to the one that was signed. Computed via the browser's own Web Crypto
+  // API, over the actual output bytes — never a placeholder value.
+  useEffect(() => {
+    if (!result) {
+      setChecksum(null);
+      return;
+    }
+    let cancelled = false;
+    result
+      .arrayBuffer()
+      .then((buf) => crypto.subtle.digest("SHA-256", buf))
+      .then((digest) => {
+        if (cancelled) return;
+        const hex = Array.from(new Uint8Array(digest))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+        setChecksum(hex);
+      })
+      .catch(() => !cancelled && setChecksum(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [result]);
 
   const padPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = padRef.current!;
@@ -205,6 +233,16 @@ export default function EsignPdf() {
         <>
           <FileDownload blob={result} filename={`${baseName(file ?? undefined, "document")}-signed.pdf`} />
           <p className="text-xs text-slate">🔒 Your signature and document never left this device — everything was drawn and saved locally in your browser.</p>
+          {checksum && (
+            <div className="rounded-xl border border-ink/10 bg-sand/30 p-3">
+              <p className="text-xs font-medium text-ink">File checksum (SHA-256)</p>
+              <p className="mt-1 break-all font-mono text-[11px] text-slate">{checksum}</p>
+              <p className="mt-1 text-[11px] text-slate">
+                A fingerprint of this exact file, computed in your browser. Share it alongside the PDF so the recipient can confirm their
+                copy wasn’t altered — not a digital signature, just an integrity check anyone can re-run.
+              </p>
+            </div>
+          )}
         </>
       )}
     </Stack>
