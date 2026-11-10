@@ -16,6 +16,104 @@ export async function generateQrDataUrl(text: string, opts: QrOptions = {}) {
   });
 }
 
+// Escapes the characters the WIFI: and VCARD payload formats below treat as
+// delimiters, per the de-facto WIFI: QR format (used by Android/iOS camera scanners)
+// and the vCard 3.0 spec — without this, a network name or a name containing a
+// semicolon, comma or backslash would silently corrupt the payload.
+function escapeQrField(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/:/g, "\\:");
+}
+
+export type WifiQrFields = {
+  ssid: string;
+  password?: string;
+  encryption?: "WPA" | "WEP" | "nopass";
+  hidden?: boolean;
+};
+
+// The WIFI: format isn't a Toolkitties invention — it's the real, widely-supported
+// convention Android's and iOS's own camera apps look for when scanning a QR code,
+// which is why "connect automatically" works from a plain photo of a printed code.
+export function buildWifiQrPayload(f: WifiQrFields): string {
+  if (!f.ssid.trim()) throw new Error("Enter the network name (SSID).");
+  const enc = f.encryption ?? "WPA";
+  const parts = [
+    `WIFI:T:${enc}`,
+    `S:${escapeQrField(f.ssid)}`,
+    enc !== "nopass" ? `P:${escapeQrField(f.password ?? "")}` : "",
+    f.hidden ? "H:true" : "",
+  ].filter(Boolean);
+  return parts.join(";") + ";;";
+}
+
+export type VCardQrFields = {
+  name: string;
+  phone?: string;
+  email?: string;
+  organization?: string;
+  url?: string;
+};
+
+// vCard 3.0 — the real contact-card format that Android/iOS camera apps recognize
+// and offer to save straight to Contacts.
+export function buildVCardQrPayload(f: VCardQrFields): string {
+  if (!f.name.trim()) throw new Error("Enter a name.");
+  const lines = ["BEGIN:VCARD", "VERSION:3.0", `N:${escapeQrField(f.name)}`, `FN:${escapeQrField(f.name)}`];
+  if (f.organization?.trim()) lines.push(`ORG:${escapeQrField(f.organization)}`);
+  if (f.phone?.trim()) lines.push(`TEL:${escapeQrField(f.phone)}`);
+  if (f.email?.trim()) lines.push(`EMAIL:${escapeQrField(f.email)}`);
+  if (f.url?.trim()) lines.push(`URL:${escapeQrField(f.url)}`);
+  lines.push("END:VCARD");
+  return lines.join("\n");
+}
+
+// Draws a logo in the center of an already-generated QR code. Only safe to call when
+// the QR itself was generated with errorCorrectionLevel "H" (~30% of the code can be
+// damaged/obscured and still scan) — the caller is responsible for that, since a
+// logo over a low-error-correction code can make it unscannable.
+export async function embedLogoInQr(qrDataUrl: string, logoFile: File, size: number): Promise<string> {
+  const [qrImg, logoImg] = await Promise.all([loadImageFromSrc(qrDataUrl), loadImageFromFile(logoFile)]);
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas isn't available in this browser.");
+  ctx.drawImage(qrImg, 0, 0, size, size);
+
+  const logoSize = Math.round(size * 0.22);
+  const pad = Math.round(logoSize * 0.14);
+  const cx = (size - logoSize) / 2;
+  const cy = (size - logoSize) / 2;
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(cx - pad, cy - pad, logoSize + pad * 2, logoSize + pad * 2);
+  ctx.drawImage(logoImg, cx, cy, logoSize, logoSize);
+
+  return canvas.toDataURL("image/png");
+}
+
+function loadImageFromSrc(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Couldn't load the QR image."));
+    img.src = src;
+  });
+}
+
+function loadImageFromFile(file: File): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Couldn't load the logo image."));
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject(new Error("Couldn't read the logo file."));
+    reader.readAsDataURL(file);
+  });
+}
+
 // ---------------------------------------------------------------- Passwords
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LOWER = "abcdefghijklmnopqrstuvwxyz";

@@ -711,13 +711,40 @@ export default function ToolWorkspace({ tool, initialOpts, initialText }: { tool
     const doProcess = () =>
       run(async () => {
         if (tool.slug === "qr-code-generator") {
-          if (!inputText.trim()) throw new Error("Enter a link or text first.");
-          const dataUrl = await dev.generateQrDataUrl(inputText, {
-            size: Number(opts.qrSize || 320),
+          const qrType = opts.qrType || "text";
+          let payload: string;
+          if (qrType === "wifi") {
+            payload = dev.buildWifiQrPayload({
+              ssid: opts.wifiSsid || "",
+              password: opts.wifiPassword || "",
+              encryption: (opts.wifiEnc as "WPA" | "WEP" | "nopass") || "WPA",
+              hidden: opts.wifiHidden === "true",
+            });
+          } else if (qrType === "vcard") {
+            payload = dev.buildVCardQrPayload({
+              name: opts.vcardName || "",
+              phone: opts.vcardPhone || "",
+              email: opts.vcardEmail || "",
+              organization: opts.vcardOrg || "",
+              url: opts.vcardUrl || "",
+            });
+          } else {
+            if (!inputText.trim()) throw new Error("Enter a link or text first.");
+            payload = inputText;
+          }
+
+          const hasLogo = files[0] != null;
+          const size = Number(opts.qrSize || 320);
+          let dataUrl = await dev.generateQrDataUrl(payload, {
+            size,
             dark: opts.qrDark || "#15171A",
             light: opts.qrLight || "#F5F6F3",
-            errorCorrectionLevel: (opts.qrEcc as "L" | "M" | "Q" | "H") || "M",
+            // A logo covers part of the code, so it needs the highest error-correction
+            // level to stay scannable; otherwise the user's own chosen level applies.
+            errorCorrectionLevel: hasLogo ? "H" : (opts.qrEcc as "L" | "M" | "Q" | "H") || "M",
           });
+          if (hasLogo) dataUrl = await dev.embedLogoInQr(dataUrl, files[0], size);
+
           const res = await fetch(dataUrl);
           const blob = await res.blob();
           setOutputBlob({ blob, filename: "qr-code.png", previewImage: true });
@@ -752,7 +779,58 @@ export default function ToolWorkspace({ tool, initialOpts, initialText }: { tool
       <Workspace perf={perfInfo} toolSlug={tool.slug} successTick={successTick}>
         {tool.slug === "qr-code-generator" && (
           <>
-            <TextField label="Link or text" value={inputText} onChange={setInputText} placeholder="https://example.com" />
+            <SelectField
+              label="QR code type"
+              value={opts.qrType || "text"}
+              onChange={(v) => setOpt("qrType", v)}
+              options={[["text", "Link or text"], ["wifi", "Wi-Fi network"], ["vcard", "Contact card (vCard)"]]}
+            />
+
+            {(opts.qrType || "text") === "text" && (
+              <TextField label="Link or text" value={inputText} onChange={setInputText} placeholder="https://example.com" />
+            )}
+
+            {opts.qrType === "wifi" && (
+              <>
+                <TextField label="Network name (SSID)" value={opts.wifiSsid || ""} onChange={(v) => setOpt("wifiSsid", v)} placeholder="My Wi-Fi" />
+                <SelectField
+                  label="Security"
+                  value={opts.wifiEnc || "WPA"}
+                  onChange={(v) => setOpt("wifiEnc", v)}
+                  options={[["WPA", "WPA/WPA2 (most common)"], ["WEP", "WEP"], ["nopass", "None (open network)"]]}
+                />
+                {opts.wifiEnc !== "nopass" && (
+                  <TextField label="Password" value={opts.wifiPassword || ""} onChange={(v) => setOpt("wifiPassword", v)} placeholder="Network password" />
+                )}
+                <Checkbox label="This is a hidden network" checked={opts.wifiHidden === "true"} onChange={(v) => setOpt("wifiHidden", String(v))} />
+                <p className="text-xs text-slate">
+                  Scanning this with a phone camera offers to join the network directly — no typing the password by hand.
+                </p>
+              </>
+            )}
+
+            {opts.qrType === "vcard" && (
+              <>
+                <TextField label="Name" value={opts.vcardName || ""} onChange={(v) => setOpt("vcardName", v)} placeholder="Jane Doe" />
+                <TextField label="Organization (optional)" value={opts.vcardOrg || ""} onChange={(v) => setOpt("vcardOrg", v)} placeholder="Acme Inc." />
+                <TextField label="Phone (optional)" value={opts.vcardPhone || ""} onChange={(v) => setOpt("vcardPhone", v)} placeholder="+1 555 0100" />
+                <TextField label="Email (optional)" value={opts.vcardEmail || ""} onChange={(v) => setOpt("vcardEmail", v)} placeholder="jane@example.com" />
+                <TextField label="Website (optional)" value={opts.vcardUrl || ""} onChange={(v) => setOpt("vcardUrl", v)} placeholder="https://example.com" />
+                <p className="text-xs text-slate">Scanning this offers to save the contact directly — no retyping.</p>
+              </>
+            )}
+
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+              Logo in the center (optional)
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFiles(e.target.files?.[0] ? [e.target.files[0]] : [])}
+                className="rounded-xl border border-ink/15 bg-white px-3 py-2.5 text-sm text-ink file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-paper"
+              />
+              {files[0] && <span className="text-xs text-slate">Error correction is automatically set to High so the code still scans with a logo over it.</span>}
+            </label>
+
             <SelectField
               label="Size"
               value={opts.qrSize || "320"}
