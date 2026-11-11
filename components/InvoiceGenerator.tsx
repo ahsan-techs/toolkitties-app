@@ -18,6 +18,12 @@ import {
 } from "@/lib/tool-processors/invoice-math";
 
 const THEME_KEY = "toolkitties-invoice-theme";
+// Remembers just the "about you" fields — your business name/details, default
+// currency and tax rate — so they're filled in automatically next time instead of
+// retyping them on every invoice or quote. Never the client, line items, or notes:
+// those are specific to one document and shouldn't carry over to the next.
+const BUSINESS_PROFILE_KEY = "toolkitties-invoice-business-profile";
+type BusinessProfile = { fromName: string; fromDetails: string; currency: string; tax: string };
 const MATRIX_DAYS = [7, 14, 30, 60, 90, 120];
 const ACCENTS = ["#1F5C4C", "#4F46E5", "#E11D48", "#D97706", "#111827"];
 
@@ -164,13 +170,35 @@ export default function InvoiceGenerator({ mode = "invoice" }: { mode?: "invoice
 
   const setField = (k: keyof typeof inv) => (v: string) => setInv((s) => ({ ...s, [k]: v }));
 
-  // Theme: remember the choice; default light.
+  // Theme: remember the choice; default light. Also restores a saved business
+  // profile (name/details/currency/tax) from a previous visit, if there is one.
   useEffect(() => {
     try {
       if (localStorage.getItem(THEME_KEY) === "dark") setDark(true);
     } catch {}
-    setInv((s) => (s.issueDate ? s : { ...s, issueDate: new Date().toISOString().slice(0, 10) }));
+    let profile: Partial<BusinessProfile> = {};
+    try {
+      const saved = localStorage.getItem(BUSINESS_PROFILE_KEY);
+      if (saved) profile = JSON.parse(saved);
+    } catch {}
+    setInv((s) => ({
+      ...s,
+      issueDate: s.issueDate || new Date().toISOString().slice(0, 10),
+      fromName: profile.fromName || s.fromName,
+      fromDetails: profile.fromDetails || s.fromDetails,
+      currency: profile.currency || s.currency,
+      tax: profile.tax || s.tax,
+    }));
   }, []);
+
+  // Saves the profile fields back whenever they change, so the next invoice or
+  // quote (even a different one, opened later) starts pre-filled.
+  useEffect(() => {
+    try {
+      const profile: BusinessProfile = { fromName: inv.fromName, fromDetails: inv.fromDetails, currency: inv.currency, tax: inv.tax };
+      localStorage.setItem(BUSINESS_PROFILE_KEY, JSON.stringify(profile));
+    } catch {}
+  }, [inv.fromName, inv.fromDetails, inv.currency, inv.tax]);
   const toggleTheme = () =>
     setDark((d) => {
       try {

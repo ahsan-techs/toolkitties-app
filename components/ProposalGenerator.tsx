@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { buildProposalPdf, proposalToText, composeProposal, type ProposalInput } from "@/lib/tool-processors/proposal";
 import { Stack, Field, ErrorNote, inputCls, btnCls, ghostBtnCls, CopyButton } from "./tools/ui";
 
@@ -32,6 +32,21 @@ export default function ProposalGenerator() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const set = (k: keyof typeof f) => (v: string) => setF((s) => ({ ...s, [k]: v }));
+
+  // "Prepared by" is the one field that's really about you rather than this one
+  // proposal, so it's the only one remembered between visits — everything else
+  // (client, scope, price, terms) is specific to the project at hand.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("toolkitties-proposal-prepared-by");
+      if (saved) setF((s) => ({ ...s, preparedBy: saved }));
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      if (f.preparedBy) localStorage.setItem("toolkitties-proposal-prepared-by", f.preparedBy);
+    } catch {}
+  }, [f.preparedBy]);
 
   const input: ProposalInput = useMemo(
     () => ({
