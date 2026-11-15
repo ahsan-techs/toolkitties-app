@@ -40,6 +40,7 @@ export const toolGroups: ToolGroup[] = [
       { slug: "unlock-pdf", name: "Unlock PDF", description: "Remove the password from a PDF you know the password for. Pages become images.", icon: "🔓", functional: true },
       { slug: "pdf-to-jpg", name: "PDF to JPG", description: "Export each PDF page as a standalone JPG image.", icon: "🖼️", functional: true },
       { slug: "image-to-pdf", name: "Image to PDF", description: "Combine JPG and PNG images into a single PDF, in the order you choose.", icon: "📷", functional: true },
+      { slug: "epub-to-pdf", name: "EPUB to PDF", description: "Turn an EPUB ebook into a readable PDF — chapter text and headings are kept, original fonts and page images are not.", icon: "📚", functional: true },
     ],
   },
   {
