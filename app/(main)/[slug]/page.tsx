@@ -200,6 +200,19 @@ export default function ToolPage({ params, searchParams }: { params: { slug: str
             <p className="mt-3 text-base text-slate">{displayDescription}</p>
           </div>
 
+          {/* Direct answer: a short, quotable definition placed at the very top of the page for search and AI answer engines (ChatGPT, Perplexity, AI Overviews) to quote. */}
+          <section className="mx-auto mt-5 max-w-2xl rounded-2xl border border-ink/[0.06] bg-sand/30 p-4 text-left">
+            <p className="text-sm leading-6 text-ink/85">
+              <span className="font-semibold text-ink">In short: </span>
+              {directAnswer}
+            </p>
+            {seo && (
+              <p className="mt-2 text-xs text-slate">
+                Also searched as: {seo.also.join(", ")}.
+              </p>
+            )}
+          </section>
+
           {tool.functional && <PrivacyBadge />}
 
           <div className={`${wide ? "tk-workspace-wide" : "tk-workspace"} mt-8 rounded-[24px] border border-ink/[0.06] bg-white/40 p-5 shadow-[0_8px_30px_rgba(21,23,26,0.03)] md:p-8`}>
@@ -228,18 +241,7 @@ export default function ToolPage({ params, searchParams }: { params: { slug: str
 
           {tool.functional && <EthicalAd />}
 
-          {/* Direct answer: a short, quotable definition for search and AI answer engines */}
           <section className="mx-auto mt-14 max-w-2xl">
-            <h2 className="font-display text-xl font-semibold text-ink">What is {displayName}?</h2>
-            <p className="mt-3 text-base leading-7 text-ink/85">{directAnswer}</p>
-            {seo && (
-              <p className="mt-3 text-sm text-slate">
-                Also searched as: {seo.also.join(", ")}.
-              </p>
-            )}
-          </section>
-
-          <section className="mx-auto mt-12 max-w-2xl">
             <h2 className="font-display text-xl font-semibold text-ink">{displayName} at a glance</h2>
             <dl className="mt-4 grid gap-px overflow-hidden rounded-[24px] border border-ink/10 bg-ink/10 sm:grid-cols-2">
               {quickFacts.map((f) => (

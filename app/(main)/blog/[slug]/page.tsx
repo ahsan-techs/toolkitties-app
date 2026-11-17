@@ -105,7 +105,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-ink md:text-5xl">{post.title}</h1>
             <p className="mt-4 text-base text-slate md:text-lg">{post.description}</p>
             <p className="bl-byline">
-              <span>By the Toolkitties team</span>
+              <span>By <Link href="/about" className="hover:text-moss hover:underline">the Toolkitties team</Link></span>
               <span aria-hidden="true">·</span>
               <span>Updated <time dateTime={post.updated}>{fmt(post.updated)}</time></span>
               <span aria-hidden="true">·</span>
