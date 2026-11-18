@@ -5,6 +5,67 @@ import type { Post } from "./types";
 // (Capterra reviews, published pricing pages) — no invented numbers.
 export const comparisonPosts: Post[] = [
   {
+    slug: "camscanner-alternative-free-no-watermark",
+    title: "A Free CamScanner Alternative With No Watermark (2026)",
+    seoTitle: "Free CamScanner Alternative, No Watermark, No Upload | Toolkitties",
+    description: "Turn phone photos into a clean PDF without CamScanner's watermark, OCR limit, or cloud upload — free, with no account.",
+    tool: "image-to-pdf",
+    category: "Privacy",
+    emoji: "📷",
+    published: "2026-11-18",
+    updated: "2026-11-18",
+    takeaways: [
+      "CamScanner's free plan stamps a visible watermark on every exported PDF, and caps free OCR at a small number of recognitions a month — removing either needs the paid Premium plan.",
+      "CamScanner uploads your scanned documents to its own cloud servers, even on the free plan.",
+      "Toolkitties' Image to PDF tool combines your photos into a PDF entirely in your browser — no watermark, no upload, and no account, for any number of pages.",
+      "If you specifically need searchable text pulled out of a scan, Toolkitties' separate PDF OCR tool does that, also free and with no page limit.",
+    ],
+    sections: [
+      {
+        id: "the-watermark-problem",
+        heading: "Why a scanning app you already paid nothing for still costs you something",
+        blocks: [
+          "CamScanner's free tier is reviewed consistently the same way across independent software directories: it adds a watermark to every document you export, and that mark survives most cropping attempts because it's often placed across the page rather than in a corner. For a one-off personal scan that's a minor annoyance; for anything you're sending to a client, a landlord, or a school, it looks unfinished.",
+          "On top of the watermark, CamScanner's own pricing page (checked October 2026) describes a free Basic plan limited to around 10 OCR recognitions, with a paid Premium plan — listed at $9.99/month in the US App Store, though third-party pricing trackers list somewhat different regional figures — raising that to 1,000 a month. And because CamScanner is a cloud scanning service, your scanned pages are uploaded to its servers to be processed, not just kept on your phone.",
+        ],
+      },
+      {
+        id: "comparison-table",
+        heading: "CamScanner (free) vs Toolkitties, side by side",
+        blocks: [
+          {
+            table: {
+              head: ["", "Toolkitties (Image to PDF)", "CamScanner (Free/Basic)"],
+              rows: [
+                ["Watermark on exported PDF", "No", "Yes"],
+                ["Where photos are processed", "In your browser — never uploaded", "Uploaded to CamScanner's cloud"],
+                ["Account required", "No", "No for the free plan"],
+                ["Page limit per PDF", "None beyond your device's memory", "Not watermark-related, but OCR is capped"],
+                ["Free OCR (text extraction)", "Yes, via the separate PDF OCR tool, no page limit", "Limited — around 10 recognitions/month on the free plan"],
+                ["Price to remove the watermark / raise OCR limit", "Nothing to remove — there isn't one", "$9.99/month (Premium, US pricing)"],
+              ],
+            },
+          },
+          { note: "CamScanner's free-plan figures above are drawn from its own pricing page and independent reviews on Capterra, GetApp and SoftwareAdvice as checked in October 2026 — pricing and limits can change, so check CamScanner's current page if it matters for your decision." },
+        ],
+      },
+      {
+        id: "when-camscanner-still-makes-sense",
+        heading: "When CamScanner is still the better pick",
+        blocks: [
+          "CamScanner's scanning camera — the live edge-detection that frames a document as you photograph it — is a genuinely useful piece of mobile software, and its OCR supports more languages than a lot of browser-based tools attempt. If you're scanning constantly on the go and the watermark and upload don't bother you (or you're fine paying to remove them), it remains a capable app.",
+          "Toolkitties solves a narrower, different problem: you already have the photos (taken with your phone's normal camera, or received from someone else), and you just need them turned into one clean, unmarked PDF without creating an account or sending the images anywhere. [Image to PDF](/image-to-pdf) does exactly that step, and nothing more.",
+        ],
+      },
+    ],
+    faqs: [
+      { q: "Does Toolkitties' Image to PDF tool scan documents the way CamScanner's camera does?", a: "No — it combines photos you already have (from your camera roll or a file picker) into a single PDF, in the order you choose. It doesn't include CamScanner's live edge-detection scanning camera." },
+      { q: "Can I remove the CamScanner watermark for free?", a: "Not through CamScanner itself — removing the watermark requires upgrading to its paid Premium plan. Using a different tool, like Toolkitties, that never adds a watermark in the first place is the free route." },
+      { q: "I need the text from my scan to be searchable or copyable, not just a photo in a PDF — does Image to PDF do that?", a: "No, Image to PDF just assembles the images. For searchable text, use Toolkitties' separate [PDF OCR](/pdf-ocr) tool afterward — it also runs in your browser with no page limit." },
+    ],
+    related: ["toolkitties-vs-ilovepdf-vs-smallpdf", "are-online-pdf-tools-safe"],
+  },
+  {
     slug: "toolkitties-vs-ilovepdf-vs-smallpdf",
     title: "Toolkitties vs iLovePDF vs Smallpdf: Free PDF Tools Compared (2026)",
     seoTitle: "Toolkitties vs iLovePDF vs Smallpdf: Which Free PDF Tool? | Toolkitties",

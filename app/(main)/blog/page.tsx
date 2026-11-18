@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BackgroundShapes from "@/components/BackgroundShapes";
 import PostCard from "@/components/blog/PostCard";
+import Link from "next/link";
 import { allPosts, type PostCategory } from "@/lib/blog";
 
 const url = "https://toolkitties.com/blog";
@@ -65,7 +66,9 @@ export default function BlogIndex() {
             if (list.length === 0) return null;
             return (
               <section key={c} id={slug(c)} className="mt-14 scroll-mt-24" aria-labelledby={`h-${slug(c)}`}>
-                <h2 id={`h-${slug(c)}`} className="font-display text-2xl font-bold text-ink">{c}</h2>
+                <h2 id={`h-${slug(c)}`} className="font-display text-2xl font-bold text-ink">
+                  <Link href={`/guides/${slug(c)}`} className="hover:text-moss hover:underline">{c} guide →</Link>
+                </h2>
                 <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {list.map((p) => <PostCard key={p.slug} post={p} />)}
                 </div>

@@ -9,6 +9,7 @@ import { phase4Batch3 } from "./posts-phase4-batch3";
 import { expansions } from "./posts-expand";
 
 export type { Post, Block, Section, PostCategory } from "./types";
+export { pillars, findPillar, type Pillar } from "./pillars";
 
 // Newest first. Posts with the same date keep the order they are written in (a stable sort),
 // so the first post in posts-pdf.ts is the featured one on the blog page.

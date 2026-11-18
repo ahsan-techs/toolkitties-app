@@ -96,7 +96,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
               <li aria-hidden="true">/</li>
               <li><Link href="/blog" className="hover:text-moss">Guides</Link></li>
               <li aria-hidden="true">/</li>
-              <li className="text-ink/70" aria-current="page">{post.category}</li>
+              <li><Link href={`/guides/${post.category.toLowerCase()}`} className="hover:text-moss">{post.category}</Link></li>
             </ol>
           </nav>
 
