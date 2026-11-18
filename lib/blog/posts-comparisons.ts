@@ -5,6 +5,127 @@ import type { Post } from "./types";
 // (Capterra reviews, published pricing pages) — no invented numbers.
 export const comparisonPosts: Post[] = [
   {
+    slug: "dochub-alternative-no-monthly-limit",
+    title: "A Free DocHub Alternative With No Monthly Signature Limit (2026)",
+    seoTitle: "Free DocHub Alternative, No Monthly Limit on Signatures | Toolkitties",
+    description: "Sign a PDF as many times as you need — DocHub's free plan caps you at a handful of signatures a month, Toolkitties' eSign tool doesn't.",
+    tool: "esign-pdf",
+    category: "Privacy",
+    emoji: "✍️",
+    published: "2026-11-18",
+    updated: "2026-11-18",
+    takeaways: [
+      "DocHub's free plan limits you to around 3 completed documents and 5 eSignatures a month, reported consistently across independent review sites.",
+      "Once you hit that monthly cap, DocHub's cheapest paid plan starts at $8/month (reported as high as $11–12/month on some pricing pages).",
+      "Toolkitties' eSign PDF tool has no monthly signature count — sign as many documents as you need, for free, with no account.",
+      "DocHub is still the stronger pick if you need multi-party signing requests or team collaboration — Toolkitties' tool is built for one person signing their own documents, quickly.",
+    ],
+    sections: [
+      {
+        id: "the-monthly-reset",
+        heading: "What happens when you run out of free signatures mid-month",
+        blocks: [
+          "DocHub's free tier is genuinely useful for occasional signing — reviewers on Capterra and cost-tracking sites consistently report it capped at a small number of completed documents and eSignatures per month, with the exact figures (around 3 documents, 5 signatures) repeated across several independent sources checked in 2026. That's enough for the odd lease or form, but it resets monthly rather than refilling as you need it.",
+          "If you're freelancing, running a small business, or just happen to need to sign six things in one busy week, that cap turns into a wall exactly when you're already under time pressure — and the fix is a paid plan starting around $8–12/month depending on which pricing page you check.",
+        ],
+      },
+      {
+        id: "comparison-table",
+        heading: "DocHub (Free) vs Toolkitties eSign PDF, side by side",
+        blocks: [
+          {
+            table: {
+              head: ["", "Toolkitties (eSign PDF)", "DocHub (Free)"],
+              rows: [
+                ["Signatures per month", "Unlimited", "Reported around 5/month"],
+                ["Completed documents per month", "Unlimited", "Reported around 3/month"],
+                ["Account required", "No", "Yes, for the free plan"],
+                ["Where your document is processed", "In your browser — never uploaded", "Uploaded to DocHub's servers"],
+                ["Multi-party signing requests / team features", "No — single signer, on your own document", "Yes"],
+                ["Price once the free limit is hit", "Nothing to hit", "From $8/month"],
+              ],
+            },
+          },
+          { note: "DocHub's free-plan figures above come from its own published usage limits and independent pricing trackers (Capterra, CostBench) as checked in 2026 — limits and pricing can change, so check DocHub's current pricing page if it matters for your decision." },
+        ],
+      },
+      {
+        id: "when-dochub-wins",
+        heading: "When DocHub is the right tool instead",
+        blocks: [
+          "If you need to send a document to someone else for them to sign — a client countersigning a contract, a landlord and tenant both signing a lease — that's a signing request workflow, which DocHub supports and Toolkitties' tool deliberately doesn't try to replicate.",
+          "[eSign PDF](/esign-pdf) is built for the simpler, more common case: it's your own document, you need to sign it yourself, and you want to do that without creating an account or uploading the file anywhere.",
+        ],
+      },
+    ],
+    faqs: [
+      { q: "Can Toolkitties send a document to someone else to sign?", a: "No — eSign PDF is for signing a document yourself. If you need another person to sign remotely as part of a request, that's a workflow DocHub and similar e-signature services are built for." },
+      { q: "Does Toolkitties keep a record of what I've signed, the way DocHub does?", a: "No. Because nothing is uploaded, there's no account and no document history on Toolkitties' side — you download the signed PDF and that's the only copy. Keep it yourself if you need a record." },
+      { q: "Is a hand-drawn signature from a browser tool legally valid?", a: "In most jurisdictions, a clearly intentional electronic signature (drawn, typed, or uploaded as an image) carries legal weight for everyday documents, but rules vary by country and document type — for anything with significant legal or financial consequences, check what your jurisdiction and the other party require." },
+    ],
+    related: ["camscanner-alternative-free-no-watermark", "toolkitties-vs-ilovepdf-vs-smallpdf"],
+  },
+  {
+    slug: "pdf24-vs-toolkitties",
+    title: "PDF24 vs Toolkitties: The Real Difference Isn't the Limit (2026)",
+    seoTitle: "PDF24 vs Toolkitties: Privacy Compared, Not Just Limits | Toolkitties",
+    description: "PDF24's online tools don't cap your free usage — but they do upload your file to a server. Here's the one difference that actually matters.",
+    tool: "split-pdf",
+    category: "Privacy",
+    emoji: "⚖️",
+    published: "2026-11-18",
+    updated: "2026-11-18",
+    takeaways: [
+      "To PDF24's credit, its free online tools don't appear to have a hard daily or monthly task limit, unlike several other free PDF sites.",
+      "The real difference is privacy: PDF24's online tools upload your file to its servers in Germany to process it, as reported by multiple independent reviews.",
+      "PDF24 also offers a Windows-only desktop app that processes files locally — but that leaves Mac, Linux and Chromebook users with the server-upload version.",
+      "Toolkitties processes every file in your own browser on any device with a modern browser, so there's no upload step regardless of your operating system.",
+    ],
+    sections: [
+      {
+        id: "giving-credit",
+        heading: "PDF24 isn't the villain in this comparison",
+        blocks: [
+          "Most \"free PDF tool\" comparisons published in 2026 single out iLovePDF's and Smallpdf's daily task caps as the main complaint — and PDF24 is usually credited, fairly, as one of the few that doesn't impose a strict numeric limit on its free online tools. If a daily cap is your main frustration with other sites, PDF24 genuinely solves that part of the problem.",
+          "So this comparison isn't about limits. It's about where your file actually goes while PDF24 is working on it — which several independent reviews describe the same way.",
+        ],
+      },
+      {
+        id: "the-upload-question",
+        heading: "Where does your file go?",
+        blocks: [
+          "Independent comparisons of PDF24 (checked through 2026) consistently describe the same setup: the online tools at tools.pdf24.org send your file to PDF24's own servers, reported to be located in Germany, to perform the merge, split, compress or convert, then send the result back. PDF24 also publishes a desktop application, PDF24 Creator, which processes files locally — but it's Windows-only, so it isn't an option for Mac, Linux or Chromebook users, or for anyone working from a phone or tablet.",
+          "That upload step is standard for most online PDF tools, and PDF24's stated server location and lack of a usage cap put it ahead of plenty of competitors on both fronts. It's just a different model from a tool that never uploads the file in the first place.",
+        ],
+      },
+      {
+        id: "comparison-table",
+        heading: "PDF24 vs Toolkitties, side by side",
+        blocks: [
+          {
+            table: {
+              head: ["", "Toolkitties", "PDF24 (online tools)"],
+              rows: [
+                ["Free usage limit", "None", "None reported, by most independent reviews"],
+                ["Where your file is processed", "In your browser, on any device", "Uploaded to PDF24's servers"],
+                ["Works the same on Mac / Linux / Chromebook", "Yes", "Yes for upload-based tools; local processing needs the Windows-only desktop app"],
+                ["Account required", "No", "No"],
+                ["Ads on the free tools", "No", "Reported by some reviews as more prominent than competitors"],
+              ],
+            },
+          },
+          { note: "PDF24's server location and lack of a strict usage cap are reported consistently across several independent 2026 comparison articles and TechRepublic's privacy review — check PDF24's own site for its current, exact terms." },
+        ],
+      },
+    ],
+    faqs: [
+      { q: "Is PDF24 a bad or untrustworthy tool?", a: "No — it's a long-running, widely used free PDF service, and several reviews credit it for having no strict free-tier limit. The trade-off it shares with most server-based tools is simply that your file is uploaded somewhere else to be processed." },
+      { q: "Does PDF24's desktop app have the same upload issue?", a: "No — PDF24 Creator, its Windows desktop application, processes files locally on your machine. It just isn't available for Mac, Linux, or mobile." },
+      { q: "If PDF24 has no limit either, why does it matter which one I use?", a: "It comes down to what you're optimizing for. If you never worry about where a file is processed, either works. If you'd rather a sensitive file never leave your device at all — regardless of operating system — that's the specific gap Toolkitties is built to close." },
+    ],
+    related: ["toolkitties-vs-ilovepdf-vs-smallpdf", "are-online-pdf-tools-safe"],
+  },
+  {
     slug: "camscanner-alternative-free-no-watermark",
     title: "A Free CamScanner Alternative With No Watermark (2026)",
     seoTitle: "Free CamScanner Alternative, No Watermark, No Upload | Toolkitties",
