@@ -7,6 +7,57 @@
 export type ToolSeo = { also: string[]; uses: string[]; faqs: { q: string; a: string }[] };
 
 export const toolSeo: Record<string, ToolSeo> = {
+  "ai-pdf-chat": {
+    also: ["chat with a PDF", "ask questions about a PDF", "AI PDF summarizer", "talk to a document"],
+    uses: ["Get the gist of a long report without reading every page", "Find one specific clause or number inside a contract quickly", "Ask follow-up questions about a document instead of re-reading it"],
+    faqs: [
+      { q: "Does my PDF get uploaded to an AI company's servers to answer questions?", a: "No. The AI model that reads your PDF runs inside your own browser, so the document itself is never uploaded anywhere." },
+      { q: "How accurate are the answers?", a: "The model answers based only on the text it can read in your PDF. For scanned pages with no selectable text, accuracy drops — run the PDF through OCR first for the best results." },
+      { q: "Is there a limit on how many questions I can ask?", a: "No daily limit — ask as many questions as you need during your session." },
+    ],
+  },
+  "pdf-ocr": {
+    also: ["extract text from scanned PDF", "make a PDF searchable", "OCR a document", "scanned PDF to text"],
+    uses: ["Make an old scanned contract searchable and copyable", "Pull text out of a photographed receipt or form", "Turn a flat scan into text you can paste elsewhere"],
+    faqs: [
+      { q: "Will OCR work on a photo, not just a scanned PDF?", a: "Yes — you can run OCR on a photo of a document as well as an already-scanned PDF." },
+      { q: "Is there a page limit on the free OCR?", a: "No. There's no page limit, unlike some competing tools that cap free OCR at a small number of recognitions per month." },
+      { q: "Does OCR work for handwriting?", a: "OCR is built for printed text. Handwritten text is recognized far less reliably, if at all." },
+    ],
+  },
+  "pdf-to-excel": {
+    also: ["convert PDF to spreadsheet", "extract tables from PDF", "PDF to xlsx"],
+    uses: ["Pull a table of numbers out of a report into a spreadsheet you can calculate with", "Turn a PDF invoice or statement into editable rows and columns", "Get data out of a PDF without retyping it by hand"],
+    faqs: [
+      { q: "Will the table formatting come out exactly the same in Excel?", a: "Table structure is kept as closely as possible, but complex merged cells or unusual layouts may need a manual tidy-up afterward." },
+      { q: "What happens to pages that aren't tables?", a: "Each page becomes its own sheet in the spreadsheet, so page text is kept even where there's no table on it." },
+    ],
+  },
+  "excel-to-pdf": {
+    also: ["convert spreadsheet to PDF", "Excel to PDF converter", "print spreadsheet as PDF"],
+    uses: ["Send a spreadsheet to someone who can't edit it or doesn't have Excel", "Get a print-ready version of a report with no cut-off columns", "Archive a spreadsheet's current numbers as a fixed document"],
+    faqs: [
+      { q: "Will wide spreadsheets get cut off in the PDF?", a: "No — the PDF is laid out so columns aren't cut off, and the header row repeats on every page for long tables." },
+      { q: "Do formulas still show as numbers or as the formula text?", a: "The PDF shows the calculated values your spreadsheet displays, not the underlying formulas." },
+    ],
+  },
+  "esign-pdf": {
+    also: ["sign a PDF online", "add a signature to a PDF", "electronic signature on a PDF", "sign a document without printing it"],
+    uses: ["Sign a lease or contract you received by email", "Sign a form without printing, signing by hand, and scanning it back in", "Add your signature to the same document more than once in a month"],
+    faqs: [
+      { q: "Is there a limit on how many PDFs I can sign per month?", a: "No — unlike some e-signature services that cap free signatures at a small number per month, there's no monthly limit here." },
+      { q: "Can I send the PDF to someone else to sign too?", a: "No — this tool is built for signing a document yourself. For sending a signing request to someone else, you'd need a dedicated e-signature service." },
+      { q: "Is a signature drawn here legally binding?", a: "In most places, a clearly intentional electronic signature carries legal weight for everyday documents, but rules vary by country and document type — check what's required for anything with serious legal or financial consequences." },
+    ],
+  },
+  "epub-to-pdf": {
+    also: ["convert ebook to PDF", "EPUB reader to PDF", "EPUB converter"],
+    uses: ["Read an EPUB ebook on a device or app that only supports PDF", "Print pages from an ebook", "Keep a fixed, shareable copy of an EPUB's text"],
+    faqs: [
+      { q: "Will the PDF look exactly like the original ebook?", a: "Chapter text and headings carry over, but the original fonts and any embedded page images from the EPUB are not preserved in the PDF." },
+      { q: "Can I convert an EPUB with DRM protection?", a: "No — DRM-protected EPUBs can't be converted, since the file itself is locked by the publisher's protection, not by this tool." },
+    ],
+  },
   "merge-pdf": {
     also: ["combine PDF files", "join PDFs", "PDF merger", "merge PDFs into one file"],
     uses: ["Combine scanned pages, receipts and forms into one document", "Join report chapters before sending them", "Put several files into a single email attachment or application upload"],
