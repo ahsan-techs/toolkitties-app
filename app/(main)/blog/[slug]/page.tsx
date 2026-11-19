@@ -81,6 +81,18 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     },
   ];
 
+  // Extend HowTo schema into the blog: if a section contains step-by-step instructions, describe them as a HowTo.
+  const stepSection = post.sections.find((s) => s.blocks.some((b) => typeof b === "object" && "steps" in b));
+  if (stepSection) {
+    const steps = stepSection.blocks.find((b) => typeof b === "object" && "steps" in b) as { steps: string[] };
+    jsonLd.push({
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      name: post.title,
+      step: steps.steps.map((text, i) => ({ "@type": "HowToStep", position: i + 1, text: text.replace(/\*\*/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") })),
+    } as unknown as (typeof jsonLd)[number]);
+  }
+
   return (
     <>
       <Navbar />
