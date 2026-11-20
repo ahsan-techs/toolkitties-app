@@ -666,6 +666,22 @@ export const toolVariants: ToolVariant[] = [
     presetOpts: {},
   },
   {
+    slug: "combine-pdf-files-online-free",
+    toolSlug: "merge-pdf",
+    name: "Combine PDF Files Online",
+    title: "Combine PDF Files Online Free — No Signup | Toolkitties",
+    description: "Combine, join, or add several PDF files into one — free, private, no signup, in your browser.",
+    presetOpts: {},
+  },
+  {
+    slug: "shrink-pdf-file-size-online",
+    toolSlug: "compress-pdf",
+    name: "Shrink PDF File Size Online",
+    title: "Shrink a PDF's File Size Online Free | Toolkitties",
+    description: "Shrink a PDF down so it's small enough to email or upload — free, private, in your browser.",
+    presetOpts: {},
+  },
+  {
     slug: "convert-svg-to-png-free",
     toolSlug: "svg-to-png",
     name: "Convert SVG to PNG Free",
