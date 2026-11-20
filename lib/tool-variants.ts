@@ -153,6 +153,14 @@ export const toolVariants: ToolVariant[] = [
 
   // ---- Word Counter: use-case presets ----
   {
+    slug: "count-words-online-free",
+    toolSlug: "word-counter",
+    name: "Count Words Online",
+    title: "Count Words Online Free | Toolkitties",
+    description: "Count words, characters, and reading time in any text — free and instant as you type.",
+    presetOpts: {},
+  },
+  {
     slug: "essay-word-counter",
     toolSlug: "word-counter",
     name: "Essay Word Counter",
