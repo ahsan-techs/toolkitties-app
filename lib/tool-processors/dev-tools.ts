@@ -1,5 +1,3 @@
-import QRCode from "qrcode";
-
 export type QrOptions = {
   size?: number;
   dark?: string;
@@ -8,6 +6,8 @@ export type QrOptions = {
 };
 
 export async function generateQrDataUrl(text: string, opts: QrOptions = {}) {
+  // Loaded on demand so the qrcode library is not part of every tool page's first load.
+  const QRCode = (await import("qrcode")).default;
   return QRCode.toDataURL(text, {
     width: opts.size ?? 320,
     margin: 1,

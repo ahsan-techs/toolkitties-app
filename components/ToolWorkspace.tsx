@@ -7,7 +7,7 @@ import { TextOutput, FileDownload } from "@/components/workspace/OutputPanel";
 import WaveLoader from "@/components/WaveLoader";
 import * as text from "@/lib/tool-processors/text-tools";
 import * as image from "@/lib/tool-processors/image-tools";
-import * as pdf from "@/lib/tool-processors/pdf-tools";
+import type * as PdfT from "@/lib/tool-processors/pdf-tools";
 import * as dev from "@/lib/tool-processors/dev-tools";
 import { useRouter } from "next/navigation";
 import { setFileHandoff, consumeFileHandoff } from "@/lib/file-handoff";
@@ -600,14 +600,16 @@ export default function ToolWorkspace({ tool, initialOpts, initialText }: { tool
       run(async () => {
         const file = files[0];
         if (!file) throw new Error("Add a PDF first.");
+        // Loaded on demand so pdf-lib is not part of every tool page's first load.
+        const pdf = await import("@/lib/tool-processors/pdf-tools");
 
-        const finish = (res: pdf.ToolResult, suffix: string, name = originalName(suffix)) => {
+        const finish = (res: PdfT.ToolResult, suffix: string, name = originalName(suffix)) => {
           setOutputBlob({ blob: pdf.bytesToBlob(res.bytes), filename: name });
           if (res.note) setNote(res.note);
         };
 
         if (tool.slug === "compress-pdf") {
-          const level = (opts.level || "recommended") as pdf.CompressLevel;
+          const level = (opts.level || "recommended") as PdfT.CompressLevel;
           const res = await pdf.compressPdf(file, level, (done, total) => setProgress(`Working on ${done} of ${total}…`));
           finish(res, "-compressed.pdf", res.kept ? file.name : originalName("-compressed.pdf"));
           return;
@@ -630,8 +632,8 @@ export default function ToolWorkspace({ tool, initialOpts, initialText }: { tool
         }
         if (tool.slug === "pdf-page-numbers") {
           const res = await pdf.addPageNumbers(file, {
-            format: (opts.format || "number") as pdf.NumberFormat,
-            position: (opts.position || "bottom-center") as pdf.NumberPosition,
+            format: (opts.format || "number") as PdfT.NumberFormat,
+            position: (opts.position || "bottom-center") as PdfT.NumberPosition,
             start: Number(opts.start || 1),
           });
           finish(res, "-numbered.pdf");
