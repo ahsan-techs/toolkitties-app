@@ -215,9 +215,12 @@ export const toolSeo: Record<string, ToolSeo> = {
     faqs: [{ q: "Can I make the photo black and white?", a: "Yes. You can optionally turn the flipped image black and white." }],
   },
   "word-counter": {
-    also: ["character counter", "word count online", "count words and characters", "reading time calculator"],
+    also: ["word count online", "online word counter", "count words online", "character counter", "reading time calculator"],
     uses: ["Check an essay against a word limit", "Keep a post within a character limit", "Estimate how long a text takes to read"],
-    faqs: [{ q: "What does the Word Counter measure?", a: "It counts words, characters, sentences and shows an estimated reading time." }],
+    faqs: [
+      { q: "What does the Word Counter measure?", a: "It counts words, characters, sentences and shows an estimated reading time." },
+      { q: "How do I count the words in my text online?", a: "Type or paste your text into the box and the counts update as you go. Nothing needs to be uploaded or submitted." },
+    ],
   },
   "case-converter": {
     also: ["uppercase to lowercase", "text case converter", "title case converter", "sentence case converter"],
@@ -381,9 +384,12 @@ export const toolSeo: Record<string, ToolSeo> = {
     faqs: [{ q: "Is the quotation a legal contract?", a: "No. It is a document you create. Ask a legal professional if you need contract wording." }],
   },
   "vat-calculator": {
-    also: ["GST calculator", "sales tax calculator", "add VAT to a price", "remove VAT from a price"],
+    also: ["VAT tax calculator", "tax VAT calculator", "GST calculator", "sales tax calculator", "add VAT to a price", "remove VAT from a price"],
     uses: ["Add VAT, GST or sales tax to a price", "Find the tax inside a price that already includes it", "Check an invoice total"],
-    faqs: [{ q: "Which tax rate should I use?", a: "Enter the rate that applies to you. Tax rules differ by country, so confirm the correct rate with your tax authority." }],
+    faqs: [
+      { q: "How do I calculate VAT on a price?", a: "Enter the price and the tax rate, choose whether to add tax to the price or take it out of a price that already includes it, and the calculator shows the price before tax, the tax amount and the price including tax." },
+      { q: "Which tax rate should I use?", a: "Enter the rate that applies to you. Tax rules differ by country, so confirm the correct rate with your tax authority." },
+    ],
   },
   "profit-margin-calculator": {
     also: ["markup calculator", "gross margin calculator", "selling price calculator", "profit percentage"],

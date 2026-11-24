@@ -346,8 +346,8 @@ export const toolVariants: ToolVariant[] = [
     slug: "url-decode-online",
     toolSlug: "url-encoder",
     name: "URL Decode Online",
-    title: "URL Decoder Online Free | Toolkitties",
-    description: "Decode a URL-encoded string back to plain text — free, private, no signup.",
+    title: "URL Decode Online: Free URL Decoder | Toolkitties",
+    description: "URL decode online: turn a URL-encoded string, such as one with %20 in it, back into plain text. A free, private URL decoder with no signup.",
     presetOpts: { mode: "decode" },
   },
   {

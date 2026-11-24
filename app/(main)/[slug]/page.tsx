@@ -13,6 +13,8 @@ import EthicalAd from "@/components/EthicalAd";
 import { MINI_TOOL_SLUGS } from "@/components/tools/registry";
 import { allTools, findTool, toolGroups } from "@/lib/tools-data";
 import { toolVariants, findVariant, variantsForTool } from "@/lib/tool-variants";
+import { toolGuides } from "@/lib/tool-guides";
+import { findPost } from "@/lib/blog";
 import { generateHowTo, generateBenefits, generateFaqs, generatePrivacyNote, generateSeoTitle, generateSeoDescription, generateDirectAnswer, generateQuickFacts, detectKind, fitVariantTitle, fitVariantDescription } from "@/lib/seo-content";
 import { toolSeo } from "@/lib/tool-seo";
 import ToolShowcase from "@/components/ToolShowcase";
@@ -111,6 +113,7 @@ export default function ToolPage({ params, searchParams }: { params: { slug: str
     .map((slug) => findTool(slug)?.tool)
     .filter((t): t is NonNullable<typeof t> => Boolean(t))
     .slice(0, 4);
+  const relatedGuides = (toolGuides[tool.slug] ?? []).map((g) => findPost(g)).filter((g): g is NonNullable<typeof g> => Boolean(g));
   const siblingVariants = variantsForTool(tool.slug).filter((v) => v.slug !== canonicalSlug);
   // On a variant page, always link back to the base tool it's powered by.
   const relatedSearches = variant ? [{ slug: tool.slug, name: tool.name }, ...siblingVariants.map((v) => ({ slug: v.slug, name: v.name }))] : siblingVariants.map((v) => ({ slug: v.slug, name: v.name }));
@@ -316,6 +319,19 @@ export default function ToolPage({ params, searchParams }: { params: { slug: str
               ))}
             </div>
           </section>
+
+          {relatedGuides.length > 0 && (
+            <section className="mx-auto mt-14 max-w-2xl">
+              <h2 className="font-display text-lg font-semibold text-ink">Related guides</h2>
+              <ul className="mt-4 space-y-2">
+                {relatedGuides.map((g) => (
+                  <li key={g.slug}>
+                    <Link href={`/blog/${g.slug}`} className="text-sm text-moss underline-offset-2 hover:underline">{g.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {relatedSearches.length > 0 && (
             <section className="mx-auto mt-14 max-w-2xl">

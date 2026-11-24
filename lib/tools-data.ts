@@ -71,7 +71,7 @@ export const toolGroups: ToolGroup[] = [
     icon: "📝",
     blurb: "Format, count, and convert text and structured data instantly.",
     tools: [
-      { slug: "word-counter", name: "Word Counter", description: "Count words, characters, sentences, and reading time.", icon: "🔢", functional: true },
+      { slug: "word-counter", name: "Word Counter", description: "Free online word counter: count words, characters, sentences, and reading time.", icon: "🔢", functional: true },
       { slug: "case-converter", name: "Case Transformer", description: "Switch text between UPPER, lower, Title, and Sentence case.", icon: "🔠", functional: true },
       { slug: "json-formatter", name: "JSON Formatter", description: "Clean up and validate messy JSON in one click.", icon: "🧾", functional: true },
       { slug: "base64", name: "Base64 Decoder", description: "Encode text to Base64 or decode it straight back.", icon: "🔐", functional: true },
