@@ -4,14 +4,14 @@ import type { Post } from "./types";
 export const pdfPosts: Post[] = [
   {
     slug: "how-to-merge-pdf-files",
-    title: "How to Merge PDF Files Online for Free (No Upload, No Signup)",
-    seoTitle: "How to Merge PDF Files Online for Free | Toolkitties",
-    description: "Combine several PDFs into one file in your browser. Reorder files, pick the pages you want and download, with no upload and no signup.",
+    title: "How to Combine PDF Files Into One: Free, No Upload, No Signup",
+    seoTitle: "How to Combine PDF Files Into One (Free, Private)",
+    description: "How to combine, join or merge two or more PDF files into one, free in your browser. Reorder files, pick pages and download, with no upload and no signup.",
     tool: "merge-pdf",
     category: "PDF",
     emoji: "📎",
     published: "2026-10-22",
-    updated: "2026-10-22",
+    updated: "2026-11-22",
     takeaways: [
       "Open Merge PDF, add your files, drag them into order and download one combined PDF.",
       "You can choose which pages to take from each file, so cover pages and blanks can be left out.",
@@ -23,7 +23,7 @@ export const pdfPosts: Post[] = [
         id: "steps",
         heading: "Merge PDFs in five steps",
         blocks: [
-          "Putting several documents into one PDF is the easiest way to send a contract pack, a set of receipts or a report with its appendices. You do not need to install anything. Here is the full process with [Merge PDF](/merge-pdf):",
+          "Combining, joining and merging PDFs all mean the same thing: putting several documents into one PDF file, which is the easiest way to send a contract pack, a set of receipts or a report with its appendices. You do not need to install anything. Here is the full process with [Merge PDF](/merge-pdf), or go straight to the [Combine PDF Files Online](/combine-pdf-files-online-free) page:",
           { steps: [
             "Open **Merge PDF** and add your files. You can pick them from your device, and you can add more than one at a time.",
             "Check the first-page previews so you know which file is which.",
@@ -45,6 +45,14 @@ export const pdfPosts: Post[] = [
             "**Merge in the final order.** It is faster to arrange files once than to merge twice.",
           ] },
           "If you realise afterwards that one file should come earlier, you can simply run the merge again from the original files. Your originals are never changed.",
+        ],
+      },
+      {
+        id: "two-files",
+        heading: "Combine just two PDF files",
+        blocks: [
+          "Combining two PDFs is the same process with only two files. Add both, check from the previews which one should come first, drag them into order and merge. If one of the two only needs a few pages, choose those pages before you merge so the result contains only what you want.",
+          "If you later need to pull some pages back out of the combined file, [Split PDF](/split-pdf) can extract them.",
         ],
       },
       {
@@ -80,12 +88,12 @@ export const pdfPosts: Post[] = [
     slug: "how-to-reduce-pdf-file-size",
     title: "How to Reduce PDF File Size for Email and Online Forms",
     seoTitle: "How to Reduce PDF File Size (Free, in Your Browser)",
-    description: "Make a PDF smaller for email and upload limits. Learn which compression level to choose and why some PDFs shrink more than others.",
+    description: "How to reduce a PDF file size, make a PDF smaller or shrink it for email and upload limits. Which compression level to choose, and what to do by hand.",
     tool: "compress-pdf",
     category: "PDF",
     emoji: "🗜️",
     published: "2026-10-22",
-    updated: "2026-10-22",
+    updated: "2026-11-22",
     takeaways: [
       "Start with the Recommended level. It makes the file smaller and keeps text sharp.",
       "Use Smaller if the file is still too big. Use Smallest only as a last resort, because it turns pages into pictures.",
@@ -97,7 +105,7 @@ export const pdfPosts: Post[] = [
         id: "steps",
         heading: "How to compress a PDF",
         blocks: [
-          "Email services and online forms often limit attachment size. When a PDF is over the limit, you do not need special software. Use [Compress PDF](/compress-pdf):",
+          "Email services and online forms often limit attachment size. When a PDF is over the limit, you do not need special software to make it smaller. Use [Compress PDF](/compress-pdf), or go straight to the [Shrink PDF File Size](/shrink-pdf-file-size-online) or [Compress PDF for Email](/compress-pdf-for-email) pages:",
           { steps: [
             "Open the tool and add your PDF.",
             "Choose how much to compress. If you are unsure, keep **Recommended**.",
@@ -124,6 +132,19 @@ export const pdfPosts: Post[] = [
         blocks: [
           "How much a PDF can shrink depends on what is inside it. Photos and scanned pages are large, so there is a lot to save. A PDF made from a text document is already compact, so there may be very little to gain.",
           "If you started with a big scan, it also helps to shrink the pictures before they go into a PDF. [Compress Image](/compress-image) lets you set the quality and the largest side, and [Image to PDF](/image-to-pdf) will put them into one file.",
+        ],
+      },
+      {
+        id: "manually",
+        heading: "Reduce PDF size manually",
+        blocks: [
+          "If you would rather control the result yourself than rely on a compression level, three things change a PDF's size by hand, and you can combine them:",
+          { list: [
+            "**Remove pages you do not need.** Fewer pages is a smaller file. [Delete PDF Pages](/delete-pdf-pages) takes pages out of the PDF.",
+            "**Shrink the pictures before they go in.** For a PDF built from photos or scans, resize the images first with [Compress Image](/compress-image) and then build the PDF with [Image to PDF](/image-to-pdf).",
+            "**Send it in parts.** If the form or email accepts several files, [Split PDF](/split-pdf) divides a big PDF so each part is under the limit.",
+          ] },
+          "Run [Compress PDF](/compress-pdf) afterwards if it is still too large.",
         ],
       },
       {

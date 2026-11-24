@@ -23,7 +23,7 @@ export const guidePosts: Post[] = [
         id: "limits",
         heading: "Why PDFs get rejected for size",
         blocks: [
-          "Email services, job portals, scholarship forms and government sites often set a maximum size for attachments. Phone cameras and scanner apps create large pictures, and a PDF made from them can be many times bigger than the limit. The fix is not to retype anything. You make the file lighter without changing what it says.",
+          "Email services, job portals, scholarship forms and government sites often set a maximum size for attachments. Phone cameras and scanner apps create large pictures, and a PDF made from them can be many times bigger than the limit. The fix is not to retype anything. You make the file lighter without changing what it says. If you only need the quick version for an email attachment, go straight to [Compress PDF for Email](/compress-pdf-for-email).",
           "Before you do anything, find the real limit. It is usually written next to the upload button or in the instructions. Then check the size of your file in its properties so you know how far you have to go.",
         ],
       },

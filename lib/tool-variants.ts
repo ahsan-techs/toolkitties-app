@@ -572,13 +572,13 @@ export const toolVariants: ToolVariant[] = [
     presetOpts: {},
   },
 
-  // ---- Business documents: honest no-watermark / no-signup angle ----
+  // ---- Business documents: honest no-signup angle (the invoice PDF has a small footer line, so no "no watermark" claim) ----
   {
-    slug: "free-invoice-generator-no-watermark",
+    slug: "free-invoice-generator-no-signup",
     toolSlug: "invoice-generator",
-    name: "Free Invoice Generator — No Watermark",
-    title: "Free Invoice Generator, No Watermark, No Signup | Toolkitties",
-    description: "Create a professional invoice and download it as a clean PDF — free, no account, nothing stamped on it.",
+    name: "Free Invoice Generator — No Signup",
+    title: "Free Invoice Generator, No Signup | Toolkitties",
+    description: "Create a professional invoice and download it as a PDF — free, no account needed.",
     presetOpts: {},
   },
   {

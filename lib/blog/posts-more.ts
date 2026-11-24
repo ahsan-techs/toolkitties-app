@@ -344,12 +344,12 @@ export const morePosts: Post[] = [
     slug: "how-to-write-an-invoice",
     title: "How to Write a Professional Invoice: What to Include",
     seoTitle: "How to Write a Professional Invoice (Free Maker)",
-    description: "What every invoice should contain, how to add tax and payment terms, and how to create a clean PDF invoice for free in your browser.",
+    description: "How to write and create an invoice: what to include, how to set it out, how to add tax and payment terms, and how to make a PDF invoice free in your browser.",
     tool: "invoice-generator",
     category: "Business",
     emoji: "🧾",
     published: "2026-10-22",
-    updated: "2026-10-22",
+    updated: "2026-11-22",
     takeaways: [
       "A clear invoice shows who is billing whom, what for, how much, and how and when to pay.",
       "Invoice Generator works out totals and tax, and lets you download a PDF.",
@@ -370,6 +370,21 @@ export const morePosts: Post[] = [
             "**Payment details:** how to pay, such as bank details or a payment link, and your payment terms.",
           ] },
           { note: "This is general guidance, not legal or tax advice. Requirements such as tax numbers or specific wording depend on your country and business type." },
+        ],
+      },
+      {
+        id: "layout",
+        heading: "How to set out an invoice",
+        blocks: [
+          "Order matters as much as content, because the person paying should find the amount and the due date at a glance. A layout that works for most invoices:",
+          { steps: [
+            "**Top:** the word Invoice, your name or logo, the invoice number and the issue date.",
+            "**Next:** your details on one side and your client's details on the other.",
+            "**Middle:** a table of items, with description, quantity, rate and line total in columns.",
+            "**Below the table:** the subtotal, any tax, and the total due in a clear, bold line.",
+            "**Bottom:** the due date, how to pay and any notes or terms.",
+          ] },
+          "[Invoice Generator](/invoice-generator) uses this layout, so you only need to fill in the fields.",
         ],
       },
       {

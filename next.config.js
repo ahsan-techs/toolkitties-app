@@ -34,6 +34,7 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      { source: "/free-invoice-generator-no-watermark", destination: "/free-invoice-generator-no-signup", permanent: true },
       {
         source: "/tools/:slug",
         destination: "/:slug",
